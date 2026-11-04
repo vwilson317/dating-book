@@ -5,70 +5,98 @@ import '@fontsource-variable/literata/wght.css';
 import '@fontsource-variable/literata/wght-italic.css';
 import '../styles/global.css';
 import { SITE, instagramUrl } from '../site.config';
+import { LANGS, LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../i18n/ui';
 
 interface Props {
+  lang: Lang;
   title?: string;
   description?: string;
   image?: string;
   type?: 'website' | 'article';
+  /** URL of this page in each language. Defaults to the same path in every language. */
+  alternates?: Partial<Record<Lang, string>>;
 }
 
-const { title, description = SITE.description, image = '/og.png', type = 'website' } = Astro.props;
-const fullTitle = title ? `${title} · ${SITE.shortTitle}` : SITE.title;
+const { lang, title, description, image, type = 'website' } = Astro.props;
+const s = t(lang);
+const bookFull = `${s.bookTitle}: ${s.bookSubtitle}`;
+const fullTitle = title ? `${title} · ${s.bookTitle}` : bookFull;
+const desc = description ?? s.description;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL(image, Astro.site);
+const ogImage = new URL(image ?? (lang === DEFAULT_LANG ? '/og.png' : `/og-${lang}.png`), Astro.site);
 const path = Astro.url.pathname;
+
+// Same page in other languages
+const basePath = lang === DEFAULT_LANG ? path : path.replace(new RegExp(`^/${lang}`), '') || '/';
+const alternates: Record<Lang, string> = Object.fromEntries(
+  LANG_CODES.map((l) => [l, Astro.props.alternates?.[l] ?? localePath(l, basePath)]),
+) as Record<Lang, string>;
+const otherLangs = LANG_CODES.filter((l) => l !== lang);
+
 const nav = [
-  { href: '/chapters/', label: 'Chapters' },
-  { href: '/downloads/', label: 'Downloads' },
+  { href: localePath(lang, '/chapters/'), label: s.navChapters },
+  { href: localePath(lang, '/downloads/'), label: s.navDownloads },
 ];
+const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/manifest.webmanifest`;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
-    <meta name="description" content={description} />
+    <meta name="description" content={desc} />
     <link rel="canonical" href={canonical} />
+    {LANG_CODES.map((l) => <link rel="alternate" hreflang={l} href={new URL(alternates[l], Astro.site)} />)}
+    <link rel="alternate" hreflang="x-default" href={new URL(alternates[DEFAULT_LANG], Astro.site)} />
 
     <!-- PWA -->
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="manifest" href={manifest} />
     <meta name="theme-color" content={SITE.themeColor} />
     <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content={SITE.shortTitle} />
+    <meta name="apple-mobile-web-app-title" content={s.bookTitle} />
 
     <!-- Link previews (Instagram DMs, iMessage, WhatsApp, etc.) -->
     <meta property="og:type" content={type} />
-    <meta property="og:site_name" content={SITE.shortTitle} />
-    <meta property="og:title" content={title ?? SITE.title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={s.bookTitle} />
+    <meta property="og:locale" content={LANGS[lang].ogLocale} />
+    {otherLangs.map((l) => <meta property="og:locale:alternate" content={LANGS[l].ogLocale} />)}
+    <meta property="og:title" content={title ?? bookFull} />
+    <meta property="og:description" content={desc} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
   </head>
-  <body>
-    <a class="skip" href="#main">Skip to content</a>
+  <body data-lang={lang}>
+    <a class="skip" href="#main">{s.skip}</a>
 
     <div class="inapp-banner" id="inapp-banner" hidden>
-      <p>
-        <strong>Reading from Instagram?</strong> Tap <span aria-label="the menu button">•••</span> and choose
-        <em>Open in browser</em> to save the book to your home screen and download PDFs.
-      </p>
-      <button type="button" class="icon-btn" data-dismiss="inapp-banner" aria-label="Dismiss">✕</button>
+      <p><strong>{s.inAppTitle}</strong> {s.inAppBody}</p>
+      <button type="button" class="icon-btn" data-dismiss="inapp-banner" aria-label={s.dismiss}>✕</button>
     </div>
 
+    {
+      otherLangs.map((l) => (
+        <div class="lang-banner" data-suggest-lang={l} hidden>
+          <a href={alternates[l]} hreflang={l} lang={l} data-lang-switch={l} data-track="language_switched" data-prop-to={l} data-prop-from={lang} data-prop-via="suggestion">
+            {s.suggestLang}
+          </a>
+          <button type="button" class="icon-btn" data-dismiss-lang aria-label={s.dismiss}>✕</button>
+        </div>
+      ))
+    }
+
     <header class="site-header">
-      <a href="/" class="brand" aria-label={`${SITE.shortTitle} home`}>
+      <a href={localePath(lang, '/')} class="brand" aria-label={`${s.bookTitle} ${s.home}`}>
         <span class="brand-mark" aria-hidden="true">RMB</span>
-        <span class="brand-name">{SITE.shortTitle}</span>
+        <span class="brand-name">{s.bookTitle}</span>
       </a>
       <nav aria-label="Main">
         {
@@ -78,7 +106,20 @@ const nav = [
             </a>
           ))
         }
-        <button type="button" class="install-btn" id="install-btn" hidden>Get the app</button>
+        <span class="lang-switch" role="group" aria-label={s.languageLabel}>
+          {
+            LANG_CODES.map((l) =>
+              l === lang ? (
+                <span aria-current="true" title={LANGS[l].label}>{LANGS[l].short}</span>
+              ) : (
+                <a href={alternates[l]} hreflang={l} lang={l} title={LANGS[l].label} data-lang-switch={l} data-track="language_switched" data-prop-to={l} data-prop-from={lang} data-prop-via="header">
+                  {LANGS[l].short}
+                </a>
+              ),
+            )
+          }
+        </span>
+        <button type="button" class="install-btn" id="install-btn" hidden>{s.getApp}</button>
       </nav>
     </header>
 
@@ -87,24 +128,24 @@ const nav = [
     </main>
 
     <footer class="site-footer">
-      <p class="footer-title"><em>{SITE.title}</em></p>
+      <p class="footer-title"><em>{bookFull}</em></p>
       <p>
-        by {SITE.author} ·{' '}
+        {s.by} {SITE.author} ·{' '}
         <a href={instagramUrl} data-track="instagram_clicked" data-prop-location="footer" rel="me noopener">
           @{SITE.instagram}
         </a>
       </p>
-      <p class="muted">© {new Date().getFullYear()} {SITE.author}. All rights reserved.</p>
+      <p class="muted">© {new Date().getFullYear()} {SITE.author}. {s.rights}</p>
     </footer>
 
     <dialog id="ios-install" class="sheet">
-      <h2>Add to your home screen</h2>
+      <h2>{s.iosTitle}</h2>
       <ol>
-        <li>Tap the <strong>Share</strong> button <span aria-hidden="true">(□↑)</span> in Safari's toolbar.</li>
-        <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
-        <li>Tap <strong>Add</strong>. New chapters will be one tap away.</li>
+        <li>{s.iosStep1}</li>
+        <li>{s.iosStep2}</li>
+        <li>{s.iosStep3}</li>
       </ol>
-      <form method="dialog"><button class="btn">Got it</button></form>
+      <form method="dialog"><button class="btn">{s.gotIt}</button></form>
     </dialog>
 
     <script>

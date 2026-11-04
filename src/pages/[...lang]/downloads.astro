@@ -1,30 +1,35 @@
 ---
-import Base from '../layouts/Base.astro';
-import PdfVersions from '../components/PdfVersions.astro';
-import { getPublishedChapters, getEditions, chapterUrl, formatDate } from '../lib/content';
+import Base from '../../layouts/Base.astro';
+import PdfVersions from '../../components/PdfVersions.astro';
+import { getPublishedChapters, getEditions, chapterUrl, formatDate } from '../../lib/content';
+import { langPaths, t, type Lang } from '../../i18n/ui';
 
-const chapters = await getPublishedChapters();
-const editions = await getEditions();
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+const chapters = (await getPublishedChapters(lang)).filter((c) => c.data.versions.length);
+const editions = await getEditions(lang);
 ---
 
-<Base title="Downloads" description="Download chapters and full editions as PDFs.">
+<Base lang={lang} title={s.downloadsTitle} description={s.downloadsDescription}>
   <header class="page-head">
-    <p class="eyebrow">PDFs</p>
-    <h1>Downloads</h1>
-    <p class="muted">Every version stays here, so you can always grab the one you want.</p>
+    <p class="eyebrow">{s.downloadsEyebrow}</p>
+    <h1>{s.downloadsTitle}</h1>
+    <p class="muted">{editions.length || chapters.length ? s.downloadsLede : s.noPdfs}</p>
   </header>
 
   {
     editions.length > 0 && (
       <section>
-        <h2>Full editions</h2>
+        <h2>{s.fullEditions}</h2>
         <ul class="download-list">
           {editions.map((e) => (
             <li class="download-row">
               <div>
                 <h3>{e.data.title}</h3>
                 {e.data.description && <p class="muted">{e.data.description}</p>}
-                <p class="muted small">{formatDate(e.data.date)}</p>
+                <p class="muted small">{formatDate(e.data.date, lang)}</p>
               </div>
               <a
                 class="btn btn--primary"
@@ -44,13 +49,12 @@ const editions = await getEditions();
     )
   }
 
-  <section>
-    <h2>By chapter</h2>
-    <ul class="download-list">
-      {
-        chapters
-          .filter((c) => c.data.versions.length)
-          .map((c) => (
+  {
+    chapters.length > 0 && (
+      <section>
+        <h2>{s.byChapter}</h2>
+        <ul class="download-list">
+          {chapters.map((c) => (
             <li class="download-row download-row--stack">
               <h3>
                 <a href={chapterUrl(c)}>
@@ -59,8 +63,9 @@ const editions = await getEditions();
               </h3>
               <PdfVersions chapter={c} />
             </li>
-          ))
-      }
-    </ul>
-  </section>
+          ))}
+        </ul>
+      </section>
+    )
+  }
 </Base>

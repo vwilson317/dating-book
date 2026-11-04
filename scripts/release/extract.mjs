@@ -1,42 +1,25 @@
 // Turns a full-book PDF into chapters: page ranges, titles, and Markdown text.
 // Works with PDFs exported from Word, Google Docs, Pages, Scrivener, Vellum, etc.
 // Assumes each chapter starts on a new page with a heading like "Chapter 3", "CHAPTER THREE",
-// or "Chapter 3: Title". "Prologue" becomes chapter 0, "Epilogue" comes after the last chapter.
+// "Chapter 3: Title" (or "Capítulo 3", "CAPÍTULO TRÊS" in Portuguese; see languages.mjs).
+// The prologue becomes chapter 0, the epilogue comes after the last chapter.
 import { getDocument } from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { LANGUAGES, parseNumber, detectLanguage } from './languages.mjs';
 
-const CHAPTER_RE = /^\s*chapter\s+([0-9]+|[a-z][a-z\- ]*?)\s*(?:[:.\-–—]\s*(.*))?$/i;
-const PROLOGUE_RE = /^\s*(prologue|preface|introduction)\s*(?:[:.\-–—]\s*(.*))?$/i;
-const EPILOGUE_RE = /^\s*(epilogue|afterword)\s*(?:[:.\-–—]\s*(.*))?$/i;
-// Back matter: everything from here on is left out of the last chapter.
-const STOP_RE = /^\s*(acknowledge?ments?|about the author|also by|notes|bibliography)\s*$/i;
 const SCENE_BREAK_RE = /^[\s*#~•·✦◆\-_=]+$/;
 
-const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve',
-  'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
-const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-
-function parseNumber(s) {
-  s = s.trim().toLowerCase();
-  if (/^\d+$/.test(s)) return Number(s);
-  const parts = s.split(/[\s-]+/);
-  let n = 0;
-  for (const p of parts) {
-    if (ONES.includes(p)) n += ONES.indexOf(p);
-    else if (TENS.includes(p) && p) n += TENS.indexOf(p) * 10;
-    else return null;
-  }
-  return parts.length ? n : null;
-}
+// Heading rules for the manuscript being read (set per book in extractBook)
+let RULES = LANGUAGES.en;
 
 /** Returns { kind: 'chapter'|'prologue'|'epilogue', number, inlineTitle } or null */
 function matchHeading(text) {
-  let m = text.match(CHAPTER_RE);
+  let m = text.match(RULES.chapter);
   if (m) {
-    const n = parseNumber(m[1]);
+    const n = parseNumber(m[1], RULES);
     if (n != null) return { kind: 'chapter', number: n, inlineTitle: (m[2] || '').trim() };
   }
-  if ((m = text.match(PROLOGUE_RE))) return { kind: 'prologue', number: 0, inlineTitle: (m[2] || '').trim(), label: cap(m[1]) };
-  if ((m = text.match(EPILOGUE_RE))) return { kind: 'epilogue', number: null, inlineTitle: (m[2] || '').trim(), label: cap(m[1]) };
+  if ((m = text.match(RULES.prologue))) return { kind: 'prologue', number: 0, inlineTitle: (m[2] || '').trim(), label: cap(m[1]) };
+  if ((m = text.match(RULES.epilogue))) return { kind: 'epilogue', number: null, inlineTitle: (m[2] || '').trim(), label: cap(m[1]) };
   return null;
 }
 const cap = (s) => s[0].toUpperCase() + s.slice(1).toLowerCase();
@@ -259,8 +242,12 @@ export function plainText(md) {
 
 // ---------------------------------------------------------------------------
 
-export async function extractBook(data) {
+/** @param {{ lang?: string }} [opts] lang: 'en' | 'pt'; detected from the text when omitted */
+export async function extractBook(data, opts = {}) {
   const pages = await readPages(data);
+  const lang = opts.lang ?? detectLanguage(pages.flatMap((p) => p.lines.map((l) => l.text)));
+  if (!LANGUAGES[lang]) throw new Error(`Unknown language "${lang}". Known: ${Object.keys(LANGUAGES).join(', ')}`);
+  RULES = LANGUAGES[lang];
   const allLines = pages.flatMap((p) => p.lines);
   const bodySize = mode(allLines.filter((l) => l.text.length > 30).map((l) => l.size)) ?? 11;
   const running = findRunningLines(pages);
@@ -280,7 +267,7 @@ export async function extractBook(data) {
       starts.push({ ...h, page: p.index, line: top[idx], lineIdx: p.lines.indexOf(top[idx]) });
       continue;
     }
-    if (starts.length && top.some((l) => STOP_RE.test(l.text))) {
+    if (starts.length && top.some((l) => RULES.stop.test(l.text))) {
       stopPage = p.index;
       break;
     }
@@ -325,5 +312,5 @@ export async function extractBook(data) {
     };
   });
 
-  return { numPages: pages.length, chapters };
+  return { lang, numPages: pages.length, chapters };
 }

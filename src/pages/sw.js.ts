@@ -1,18 +1,18 @@
 // Generates /sw.js at build time. The build timestamp versions the caches, so each deploy
 // cleans up after the previous one.
 import type { APIRoute } from 'astro';
+import { LANG_CODES, localePath } from '../i18n/ui';
 
 const VERSION = Date.now().toString(36);
 
 const PRECACHE = [
-  '/',
-  '/chapters/',
-  '/downloads/',
-  '/offline/',
-  '/manifest.webmanifest',
+  ...LANG_CODES.flatMap((l) =>
+    ['/', '/chapters/', '/downloads/', '/offline/', '/manifest.webmanifest'].map((p) => localePath(l, p)),
+  ),
   '/icons/favicon.svg',
   '/icons/icon-192.png',
 ];
+const LANG_PREFIXES = LANG_CODES.map((l) => localePath(l, '/')).filter((p) => p !== '/');
 
 const sw = /* js */ `
 const VERSION = '${VERSION}';
@@ -20,6 +20,8 @@ const PAGES = 'pages-' + VERSION;
 const ASSETS = 'assets-v1';   // hashed files under /_astro/ never change, keep across deploys
 const PDFS = 'pdfs-v1';
 const PRECACHE = ${JSON.stringify(PRECACHE)};
+const LANG_PREFIXES = ${JSON.stringify(LANG_PREFIXES)};
+const offlineFor = (path) => (LANG_PREFIXES.find((p) => path.startsWith(p)) || '/') + 'offline/';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(PAGES).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
@@ -48,7 +50,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(PAGES).then((c) => c.put(req, copy));
           return res;
         })
-        .catch(async () => (await caches.match(req)) || (await caches.match('/offline/')))
+        .catch(async () => (await caches.match(req)) || (await caches.match(offlineFor(url.pathname))))
     );
     return;
   }

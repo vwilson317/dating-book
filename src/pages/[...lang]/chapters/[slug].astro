@@ -1,0 +1,128 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import PdfVersions from '../../../components/PdfVersions.astro';
+import {
+  getPublishedChapters,
+  chapterUrl,
+  chapterSlug,
+  formatDate,
+  readingMinutes,
+  wordCount,
+} from '../../../lib/content';
+import { LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const byLang = Object.fromEntries(
+    await Promise.all(LANG_CODES.map(async (l) => [l, await getPublishedChapters(l)] as const)),
+  );
+  return LANG_CODES.flatMap((lang) =>
+    byLang[lang].map((chapter, i, list) => {
+      // The same chapter (by number) in the other languages, for the language switcher
+      const alternates = Object.fromEntries(
+        LANG_CODES.map((l) => {
+          const twin = byLang[l].find((c) => c.data.number === chapter.data.number);
+          return [l, twin ? chapterUrl(twin) : localePath(l, '/chapters/')];
+        }),
+      );
+      return {
+        params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: chapterSlug(chapter) },
+        props: { lang, chapter, prev: list[i - 1], next: list[i + 1], alternates },
+      };
+    }),
+  );
+}
+
+const { chapter, prev, next, alternates } = Astro.props;
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+const { Content } = await render(chapter);
+const { number, title, excerpt, location, published } = chapter.data;
+const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
+---
+
+<Base lang={lang} title={`${s.chapter(number)}: ${title}`} description={excerpt} type="article" alternates={alternates}>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <article
+    class="chapter"
+    data-chapter={number}
+    data-title={title}
+    data-version={chapter.data.versions[0]?.label ?? 'v1'}
+    data-words={wordCount(chapter.body)}
+  >
+    <header class="chapter-head">
+      <p class="eyebrow">
+        {s.chapter(number)}{location && <span> · {location}</span>}
+      </p>
+      <h1>{title}</h1>
+      <p class="chapter-meta">
+        {formatDate(published, lang)} · {s.minRead(readingMinutes(chapter.body))}
+      </p>
+      <PdfVersions chapter={chapter} compact />
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <div id="chapter-end"></div>
+
+    <aside class="chapter-end">
+      <p class="eyebrow">{s.endOf(number)}</p>
+      <h2>{s.takeWithYou}</h2>
+      <PdfVersions chapter={chapter} />
+      <button
+        class="btn btn--ghost"
+        type="button"
+        data-share={shareUrl}
+        data-share-title={`${title} · ${s.bookTitle}`}
+        data-copied={s.linkCopied}
+      >
+        {s.share}
+      </button>
+    </aside>
+
+    <nav class="pager" aria-label="Chapter navigation">
+      {
+        prev ? (
+          <a href={chapterUrl(prev)} class="pager-link">
+            <span class="muted small">{s.previous}</span>
+            <span>{prev.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next ? (
+          <a
+            href={chapterUrl(next)}
+            class="pager-link pager-link--next"
+            data-track="next_chapter_clicked"
+            data-prop-from={String(number)}
+          >
+            <span class="muted small">{s.next}</span>
+            <span>{next.data.title}</span>
+          </a>
+        ) : (
+          <a href={localePath(lang, '/chapters/')} class="pager-link pager-link--next">
+            <span class="muted small">{s.allForNow}</span>
+            <span>{s.seeComing}</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+
+  <script>
+    import { initReading } from '../../../scripts/reading';
+
+    initReading(
+      document.querySelector<HTMLElement>('.chapter')!,
+      document.querySelector<HTMLElement>('.prose')!,
+      document.getElementById('chapter-end')!,
+      document.getElementById('progress-bar')!,
+    );
+  </script>
+</Base>

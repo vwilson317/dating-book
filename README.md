@@ -13,21 +13,37 @@ npm run preview    # serve the production build (service worker on)
 
 ## Releasing a new version of the book (the easy way)
 
-Export the whole book as one PDF, then run:
+The book exists in English and Portuguese. Each language has its own manuscript PDF, and that PDF is the source of truth for that language's chapters.
 
-```bash
-npm run release -- ~/Downloads/read-my-book.pdf --dry-run
+**1. Put the PDFs in the inbox folders** (PDFs here are not committed to git):
+
+```
+manuscript/
+  en/  ← English manuscript PDF
+  pt/  ← Portuguese manuscript PDF
 ```
 
-The dry run shows what changed in each chapter, including the edited passages, and writes nothing. When it looks right, run it again without `--dry-run`. You can add a note readers will see next to the new versions:
+You only need to drop in the language(s) you changed. If a folder has several PDFs, the newest one is used.
+
+**2. Preview what changed**, without writing anything:
 
 ```bash
-npm run release -- ~/Downloads/read-my-book.pdf --notes "Rewrote the ending of chapter 4"
+npm run release -- --dry-run
 ```
 
-You can also drop the PDF into `manuscript/` and run `npm run release` with no path. It picks the newest PDF there.
+**3. Release:**
 
-What it does:
+```bash
+npm run release
+```
+
+Add `--notes "Rewrote the ending of chapter 4"` to show readers a note next to the new versions.
+
+**4. Commit and push.** That deploys the site. The release writes the chapter text to `src/content/chapters/<lang>/` and the PDFs to `public/pdfs/<lang>/`. Those are the files that get committed.
+
+You can also pass PDFs straight from anywhere: `npm run release -- ~/Downloads/book.pdf ~/Downloads/livro.pdf`. Each file's language is detected from its headings ("Chapter" vs "Capítulo") and wording. To skip detection for a single file, add `--lang pt`.
+
+What a release does, per language:
 
 | In the PDF… | On the site |
 |---|---|
@@ -35,22 +51,40 @@ What it does:
 | A chapter whose text or title changed | Text replaced, next version added (`v2`, `v3`…) with its own PDF. Older PDFs stay downloadable |
 | A chapter that's `coming-soon` | Published |
 | A chapter that didn't change | Left alone |
-| The whole file | New **Early Reader Edition** on Downloads, featured on the home page |
+| The whole file | New **Early Reader Edition** / **Edição Antecipada** on that language's Downloads page, featured on its home page |
 
-The first real release also deletes the placeholder sample chapters. After any release, preview with `npm run dev`, then commit and push to deploy.
+Languages are versioned separately. Chapter 2 can be at `v3` in English and `v1` in Portuguese. When one language has chapters the other doesn't, the release tells you (for example, "Português is missing chapter(s) 5"). On the site, the EN/PT switcher on a chapter that isn't translated yet goes to the other language's chapter list.
 
-**What the PDF needs:** each chapter starts on a new page, with a heading near the top like `Chapter 3`, `CHAPTER THREE`, or `Chapter 3: Title`. If the title is on its own line, set it larger than the body text. `Prologue` becomes chapter 0 and `Epilogue` comes after the last chapter. The script skips the table of contents, running headers, page numbers, and back matter (Acknowledgments, About the Author). It keeps italics, bold, and scene breaks (`* * *`).
+The first release in each language deletes that language's placeholder sample chapters.
+
+**What the PDF needs:** each chapter starts on a new page, with a heading near the top:
+
+| | English | Portuguese |
+|---|---|---|
+| Chapters | `Chapter 3`, `CHAPTER THREE`, `Chapter 3: Title` | `Capítulo 3`, `CAPÍTULO TRÊS`, `Capítulo Vinte e Um` |
+| Chapter 0 | `Prologue`, `Preface`, `Introduction` | `Prólogo`, `Prefácio`, `Introdução` |
+| After the last chapter | `Epilogue`, `Afterword` | `Epílogo`, `Posfácio` |
+| Back matter (left out) | `Acknowledgments`, `About the Author` | `Agradecimentos`, `Sobre o autor` |
+
+If the title is on its own line, set it larger than the body text. The script skips the table of contents, running headers, and page numbers. It keeps italics, bold, and scene breaks (`* * *`). The words it looks for are in `scripts/release/languages.mjs`.
 
 **Good to know**
 - **The PDF is the source of truth.** A release replaces a changed chapter's web text with what's in the PDF, so make text edits in your manuscript, not in the `.md` files. Frontmatter you add by hand (`location`, a custom `excerpt`, `slug`) is kept.
-- **Chapters are matched by number.** If you insert a new chapter in the middle and renumber the rest, every chapter after it will look changed.
+- **Chapters are matched by number**, within each language. EN chapter 4 and PT chapter 4 are treated as the same chapter for the language switcher, so keep the numbering the same in both manuscripts. If you insert a chapter in the middle and renumber the rest, every chapter after it will look changed.
 - **Re-exporting with a different layout is fine.** Changing fonts or margins doesn't create new versions; only changes to the words, italics, or paragraph breaks do.
+
+## Languages on the site
+
+- English lives at `/`, Portuguese at `/pt/`. Every page has an EN/PT switcher, and chapters link to the same chapter in the other language.
+- A visitor whose phone is set to Portuguese and lands on an English page sees a small "Leia em português →" link, and the reverse for English speakers. It never redirects automatically, so a link you share always opens the page you shared. A reader's choice is remembered on their device.
+- Each language gets its own share image (`og.png` and `og-pt.png`) and its own install manifest, so installing from a Portuguese page opens the Portuguese site.
+- **All interface text** (buttons, headings, banners, and the edition names and notes the release writes) is in `src/i18n/ui.ts`. The Portuguese book subtitle there, *Desventuras de um Gringo Namorando no Exterior*, is a placeholder translation. Change it to your real Portuguese title, then run `npm run icons` to update the Portuguese share image.
 
 ## Adding content by hand
 
 ### A new chapter
 
-Create `src/content/chapters/04-whatever.md`:
+Create `src/content/chapters/en/04-whatever.md` (or `pt/` for Portuguese):
 
 ```md
 ---
@@ -64,13 +98,13 @@ slug: the-chapter-title          # optional, sets the URL; defaults to the file 
 versions:
   - label: "v1"
     date: 2026-12-15
-    file: /pdfs/chapter-04-v1.pdf
+    file: /pdfs/en/chapter-04-v1.pdf
 ---
 
 Chapter text in Markdown...
 ```
 
-Put the PDF at `public/pdfs/chapter-04-v1.pdf`.
+Put the PDF at `public/pdfs/en/chapter-04-v1.pdf` (or `pdfs/pt/`).
 
 - `coming-soon` shows a teaser card, with no page yet. Good for building hype on Instagram.
 - `draft` hides the chapter completely.
@@ -83,11 +117,11 @@ Add the PDF with a **new file name** (for example `chapter-01-v3.pdf`) and put t
 
 ### Full-book PDFs
 
-Edit `src/content/editions.yaml`. The entry marked `featured: true` gets a download button on the home page.
+Edit `src/content/editions.yaml`. Each entry has a `lang`. The entry marked `featured: true` gets a download button on that language's home page.
 
 ### Site settings
 
-Change the title, author, and Instagram handle in `src/site.config.ts`. To change the app icon and share image, edit the SVGs in `scripts/make-icons.mjs` and run `npm run icons`.
+Change the author and Instagram handle in `src/site.config.ts`, and the book title, subtitle, and interface text in `src/i18n/ui.ts`. To change the app icon and share image, edit the SVGs in `scripts/make-icons.mjs` and run `npm run icons`.
 
 ## Analytics (PostHog)
 
@@ -99,7 +133,7 @@ Events go through a `/ingest` proxy on your own domain (set up in `netlify.toml`
 
 ### Reading events (chapter pages)
 
-Every reading event includes `chapter`, `title`, `version` (the chapter's latest version, e.g. `v2`), `words_total`, and `read_id` (one ID per visit to a chapter page).
+Every reading event includes `chapter`, `lang`, `title`, `version` (the chapter's latest version, e.g. `v2`), `words_total`, and `read_id` (one ID per visit to a chapter page).
 
 | Event | When | Extra properties |
 |---|---|---|
@@ -121,6 +155,7 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 | `next_chapter_clicked` | reader taps "Next →" |
 | `cta_clicked`, `instagram_clicked`, `shared` | buttons |
 | `in_app_browser_seen` | page opened inside the Instagram/Facebook/TikTok browser |
+| `language_suggested`, `language_switched` | "read in the other language" link shown / EN-PT switch used; props: `from`, `to`, `via` |
 | `install_clicked`, `install_prompt_result`, `app_installed` | PWA install funnel |
 
 ### Insights to set up in PostHog
@@ -129,13 +164,14 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 
 **Where readers drop off.** Funnel: `chapter_started` → `chapter_progress` (percent = 25) → (50) → (75) → `chapter_finished`, filtered to one chapter.
 
-**Did Instagram readers finish?** Add a breakdown by `in_app_browser` or `$initial_utm_source` to either funnel.
+**Did Instagram readers finish?** Add a breakdown by `in_app_browser` or `$initial_utm_source` to either funnel. Break down by `lang` to compare English and Portuguese readers.
 
 **How much people read per visit (SQL insight).** New insight → SQL:
 
 ```sql
 SELECT
-  properties.chapter AS chapter,
+  lang,
+  chapter,
   count() AS visits,
   round(avg(percent_read)) AS avg_percent_read,
   round(avg(words_read)) AS avg_words_read,
@@ -145,21 +181,22 @@ FROM (
   SELECT
     properties.read_id AS read_id,
     any(properties.chapter) AS chapter,
+    any(properties.lang) AS lang,
     argMax(toFloat(properties.percent_read), timestamp) AS percent_read,
     argMax(toFloat(properties.words_read), timestamp) AS words_read,
     argMax(toFloat(properties.active_seconds), timestamp) AS active_seconds,
-    max(properties.finished = 'true' OR properties.finished = true) AS finished
+    max(toString(properties.finished) = 'true') AS finished
   FROM events
   WHERE event = 'chapter_read' AND timestamp > now() - INTERVAL 30 DAY
   GROUP BY read_id
 )
-GROUP BY chapter
-ORDER BY toInt(chapter)
+GROUP BY lang, chapter
+ORDER BY lang, toInt(chapter)
 ```
 
 **Quick version without SQL.** Trends → `chapter_read` → "Property value: average" of `percent_read` or `words_read`, broken down by `chapter`. Add a filter `summary_number = 1` to count each visit once. This slightly undercounts readers who came back to the same tab.
 
-Every event also carries `display_mode` (browser vs. installed app) and `in_app_browser`.
+Every event also carries `lang` (`en`/`pt`), `display_mode` (browser vs. installed app), and `in_app_browser`.
 
 To track new buttons without writing code, add `data-track="event_name"` and `data-prop-anything="value"` to any element.
 

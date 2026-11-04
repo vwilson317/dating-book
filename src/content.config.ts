@@ -10,7 +10,7 @@ const pdfVersion = z.object({
   notes: z.string().optional(), // what changed in this version
 });
 
-// One markdown file per chapter in src/content/chapters/
+// One markdown file per chapter in src/content/chapters/<lang>/ (en, pt)
 const chapters = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/chapters' }),
   schema: z.object({
@@ -30,6 +30,7 @@ const chapters = defineCollection({
 const editions = defineCollection({
   loader: file('./src/content/editions.yaml'),
   schema: z.object({
+    lang: z.enum(['en', 'pt']).default('en'),
     title: z.string(),
     description: z.string().optional(),
     date: z.coerce.date(),

@@ -9,7 +9,7 @@ status: published
 versions:
   - label: "v1"
     date: 2026-11-03
-    file: /pdfs/chapter-02-v1.pdf
+    file: /pdfs/en/chapter-02-v1.pdf
 ---
 
 *Placeholder text. Replace with Chapter Two.*

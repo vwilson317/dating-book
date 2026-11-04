@@ -1,19 +1,18 @@
 #!/usr/bin/env node
-// Release a new version of the book from one full-manuscript PDF.
+// Release new versions of the book from full-manuscript PDFs (one per language).
 //
-//   npm run release -- ~/Downloads/book.pdf            # apply
-//   npm run release -- ~/Downloads/book.pdf --dry-run  # just show what would change
-//   npm run release -- book.pdf --notes "Rewrote the ending of ch. 4"
+//   npm run release                                   # newest PDF in manuscript/en/ and manuscript/pt/
+//   npm run release -- --dry-run                      # just show what would change
+//   npm run release -- ~/Downloads/book-en.pdf ~/Downloads/livro-pt.pdf
+//   npm run release -- livro.pdf --lang pt            # skip language detection
+//   npm run release -- --notes "Rewrote the ending of ch. 4"
 //
-// With no path, it uses the newest PDF in manuscript/.
-//
-// What it does:
-//   1. Splits the PDF into chapters (by "Chapter N" headings).
-//   2. Compares each chapter's text with what's on the site now.
-//   3. New chapters: creates the Markdown file + chapter PDF (v1).
-//      Changed chapters: replaces the text, adds the next version (v2, v3...) with its own PDF.
-//      Unchanged chapters: left alone.
-//   4. Adds the full PDF as a new Early Reader Edition on the downloads page.
+// For each PDF:
+//   1. Detects the language (from "Chapter"/"Capítulo" headings) unless it's in manuscript/<lang>/ or --lang is given.
+//   2. Splits it into chapters and compares each one with that language's chapters on the site.
+//   3. New chapters: Markdown file + chapter PDF (v1). Changed: text replaced, next version (v2, v3…) added.
+//      Unchanged: left alone.
+//   4. Adds the full PDF as that language's next Early Reader Edition.
 import { readFile, writeFile, readdir, mkdir, unlink, stat, copyFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -21,20 +20,31 @@ import { PDFDocument } from 'pdf-lib';
 import YAML from 'yaml';
 import { diffWords } from 'diff';
 import { extractBook, plainText } from './release/extract.mjs';
+import { LANGUAGES } from './release/languages.mjs';
+import { t, LANGS } from '../src/i18n/ui.ts';
+import { SITE } from '../src/site.config.ts';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const CHAPTERS_DIR = path.join(ROOT, 'src/content/chapters');
+const CHAPTERS_ROOT = path.join(ROOT, 'src/content/chapters');
 const EDITIONS_FILE = path.join(ROOT, 'src/content/editions.yaml');
-const PDF_DIR = path.join(ROOT, 'public/pdfs');
+const PDF_ROOT = path.join(ROOT, 'public/pdfs');
 const INBOX = path.join(ROOT, 'manuscript');
-const BOOK_TITLE = 'Read My Book: Misadventures of a Gringo Dating Abroad';
+const LANG_CODES = Object.keys(LANGUAGES).filter((l) => l in LANGS);
 
 // ---------- args ----------
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
-const notesIdx = args.indexOf('--notes');
-const userNotes = notesIdx >= 0 ? args[notesIdx + 1] : undefined;
-let pdfPath = args.find((a, i) => !a.startsWith('--') && (notesIdx < 0 || i !== notesIdx + 1));
+const valueOf = (flag) => {
+  const i = args.indexOf(flag);
+  return i >= 0 ? args[i + 1] : undefined;
+};
+const userNotes = valueOf('--notes');
+const forcedLang = valueOf('--lang');
+const flagValues = new Set([userNotes, forcedLang].filter(Boolean));
+const pdfArgs = args.filter((a) => !a.startsWith('--') && !flagValues.has(a));
+
+if (forcedLang && !LANG_CODES.includes(forcedLang)) fail(`--lang must be one of: ${LANG_CODES.join(', ')}`);
+if (forcedLang && pdfArgs.length > 1) fail('--lang only works with a single PDF.');
 
 const c = {
   bold: (s) => `\x1b[1m${s}\x1b[0m`,
@@ -44,19 +54,42 @@ const c = {
   yellow: (s) => `\x1b[33m${s}\x1b[0m`,
 };
 
-async function newestInbox() {
-  if (!existsSync(INBOX)) return null;
-  const pdfs = (await readdir(INBOX)).filter((f) => f.toLowerCase().endsWith('.pdf'));
-  if (!pdfs.length) return null;
-  const withTimes = await Promise.all(pdfs.map(async (f) => ({ f, t: (await stat(path.join(INBOX, f))).mtimeMs })));
-  return path.join(INBOX, withTimes.sort((a, b) => b.t - a.t)[0].f);
+function fail(msg) {
+  console.error(c.red(msg));
+  process.exit(1);
 }
 
-if (!pdfPath) pdfPath = await newestInbox();
-if (!pdfPath || !existsSync(pdfPath)) {
-  console.error('Usage: npm run release -- path/to/full-book.pdf [--dry-run] [--notes "what changed"]');
-  console.error('(or drop the PDF into the manuscript/ folder and run without a path)');
-  process.exit(1);
+async function newestPdf(dir) {
+  if (!existsSync(dir)) return null;
+  const pdfs = (await readdir(dir)).filter((f) => f.toLowerCase().endsWith('.pdf'));
+  if (!pdfs.length) return null;
+  const withTimes = await Promise.all(pdfs.map(async (f) => ({ f, t: (await stat(path.join(dir, f))).mtimeMs })));
+  return path.join(dir, withTimes.sort((a, b) => b.t - a.t)[0].f);
+}
+
+/** [{ file, lang? }] — lang is known when the PDF sits in manuscript/<lang>/ */
+async function inputs() {
+  if (pdfArgs.length) {
+    return pdfArgs.map((file) => {
+      if (!existsSync(file)) fail(`File not found: ${file}`);
+      const folder = path.basename(path.dirname(path.resolve(file)));
+      return { file, lang: forcedLang ?? (LANG_CODES.includes(folder) ? folder : undefined) };
+    });
+  }
+  const found = [];
+  for (const lang of LANG_CODES) {
+    const file = await newestPdf(path.join(INBOX, lang));
+    if (file) found.push({ file, lang });
+  }
+  const loose = await newestPdf(INBOX); // a PDF dropped straight into manuscript/
+  if (loose) found.push({ file: loose, lang: forcedLang });
+  if (!found.length) {
+    fail(
+      'No PDFs found. Put your manuscripts in manuscript/en/ and manuscript/pt/, or pass paths:\n' +
+        '  npm run release -- book-en.pdf livro-pt.pdf [--dry-run] [--notes "what changed"]',
+    );
+  }
+  return found;
 }
 
 // ---------- helpers ----------
@@ -66,7 +99,7 @@ const today = (() => {
 })();
 const pad = (n) => String(n).padStart(2, '0');
 const slugify = (s) =>
-  s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const normalize = (s) => s.replace(/\s+/g, ' ').trim();
 const ymd = (v) => (v instanceof Date ? v.toISOString().slice(0, 10) : String(v));
 
@@ -131,156 +164,210 @@ async function writeChapterPdf(src, start, end, file, title) {
   const pages = await out.copyPages(src, Array.from({ length: end - start + 1 }, (_, i) => start + i));
   pages.forEach((p) => out.addPage(p));
   out.setTitle(title);
-  out.setAuthor('Vincent Wilson');
-  await writeFile(path.join(PDF_DIR, file), await out.save());
+  out.setAuthor(SITE.author);
+  await writeFile(file, await out.save());
 }
 
-// ---------- load current site content ----------
-async function loadChapters() {
-  const files = (await readdir(CHAPTERS_DIR)).filter((f) => f.endsWith('.md'));
+async function loadChapters(dir) {
+  if (!existsSync(dir)) return [];
+  const files = (await readdir(dir)).filter((f) => f.endsWith('.md'));
   return Promise.all(
     files.map(async (file) => {
-      const { data, body } = parseMd(await readFile(path.join(CHAPTERS_DIR, file), 'utf8'));
+      const { data, body } = parseMd(await readFile(path.join(dir, file), 'utf8'));
       return { file, data, body };
     }),
   );
 }
 
-// ---------- main ----------
-console.log(c.bold(`\nReading ${path.basename(pdfPath)}…`));
-const bytes = await readFile(pdfPath);
-const book = await extractBook(bytes);
-
-if (!book.chapters.length) {
-  console.error(c.red('\nNo chapters found. Each chapter needs to start on a new page with a heading like "Chapter 1" or "Chapter One".'));
-  process.exit(1);
+async function readEditions() {
+  return existsSync(EDITIONS_FILE) ? (YAML.parse(await readFile(EDITIONS_FILE, 'utf8')) ?? []) : [];
 }
-console.log(c.dim(`${book.numPages} pages, ${book.chapters.length} chapters found\n`));
 
-const existing = await loadChapters();
-const samples = existing.filter((e) => e.data.sample);
-const real = existing.filter((e) => !e.data.sample);
+async function writeEditions(list) {
+  await writeFile(
+    EDITIONS_FILE,
+    `# Full-book PDF downloads, newest first. \`npm run release\` adds to this automatically.\n` +
+      `# The entry with \`featured: true\` (per language) is promoted on that language's home page.\n` +
+      YAML.stringify(list, { lineWidth: 0 }),
+  );
+}
 
-const plan = []; // { kind: 'new'|'updated'|'unchanged'|'published', ch, entry?, ... }
-for (const ch of book.chapters) {
-  const entry = real.find((e) => e.data.number === ch.number);
-  if (!entry) {
-    plan.push({ kind: 'new', ch });
-    continue;
+// ---------- release one language ----------
+async function release({ file, lang: knownLang, bytes, book }) {
+  const lang = book.lang;
+  const s = t(lang);
+  const tag = c.bold(`[${lang.toUpperCase()}]`);
+  const chaptersDir = path.join(CHAPTERS_ROOT, lang);
+  const pdfDir = path.join(PDF_ROOT, lang);
+
+  console.log(`\n${tag} ${c.bold(path.basename(file))}`);
+  console.log(
+    c.dim(
+      `${book.numPages} pages, ${book.chapters.length} chapters, language: ${LANGS[lang].label}` +
+        (knownLang ? '' : ' (detected — use manuscript/<lang>/ or --lang to set it)'),
+    ),
+  );
+  if (!book.chapters.length) {
+    const word = lang === 'pt' ? '"Capítulo 1" or "Capítulo Um"' : '"Chapter 1" or "Chapter One"';
+    console.error(c.red(`No chapters found. Each chapter needs to start on a new page with a heading like ${word}.`));
+    return { lang, changes: [], chapters: [] };
   }
-  const textChanged = normalize(entry.body) !== normalize(ch.body);
-  const titleChanged = entry.data.title !== ch.title;
-  const wasHidden = entry.data.status !== 'published';
-  if (!textChanged && !titleChanged && !wasHidden && entry.data.versions?.length) {
-    plan.push({ kind: 'unchanged', ch, entry });
-  } else {
-    plan.push({ kind: wasHidden ? 'published' : 'updated', ch, entry, textChanged, titleChanged, diff: diffSummary(entry.body, ch.body) });
+
+  const existing = await loadChapters(chaptersDir);
+  const samples = existing.filter((e) => e.data.sample);
+  const real = existing.filter((e) => !e.data.sample);
+
+  const plan = [];
+  for (const ch of book.chapters) {
+    const entry = real.find((e) => e.data.number === ch.number);
+    if (!entry) {
+      plan.push({ kind: 'new', ch });
+      continue;
+    }
+    const textChanged = normalize(entry.body) !== normalize(ch.body);
+    const titleChanged = entry.data.title !== ch.title;
+    const wasHidden = entry.data.status !== 'published';
+    if (!textChanged && !titleChanged && !wasHidden && entry.data.versions?.length) {
+      plan.push({ kind: 'unchanged', ch, entry });
+    } else {
+      plan.push({ kind: wasHidden ? 'published' : 'updated', ch, entry, textChanged, titleChanged, diff: diffSummary(entry.body, ch.body) });
+    }
   }
-}
-const missing = real.filter(
-  (e) => e.data.status === 'published' && !book.chapters.some((ch) => ch.number === e.data.number),
-);
+  const missing = real.filter(
+    (e) => e.data.status === 'published' && !book.chapters.some((ch) => ch.number === e.data.number),
+  );
 
-// ---------- report ----------
-for (const p of plan) {
-  const label = `Chapter ${p.ch.number}: ${p.ch.title}`;
-  const pages = c.dim(`(pp. ${p.ch.startPage + 1}–${p.ch.endPage + 1})`);
-  if (p.kind === 'new') console.log(`${c.green('NEW      ')} ${label} ${pages}`);
-  else if (p.kind === 'unchanged') console.log(`${c.dim('unchanged')} ${c.dim(label)}`);
-  else {
-    const tag = p.kind === 'published' ? c.green('PUBLISH  ') : c.yellow('UPDATED  ');
-    const bits = [];
-    if (p.titleChanged) bits.push(`title was "${p.entry.data.title}"`);
-    if (p.textChanged) bits.push(`${c.green('+' + p.diff.added)} / ${c.red('−' + p.diff.removed)} words`);
-    console.log(`${tag} ${label} ${pages} ${bits.join(', ')}`);
-    for (const s of p.diff?.snippets ?? []) console.log(`            ${s}`);
+  for (const p of plan) {
+    const label = `${s.chapter(p.ch.number)}: ${p.ch.title}`;
+    const pages = c.dim(`(pp. ${p.ch.startPage + 1}–${p.ch.endPage + 1})`);
+    if (p.kind === 'new') console.log(`  ${c.green('NEW      ')} ${label} ${pages}`);
+    else if (p.kind === 'unchanged') console.log(`  ${c.dim('unchanged')} ${c.dim(label)}`);
+    else {
+      const kind = p.kind === 'published' ? c.green('PUBLISH  ') : c.yellow('UPDATED  ');
+      const bits = [];
+      if (p.titleChanged) bits.push(`title was "${p.entry.data.title}"`);
+      if (p.textChanged) bits.push(`${c.green('+' + p.diff.added)} / ${c.red('−' + p.diff.removed)} words`);
+      console.log(`  ${kind} ${label} ${pages} ${bits.join(', ')}`);
+      for (const snip of p.diff?.snippets ?? []) console.log(`              ${snip}`);
+    }
   }
-}
-for (const m of missing) console.log(`${c.yellow('NOT IN PDF')} Chapter ${m.data.number}: ${m.data.title} ${c.dim('(left as is)')}`);
-if (samples.length) console.log(c.dim(`\nPlaceholder sample chapters will be removed (${samples.length}).`));
+  for (const m of missing) console.log(`  ${c.yellow('NOT IN PDF')} ${s.chapter(m.data.number)}: ${m.data.title} ${c.dim('(left as is)')}`);
+  if (samples.length) console.log(c.dim(`  Placeholder sample chapters will be removed (${samples.length}).`));
 
-const changes = plan.filter((p) => p.kind !== 'unchanged');
-if (!changes.length && !samples.length) {
-  console.log(c.bold('\nNo changes. Nothing to release.\n'));
-  process.exit(0);
-}
-if (dryRun) {
-  console.log(c.bold('\nDry run. Nothing was written.\n'));
-  process.exit(0);
-}
+  const changes = plan.filter((p) => p.kind !== 'unchanged');
+  const result = { lang, changes, chapters: book.chapters };
+  if (!changes.length && !samples.length) {
+    console.log(c.dim('  No changes.'));
+    return result;
+  }
+  if (dryRun) return result;
 
-// ---------- apply ----------
-// Remove placeholder samples (and their PDFs) on the first real release
-const sampleEditions = (YAML.parse(existsSync(EDITIONS_FILE) ? await readFile(EDITIONS_FILE, 'utf8') : '') ?? []).filter((e) => e.sample);
-for (const s of samples) {
-  await unlink(path.join(CHAPTERS_DIR, s.file));
-  for (const v of s.data.versions ?? []) await unlink(path.join(ROOT, 'public', v.file)).catch(() => {});
-}
-for (const e of sampleEditions) await unlink(path.join(ROOT, 'public', e.file)).catch(() => {});
+  // ---- apply ----
+  await mkdir(chaptersDir, { recursive: true });
+  await mkdir(pdfDir, { recursive: true });
 
-await mkdir(PDF_DIR, { recursive: true });
-const src = await PDFDocument.load(bytes);
-const written = [];
+  // Remove placeholder samples first (their PDF names can clash with the first real release)
+  const allEditions = await readEditions();
+  for (const smp of samples) {
+    await unlink(path.join(chaptersDir, smp.file));
+    for (const v of smp.data.versions ?? []) await unlink(path.join(ROOT, 'public', v.file)).catch(() => {});
+  }
+  for (const e of allEditions.filter((e) => e.sample && (e.lang ?? 'en') === lang)) {
+    await unlink(path.join(ROOT, 'public', e.file)).catch(() => {});
+  }
 
-for (const p of changes) {
-  const { ch } = p;
-  const data = p.entry ? { ...p.entry.data } : { number: ch.number };
-  const versions = data.versions ?? [];
-  const label = nextVersion(versions);
-  const pdfFile = `chapter-${pad(ch.number)}-${label}.pdf`;
-  await writeChapterPdf(src, ch.startPage, ch.endPage, pdfFile, `${ch.title} · ${BOOK_TITLE}`);
+  const src = await PDFDocument.load(bytes);
+  const written = [];
+  for (const p of changes) {
+    const { ch } = p;
+    const data = p.entry ? { ...p.entry.data } : { number: ch.number };
+    const versions = data.versions ?? [];
+    const label = nextVersion(versions);
+    const pdfFile = `chapter-${pad(ch.number)}-${label}.pdf`;
+    await writeChapterPdf(src, ch.startPage, ch.endPage, path.join(pdfDir, pdfFile), `${ch.title} · ${s.bookTitle}`);
 
-  const notes =
-    userNotes ??
-    (p.kind === 'new' || !p.textChanged
-      ? undefined
-      : `Revised: +${p.diff.added} / −${p.diff.removed} words`);
+    const notes = userNotes ?? (p.kind === 'new' || !p.textChanged ? undefined : s.revised(p.diff.added, p.diff.removed));
+    data.title = ch.title;
+    // Keep a hand-written excerpt; refresh one that was auto-generated from the old text
+    if (!data.excerpt || (p.entry && data.excerpt === makeExcerpt(p.entry.body))) data.excerpt = makeExcerpt(ch.body);
+    data.status = 'published';
+    data.published = p.kind === 'updated' ? ymd(data.published) : today;
+    data.versions = [
+      { label, date: today, file: `/pdfs/${lang}/${pdfFile}`, ...(notes ? { notes } : {}) },
+      ...versions.map((v) => ({ ...v, date: ymd(v.date) })),
+    ];
 
-  data.title = ch.title;
-  // Keep a hand-written excerpt; refresh one that was auto-generated from the old text
-  if (!data.excerpt || (p.entry && data.excerpt === makeExcerpt(p.entry.body))) data.excerpt = makeExcerpt(ch.body);
-  data.status = 'published';
-  if (p.kind !== 'updated') data.published = today;
-  else data.published = ymd(data.published);
-  data.versions = [
-    { label, date: today, file: `/pdfs/${pdfFile}`, ...(notes ? { notes } : {}) },
-    ...versions.map((v) => ({ ...v, date: ymd(v.date) })),
-  ];
+    const mdFile = p.entry?.file ?? `${pad(ch.number)}-${slugify(ch.title) || 'chapter'}.md`;
+    await writeFile(path.join(chaptersDir, mdFile), stringifyMd(data, ch.body));
+    written.push(`src/content/chapters/${lang}/${mdFile}`, `public/pdfs/${lang}/${pdfFile}`);
+  }
 
-  const file = p.entry?.file ?? `${pad(ch.number)}-${slugify(ch.title) || 'chapter'}.md`;
-  await writeFile(path.join(CHAPTERS_DIR, file), stringifyMd(data, ch.body));
-  written.push(`src/content/chapters/${file}`, `public/pdfs/${pdfFile}`);
-}
-
-// Full-book edition
-const editionsSrc = existsSync(EDITIONS_FILE) ? await readFile(EDITIONS_FILE, 'utf8') : '';
-let editions = (YAML.parse(editionsSrc) ?? []).filter((e) => !e.sample);
-const editionNum = editions.length + 1;
-let editionFile = `read-my-book-early-reader-v${editionNum}.pdf`;
-await copyFile(pdfPath, path.join(PDF_DIR, editionFile));
-const numbers = book.chapters.map((ch) => ch.number);
-const changedList = changes.map((p) => p.ch.number).join(', ');
-editions = [
-  {
-    id: `early-reader-v${editionNum}`,
-    title: `Early Reader Edition (v${editionNum})`,
-    description:
-      `Chapters ${Math.min(...numbers)}–${Math.max(...numbers)} in one PDF.` +
-      (editionNum > 1 && changedList ? ` New or revised: ${changedList}.` : ''),
+  // Full-book edition for this language
+  const others = allEditions.filter((e) => !e.sample && (e.lang ?? 'en') !== lang);
+  const mine = allEditions.filter((e) => !e.sample && (e.lang ?? 'en') === lang);
+  const n = mine.length + 1;
+  const editionFile = `read-my-book-early-reader-v${n}.pdf`;
+  await copyFile(file, path.join(pdfDir, editionFile));
+  const numbers = book.chapters.map((ch) => ch.number);
+  const changedList = changes.map((p) => p.ch.number).join(', ');
+  const edition = {
+    id: `${lang}-early-reader-v${n}`,
+    lang,
+    title: s.editionTitle(n),
+    description: s.editionDescription(Math.min(...numbers), Math.max(...numbers)) + (n > 1 && changedList ? s.editionChanged(changedList) : ''),
     date: today,
-    file: `/pdfs/${editionFile}`,
+    file: `/pdfs/${lang}/${editionFile}`,
     featured: true,
-  },
-  ...editions.map((e) => ({ ...e, date: ymd(e.date), featured: false })),
-];
-await writeFile(
-  EDITIONS_FILE,
-  `# Full-book PDF downloads, newest first. \`npm run release\` adds to this automatically.\n` +
-    `# The entry with \`featured: true\` is promoted on the home page.\n` +
-    YAML.stringify(editions, { lineWidth: 0 }),
-);
-written.push('src/content/editions.yaml', `public/pdfs/${editionFile}`);
+  };
+  await writeEditions([
+    edition,
+    ...mine.map((e) => ({ ...e, lang, date: ymd(e.date), featured: false })),
+    ...others.map((e) => ({ ...e, date: ymd(e.date) })),
+  ]);
+  written.push('src/content/editions.yaml', `public/pdfs/${lang}/${editionFile}`);
 
-console.log(c.bold(`\nReleased ${changes.length} chapter change(s) + Early Reader Edition v${editionNum}.`));
-console.log(c.dim(written.map((w) => '  ' + w).join('\n')));
-console.log(`\nNext: preview with ${c.bold('npm run dev')}, then commit and push to deploy.\n`);
+  console.log(c.green(`  Released ${changes.length} chapter change(s) + ${edition.title}.`));
+  console.log(c.dim(written.map((w) => '    ' + w).join('\n')));
+  return result;
+}
+
+// ---------- main ----------
+// Read every PDF first, so a mistake (two English PDFs) stops before anything is written
+const prepared = [];
+for (const input of await inputs()) {
+  const bytes = await readFile(input.file);
+  const book = await extractBook(bytes, { lang: input.lang });
+  const dup = prepared.find((x) => x.book.lang === book.lang);
+  if (dup) {
+    fail(
+      `${path.basename(dup.file)} and ${path.basename(input.file)} both look like ${LANGS[book.lang].label}.\n` +
+        'Pass one PDF per language, put them in manuscript/en/ and manuscript/pt/, or set --lang.',
+    );
+  }
+  prepared.push({ ...input, bytes, book });
+}
+const results = [];
+for (const input of prepared) results.push(await release(input));
+
+// Which chapters exist in one language but not another (based on what's now on the site)
+const onSite = {};
+for (const lang of LANG_CODES) {
+  const chs = (await loadChapters(path.join(CHAPTERS_ROOT, lang))).filter((e) => !e.data.sample && e.data.status === 'published');
+  // in a dry run, count what this release would add
+  const r = results.find((x) => x.lang === lang);
+  const nums = new Set([...chs.map((e) => e.data.number), ...(dryRun && r ? r.chapters.map((ch) => ch.number) : [])]);
+  onSite[lang] = nums;
+}
+const all = [...new Set(Object.values(onSite).flatMap((s) => [...s]))].sort((a, b) => a - b);
+for (const lang of LANG_CODES) {
+  const behind = all.filter((n) => !onSite[lang].has(n));
+  if (onSite[lang].size && behind.length) {
+    console.log(c.yellow(`\n${LANGS[lang].label} is missing chapter(s) ${behind.join(', ')} that exist in another language.`));
+  }
+}
+
+console.log(
+  dryRun
+    ? c.bold('\nDry run. Nothing was written.\n')
+    : `\nNext: preview with ${c.bold('npm run dev')}, then commit and push to deploy.\n`,
+);

@@ -36,6 +36,7 @@ export function initAnalytics() {
   posthog.register({
     display_mode: isStandalone() ? 'standalone' : 'browser',
     in_app_browser: inAppBrowser() ?? 'none',
+    lang: document.documentElement.lang,
   });
   ready = true;
 }

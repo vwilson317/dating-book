@@ -1,6 +1,6 @@
 // Reading analytics for chapter pages.
 //
-// Events (all include chapter, title, version, words_total, read_id):
+// Events (all include chapter, lang, title, version, words_total, read_id):
 //   chapter_started   – reader actually began reading (15s of active reading or 10% of the text)
 //   chapter_progress  – passed 25 / 50 / 75 / 90% of the text
 //   chapter_finished  – reached the end of the text
@@ -18,6 +18,7 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
   const readId = crypto.randomUUID?.() ?? String(Math.random()).slice(2);
   const base = {
     chapter: Number(article.dataset.chapter),
+    lang: document.documentElement.lang,
     title: article.dataset.title,
     version: article.dataset.version,
     words_total: wordsTotal,

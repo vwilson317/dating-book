@@ -1,9 +1,12 @@
 ---
 import type { Chapter } from '../lib/content';
-import { formatDate } from '../lib/content';
+import { chapterLang, formatDate } from '../lib/content';
+import { t } from '../i18n/ui';
 
 interface Props { chapter: Chapter; compact?: boolean }
 const { chapter, compact = false } = Astro.props;
+const lang = chapterLang(chapter);
+const s = t(lang);
 const { versions, number } = chapter.data;
 const [latest, ...older] = versions;
 const fileName = (f: string) => f.split('/').pop();
@@ -22,13 +25,13 @@ const fileName = (f: string) => f.split('/').pop();
         data-prop-version={latest.label}
         data-prop-file={latest.file}
       >
-        ↓ Download PDF <span class="btn-sub">{latest.label} · {formatDate(latest.date)}</span>
+        {s.downloadPdf} <span class="btn-sub">{latest.label} · {formatDate(latest.date, lang)}</span>
       </a>
       {latest.notes && !compact && <p class="muted small">{latest.notes}</p>}
       {
         older.length > 0 && (
           <details class="versions">
-            <summary>Earlier versions ({older.length})</summary>
+            <summary>{s.earlierVersions(older.length)}</summary>
             <ul>
               {older.map((v) => (
                 <li>
@@ -43,7 +46,7 @@ const fileName = (f: string) => f.split('/').pop();
                   >
                     {v.label}
                   </a>
-                  <span class="muted"> · {formatDate(v.date)}</span>
+                  <span class="muted"> · {formatDate(v.date, lang)}</span>
                   {v.notes && <span class="muted"> — {v.notes}</span>}
                 </li>
               ))}

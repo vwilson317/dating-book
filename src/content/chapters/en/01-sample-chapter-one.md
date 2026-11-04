@@ -9,11 +9,11 @@ status: published
 versions:
   - label: "v2"
     date: 2026-11-04
-    file: /pdfs/chapter-01-v2.pdf
+    file: /pdfs/en/chapter-01-v2.pdf
     notes: "Example: tightened the ending."
   - label: "v1"
     date: 2026-11-01
-    file: /pdfs/chapter-01-v1.pdf
+    file: /pdfs/en/chapter-01-v1.pdf
 ---
 
 *This is placeholder text so you can see how a chapter looks. Replace everything below the `---` with your chapter.*

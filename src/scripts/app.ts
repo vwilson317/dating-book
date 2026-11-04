@@ -27,7 +27,7 @@ document.querySelectorAll<HTMLButtonElement>('[data-share]').forEach((btn) => {
       } else {
         await navigator.clipboard.writeText(data.url);
         const old = btn.textContent;
-        btn.textContent = 'Link copied';
+        btn.textContent = btn.dataset.copied || 'Link copied';
         setTimeout(() => (btn.textContent = old), 2000);
       }
       track('shared', { url: data.url, method: navigator.share ? 'native' : 'clipboard' });
@@ -52,6 +52,30 @@ const inApp = inAppBrowser();
 if (inApp && !sessionStorage.getItem('dismissed:inapp-banner')) {
   document.getElementById('inapp-banner')?.removeAttribute('hidden');
   track('in_app_browser_seen', { app: inApp });
+}
+
+// ---- Language -----------------------------------------------------------
+// Remember the reader's choice, and offer the other language to visitors whose
+// phone is set to it (never auto-redirect: shared links must open what was shared).
+const pageLang = document.documentElement.lang;
+document.querySelectorAll<HTMLElement>('[data-lang-switch]').forEach((a) =>
+  a.addEventListener('click', () => localStorage.setItem('lang-pref', a.dataset.langSwitch!)),
+);
+document.querySelectorAll<HTMLButtonElement>('[data-dismiss-lang]').forEach((btn) =>
+  btn.addEventListener('click', () => {
+    localStorage.setItem('lang-pref', pageLang);
+    btn.parentElement?.setAttribute('hidden', '');
+  }),
+);
+const pref = localStorage.getItem('lang-pref');
+const browserLang = (navigator.languages?.[0] || navigator.language || '').slice(0, 2).toLowerCase();
+const wanted = pref || browserLang;
+if (wanted && wanted !== pageLang) {
+  const banner = document.querySelector<HTMLElement>(`[data-suggest-lang="${wanted}"]`);
+  if (banner) {
+    banner.hidden = false;
+    track('language_suggested', { to: wanted, from: pageLang, reason: pref ? 'preference' : 'browser' });
+  }
 }
 
 // ---- Install ("Get the app") ---------------------------------------------

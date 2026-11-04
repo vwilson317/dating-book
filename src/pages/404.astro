@@ -2,11 +2,15 @@
 import Base from '../layouts/Base.astro';
 ---
 
-<Base title="Lost in translation">
+<Base lang="en" title="Lost in translation">
   <header class="page-head center">
     <p class="eyebrow">404</p>
     <h1>Lost in translation</h1>
     <p class="muted">That page doesn't exist. Happens to the best of us.</p>
-    <p><a class="btn btn--primary" href="/">Back home</a></p>
+    <p lang="pt" class="muted">Essa página não existe. Acontece com todo mundo.</p>
+    <p>
+      <a class="btn btn--primary" href="/">Back home</a>
+      <a class="btn" href="/pt/" lang="pt">Voltar ao início</a>
+    </p>
   </header>
 </Base>
