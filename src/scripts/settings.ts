@@ -1,5 +1,5 @@
 // The "Aa" reading-settings panel: theme, text size, font, spacing, keep screen on.
-import { loadPrefs, savePrefs, applyPrefs, prefsForAnalytics, MAX_SIZE, type Prefs } from './prefs';
+import { loadPrefs, savePrefs, applyPrefs, prefsForAnalytics, environmentForAnalytics, MAX_SIZE, type Prefs } from './prefs';
 import { track, setSuperProps } from './analytics';
 
 let wakeLock: { release: () => Promise<void> } | null = null;
@@ -28,6 +28,10 @@ export function initSettings() {
   setSuperProps(prefsForAnalytics(prefs));
   syncWakeLock(prefs.awake);
   document.addEventListener('visibilitychange', () => syncWakeLock(prefs.awake));
+  // "Auto" readers whose phone flips between light and dark (e.g. at sunset)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () =>
+    setSuperProps({ ...prefsForAnalytics(prefs), ...environmentForAnalytics() }),
+  );
 
   const panel = document.getElementById('reading-settings') as HTMLDialogElement | null;
   const openBtn = document.getElementById('settings-btn');
@@ -35,13 +39,14 @@ export function initSettings() {
 
   const update = <K extends keyof Prefs>(key: K, value: Prefs[K]) => {
     if (prefs[key] === value) return;
+    const from = prefs[key];
     prefs = { ...prefs, [key]: value };
     applyPrefs(prefs);
     savePrefs(prefs);
     setSuperProps(prefsForAnalytics(prefs));
     syncWakeLock(prefs.awake);
     render();
-    track('reading_settings_changed', { setting: key, value });
+    track('reading_settings_changed', { setting: key, value, from, page_type: document.querySelector('.chapter') ? 'chapter' : 'other' });
   };
 
   const sizeDown = panel.querySelector<HTMLButtonElement>('[data-size="down"]')!;

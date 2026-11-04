@@ -46,11 +46,24 @@ export function applyPrefs(p: Prefs) {
   });
 }
 
+const osDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+
 /** Properties attached to every analytics event, so you can see e.g. whether bigger text means more finished chapters */
 export const prefsForAnalytics = (p: Prefs) => ({
-  theme: p.theme,
-  text_size: p.size,
+  theme: p.theme, // what they picked: auto | light | sepia | dark
+  theme_shown: p.theme === 'auto' ? (osDark() ? 'dark' : 'light') : p.theme, // what they actually see
+  text_size: p.size, // 0..4, 1 = default
   font: p.font,
   spacing: p.spacing,
   keep_awake: p.awake,
+  customized: p.theme !== 'auto' || p.size !== 1 || p.font !== 'serif' || p.spacing !== 'normal' || p.awake,
+});
+
+/** Settings on the phone itself (not chosen on the site) */
+export const environmentForAnalytics = () => ({
+  os_dark_mode: osDark(),
+  os_reduced_motion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  // > 16 usually means the reader has enlarged text in their phone/browser accessibility settings
+  browser_font_px: parseFloat(getComputedStyle(document.documentElement).fontSize) || 16,
+  wake_lock_supported: 'wakeLock' in navigator,
 });
