@@ -3,6 +3,7 @@
 
 export interface Progress {
   number: number;
+  label?: string; // "Chapter 3" / "Introduction"
   url: string;
   pct: number; // 0..100, position of the top of the screen in the chapter text
   finished: boolean;
@@ -63,7 +64,7 @@ export function initProgressUI() {
   const current = allProgress(lang).find((p) => !p.finished && p.pct >= 3);
   if (cta && current) {
     cta.href = current.url;
-    cta.textContent = fill(cta.dataset.continue!, { n: current.number });
+    cta.textContent = fill(cta.dataset.continue!, { ch: current.label ?? String(current.number) });
     cta.dataset.propCta = 'continue_reading';
   }
 }

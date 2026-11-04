@@ -35,6 +35,7 @@ function initReactions(open: (t: string) => string, name: string, base: Record<s
   const text = document.getElementById('feedback-text') as HTMLTextAreaElement;
   const send = document.getElementById('feedback-send') as HTMLAnchorElement;
   const chapter = Number(box.dataset.chapter);
+  const ch = box.dataset.label!;
   const title = box.dataset.title!;
   let reaction = '';
   let prefilled = '';
@@ -48,7 +49,7 @@ function initReactions(open: (t: string) => string, name: string, base: Record<s
       reaction = btn.dataset.reaction!;
       // Replace the pre-written part, keep anything the reader already added
       const extra = text.value.startsWith(prefilled) ? text.value.slice(prefilled.length) : '';
-      prefilled = fill(box.dataset.msg!, { name, n: chapter, title, emoji: btn.dataset.emoji!, label: btn.dataset.label! });
+      prefilled = fill(box.dataset.msg!, { name, ch, title, emoji: btn.dataset.emoji!, label: btn.dataset.label! });
       text.value = prefilled + extra;
       sync();
       chat.hidden = false;
@@ -78,6 +79,7 @@ function initQuotes(open: (t: string) => string, name: string, base: Record<stri
   const btn = document.getElementById('quote-btn') as HTMLAnchorElement | null;
   if (!prose || !article || !btn) return;
   const chapter = Number(article.dataset.chapter);
+  const ch = article.dataset.label!;
   const title = article.dataset.title!;
   let quote = '';
 
@@ -94,7 +96,7 @@ function initQuotes(open: (t: string) => string, name: string, base: Record<stri
     const text = sel.toString().replace(/\s+/g, ' ').trim();
     if (text.length < 12 || text.length > 600) return hide();
     quote = text;
-    btn.href = open(fill(btn.dataset.msg!, { name, n: chapter, title, quote }));
+    btn.href = open(fill(btn.dataset.msg!, { name, ch, title, quote }));
     // Below the selection: phones put their own copy/paste menu above it
     const rect = range.getBoundingClientRect();
     const top = window.scrollY + rect.bottom + 12;

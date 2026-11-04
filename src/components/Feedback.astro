@@ -8,9 +8,10 @@ import { t, type Lang } from '../i18n/ui';
 interface Props {
   lang: Lang;
   number: number;
+  label: string;
   title: string;
 }
-const { lang, number, title } = Astro.props;
+const { lang, number, label, title } = Astro.props;
 const s = t(lang);
 const enabled = !!SITE.whatsapp || import.meta.env.DEV;
 ---
@@ -21,6 +22,7 @@ const enabled = !!SITE.whatsapp || import.meta.env.DEV;
       class="feedback"
       id="feedback"
       data-chapter={number}
+      data-label={label}
       data-title={title}
       data-msg={s.waReactionMsg}
       data-name={SITE.authorFirstName}

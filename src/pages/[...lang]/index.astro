@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import ChapterCard from '../../components/ChapterCard.astro';
 import { SITE, instagramUrl } from '../../site.config';
-import { getVisibleChapters, getEditions, chapterUrl, formatDate } from '../../lib/content';
+import { getVisibleChapters, getEditions, chapterUrl, chapterLabel, formatDate } from '../../lib/content';
 import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
 
 export const getStaticPaths = langPaths;
@@ -35,7 +35,7 @@ const featured = editions.find((e) => e.data.featured) ?? editions[0];
             data-prop-cta="start_reading"
             data-continue={s.continueChapter}
           >
-            {s.startWith(first.data.number)}
+            {s.startWith(chapterLabel(first))}
           </a>
         )
       }
@@ -68,7 +68,7 @@ const featured = editions.find((e) => e.data.featured) ?? editions[0];
         </p>
         <h2>
           <a href={chapterUrl(latest)}>
-            {latest.data.number}. {latest.data.title} →
+            {latest.data.label ? `${latest.data.label}: ` : `${latest.data.number}. `}{latest.data.title} →
           </a>
         </h2>
         <p>{latest.data.excerpt}</p>

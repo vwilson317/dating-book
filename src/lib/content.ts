@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { DEFAULT_LANG, LANGS, isLang, localePath, type Lang } from '../i18n/ui';
+import { DEFAULT_LANG, LANGS, isLang, localePath, t, type Lang } from '../i18n/ui';
 
 export type Chapter = CollectionEntry<'chapters'>;
 
@@ -40,5 +40,8 @@ export function readingMinutes(body = ''): number {
 export function formatDate(d: Date, lang: Lang): string {
   return d.toLocaleDateString(LANGS[lang].locale, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' });
 }
+
+/** "Chapter 3", or the section's own label ("Introduction", "Introdução") */
+export const chapterLabel = (c: Chapter) => c.data.label ?? t(chapterLang(c)).chapter(c.data.number);
 
 export const chapterUrl = (c: Chapter) => localePath(chapterLang(c), `/chapters/${chapterSlug(c)}/`);

@@ -110,7 +110,7 @@ function parseMd(src) {
 }
 
 function stringifyMd(data, body) {
-  const order = ['number', 'title', 'slug', 'excerpt', 'location', 'published', 'status', 'versions'];
+  const order = ['number', 'label', 'title', 'slug', 'excerpt', 'location', 'published', 'status', 'versions'];
   const ordered = {};
   for (const k of order) if (data[k] !== undefined) ordered[k] = data[k];
   for (const k of Object.keys(data)) if (!(k in ordered)) ordered[k] = data[k];
@@ -225,7 +225,7 @@ async function release({ file, lang: knownLang, bytes, book }) {
       continue;
     }
     const textChanged = normalize(entry.body) !== normalize(ch.body);
-    const titleChanged = entry.data.title !== ch.title;
+    const titleChanged = entry.data.title !== ch.title || (entry.data.label ?? undefined) !== ch.label;
     const wasHidden = entry.data.status !== 'published';
     if (!textChanged && !titleChanged && !wasHidden && entry.data.versions?.length) {
       plan.push({ kind: 'unchanged', ch, entry });
@@ -238,7 +238,7 @@ async function release({ file, lang: knownLang, bytes, book }) {
   );
 
   for (const p of plan) {
-    const label = `${s.chapter(p.ch.number)}: ${p.ch.title}`;
+    const label = `${p.ch.label ?? s.chapter(p.ch.number)}: ${p.ch.title}`;
     const pages = c.dim(`(pp. ${p.ch.startPage + 1}–${p.ch.endPage + 1})`);
     if (p.kind === 'new') console.log(`  ${c.green('NEW      ')} ${label} ${pages}`);
     else if (p.kind === 'unchanged') console.log(`  ${c.dim('unchanged')} ${c.dim(label)}`);
@@ -288,6 +288,8 @@ async function release({ file, lang: knownLang, bytes, book }) {
 
     const notes = userNotes ?? (p.kind === 'new' || !p.textChanged ? undefined : s.revised(p.diff.added, p.diff.removed));
     data.title = ch.title;
+    if (ch.label) data.label = ch.label;
+    else delete data.label;
     // Keep a hand-written excerpt; refresh one that was auto-generated from the old text
     if (!data.excerpt || (p.entry && data.excerpt === makeExcerpt(p.entry.body))) data.excerpt = makeExcerpt(ch.body);
     data.status = 'published';

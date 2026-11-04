@@ -53,7 +53,7 @@ export const ui = {
     // Home
     heroEyebrow: 'A book in progress · released chapter by chapter',
     heroLede: 'Free chapters, straight from the manuscript. Read them here, take them with you as a PDF, and come back when the next one drops.',
-    startWith: (n: number) => `Start with Chapter ${n}`,
+    startWith: (label: string) => `Start with ${label}`,
     newestChapter: 'Newest chapter',
     allChapters: 'All chapters →',
     followTitle: 'New chapters drop on Instagram first',
@@ -69,7 +69,7 @@ export const ui = {
     chaptersDescription: 'Every chapter released so far.',
     comingOn: (d: string) => `Coming ${d}`,
     minRead: (n: number) => `${n} min read`,
-    endOf: (n: number) => `End of Chapter ${n}`,
+    endOf: (label: string) => `End of ${label}`,
     takeWithYou: 'Take it with you',
     share: 'Share this chapter',
     linkCopied: 'Link copied',
@@ -121,11 +121,11 @@ export const ui = {
     keepAwake: 'Keep screen on while reading',
     done: 'Done',
     resume: 'Continue where you left off · {pct}%', // {pct} is filled in on the reader's device
-    continueChapter: 'Continue Chapter {n}',
+    continueChapter: 'Continue {ch}', // {ch} = "Chapter 3" or "Introduction"
     readBadge: '✓ Read',
     pctRead: '{pct}% read',
 
-    // Feedback via WhatsApp. {name}, {n}, {title}, {emoji}, {label}, {quote} are filled in on the page.
+    // Feedback via WhatsApp. {name}, {ch}, {title}, {emoji}, {label}, {quote} are filled in on the page.
     feedbackTitle: 'How did that one land?',
     feedbackBody: 'Tap a reaction. If you want, send it to me on WhatsApp, along with anything else you want to say.',
     reactions: [
@@ -136,8 +136,8 @@ export const ui = {
       { id: 'more', emoji: '🔥', label: 'Need more' },
     ],
     reactionThanks: 'Got it, thanks! Want to tell me more?',
-    waReactionMsg: 'Hey {name}! I just read Chapter {n}, "{title}": {emoji} {label}.\n\n',
-    waQuoteMsg: 'Hey {name}! This line from Chapter {n}, "{title}", got me:\n\n"{quote}"\n\n',
+    waReactionMsg: 'Hey {name}! I just read "{title}" ({ch}): {emoji} {label}.\n\n',
+    waQuoteMsg: 'Hey {name}! This line from "{title}" ({ch}) got me:\n\n"{quote}"\n\n',
     waGeneralMsg: "Hey {name}! I'm reading Read My Book and ",
     waSend: 'Send on WhatsApp',
     waEditHint: 'Edit the message before you send it',
@@ -147,9 +147,9 @@ export const ui = {
   },
 
   pt: {
-    bookTitle: 'Read My Book',
+    bookTitle: 'Leia Meu Livro',
     bookSubtitle: 'Desventuras de um Gringo Namorando no Exterior',
-    description: 'Capítulos grátis, PDFs para baixar e novos lançamentos de "Read My Book: Desventuras de um Gringo Namorando no Exterior."',
+    description: 'Capítulos grátis, PDFs para baixar e novos lançamentos de "Leia Meu Livro: Desventuras de um Gringo Namorando no Exterior."',
 
     navChapters: 'Capítulos',
     navDownloads: 'Downloads',
@@ -173,7 +173,7 @@ export const ui = {
 
     heroEyebrow: 'Um livro em andamento · lançado capítulo por capítulo',
     heroLede: 'Capítulos grátis, direto do manuscrito. Leia aqui, leve em PDF e volte quando o próximo sair.',
-    startWith: (n: number) => `Comece pelo Capítulo ${n}`,
+    startWith: (label: string) => `Comece por aqui: ${label}`,
     newestChapter: 'Capítulo mais recente',
     allChapters: 'Todos os capítulos →',
     followTitle: 'Os novos capítulos saem primeiro no Instagram',
@@ -188,7 +188,7 @@ export const ui = {
     chaptersDescription: 'Todos os capítulos lançados até agora.',
     comingOn: (d: string) => `Chega em ${d}`,
     minRead: (n: number) => `${n} min de leitura`,
-    endOf: (n: number) => `Fim do Capítulo ${n}`,
+    endOf: (label: string) => `Você terminou: ${label}`,
     takeWithYou: 'Leve com você',
     share: 'Compartilhar capítulo',
     linkCopied: 'Link copiado',
@@ -236,7 +236,7 @@ export const ui = {
     keepAwake: 'Manter a tela ligada durante a leitura',
     done: 'Pronto',
     resume: 'Continuar de onde parou · {pct}%',
-    continueChapter: 'Continuar o Capítulo {n}',
+    continueChapter: 'Continuar: {ch}',
     readBadge: '✓ Lido',
     pctRead: '{pct}% lido',
 
@@ -250,9 +250,9 @@ export const ui = {
       { id: 'more', emoji: '🔥', label: 'Quero mais' },
     ],
     reactionThanks: 'Anotado, valeu! Quer me contar mais?',
-    waReactionMsg: 'Oi {name}! Acabei de ler o Capítulo {n}, "{title}": {emoji} {label}.\n\n',
-    waQuoteMsg: 'Oi {name}! Esse trecho do Capítulo {n}, "{title}", me pegou:\n\n"{quote}"\n\n',
-    waGeneralMsg: 'Oi {name}! Estou lendo o Read My Book e ',
+    waReactionMsg: 'Oi {name}! Acabei de ler "{title}" ({ch}): {emoji} {label}.\n\n',
+    waQuoteMsg: 'Oi {name}! Esse trecho de "{title}" ({ch}) me pegou:\n\n"{quote}"\n\n',
+    waGeneralMsg: 'Oi {name}! Estou lendo o Leia Meu Livro e ',
     waSend: 'Enviar no WhatsApp',
     waEditHint: 'Edite a mensagem antes de enviar',
     waFrom: 'abre o WhatsApp',

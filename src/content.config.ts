@@ -15,6 +15,8 @@ const chapters = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/chapters' }),
   schema: z.object({
     number: z.number(),
+    // shown instead of "Chapter N" for non-numbered sections, e.g. "Introduction", "Epilogue"
+    label: z.string().optional(),
     title: z.string(),
     excerpt: z.string(),
     location: z.string().optional(), // where the misadventure happened

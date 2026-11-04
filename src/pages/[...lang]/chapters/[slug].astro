@@ -8,6 +8,7 @@ import {
   getPublishedChapters,
   chapterUrl,
   chapterSlug,
+  chapterLabel,
   formatDate,
   readingMinutes,
   wordCount,
@@ -41,9 +42,10 @@ const s = t(lang);
 const { Content } = await render(chapter);
 const { number, title, excerpt, location, published } = chapter.data;
 const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
+const label = chapterLabel(chapter);
 ---
 
-<Base lang={lang} title={`${s.chapter(number)}: ${title}`} description={excerpt} type="article" alternates={alternates}>
+<Base lang={lang} title={`${label}: ${title}`} description={excerpt} type="article" alternates={alternates}>
   <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
   <button type="button" class="resume-btn" id="resume-btn" data-label={s.resume} hidden></button>
   {
@@ -58,12 +60,13 @@ const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
     class="chapter"
     data-chapter={number}
     data-title={title}
+    data-label={label}
     data-version={chapter.data.versions[0]?.label ?? 'v1'}
     data-words={wordCount(chapter.body)}
   >
     <header class="chapter-head">
       <p class="eyebrow">
-        {s.chapter(number)}{location && <span> · {location}</span>}
+        {label}{location && <span> · {location}</span>}
       </p>
       <h1>{title}</h1>
       <p class="chapter-meta">
@@ -79,7 +82,7 @@ const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
     <div id="chapter-end"></div>
 
     <aside class="chapter-end">
-      <p class="eyebrow">{s.endOf(number)}</p>
+      <p class="eyebrow">{s.endOf(label)}</p>
       <h2>{s.takeWithYou}</h2>
       <PdfVersions chapter={chapter} />
       <button
@@ -93,7 +96,7 @@ const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
       </button>
     </aside>
 
-    <Feedback lang={lang} number={number} title={title} />
+    <Feedback lang={lang} number={number} label={label} title={title} />
 
     <nav class="pager" aria-label="Chapter navigation">
       {

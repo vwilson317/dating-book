@@ -106,6 +106,7 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
   };
   const position = () => ({
     number: base.chapter,
+    label: article.dataset.label,
     url: location.pathname,
     pct: Math.round(topPct() * 10) / 10,
     finished: finished || !!saved?.finished,

@@ -126,7 +126,8 @@ function stripRunning(page, running, bodySize) {
     // small text in the top/bottom margin = running head or footer
     if (inMargin && l.size < bodySize * 0.92) return false;
     // running heads that repeat the chapter heading ("Chapter 3 · Title") on every page
-    if (inMargin && matchHeading(l.text)) return false;
+    // (only small ones: a big chapter heading near the top of the page is the real thing)
+    if (inMargin && matchHeading(l.text) && l.size <= bodySize * 1.05) return false;
     return true;
   });
 }
@@ -259,7 +260,9 @@ export async function extractBook(data, opts = {}) {
     const headings = p.lines.map((l) => matchHeading(l.text)).filter(Boolean);
     if (headings.length >= 2) continue; // table of contents
     const top = p.lines.slice(0, 4);
-    const idx = top.findIndex((l) => matchHeading(l.text) && !(l.y > p.height * 0.88));
+    // Skip small running heads in the top margin, but keep real (larger) headings even when they sit high on the page
+    const isRunningHead = (l) => l.y > p.height * 0.88 && l.size <= bodySize * 1.05;
+    const idx = top.findIndex((l) => matchHeading(l.text) && !isRunningHead(l));
     if (idx >= 0) {
       const h = matchHeading(top[idx].text);
       if (h.kind === 'epilogue' && starts.some((s) => s.kind === 'epilogue')) continue;
@@ -281,16 +284,15 @@ export async function extractBook(data, opts = {}) {
     const startPage = pages[s.page];
     // Title: inline ("Chapter 3: Title") or the next larger-than-body line(s)
     let after = startPage.lines.slice(s.lineIdx + 1);
-    let title = s.inlineTitle;
-    if (!title) {
-      const titleLines = [];
-      for (const l of after) {
-        if (l.size > bodySize * 1.15 && !matchHeading(l.text)) titleLines.push(l);
-        else break;
-      }
-      title = titleLines.map((l) => l.text).join(' ');
-      after = after.slice(titleLines.length);
+    // Title: inline ("Chapter 3: Title") and/or the next larger-than-body line(s), so titles that wrap
+    // onto a second line ("Chapter 2: Sure, Take All My Things, But Not" / "the Camera") stay whole
+    const titleLines = [];
+    for (const l of after) {
+      if (l.size > bodySize * 1.15 && !matchHeading(l.text)) titleLines.push(l);
+      else break;
     }
+    after = after.slice(titleLines.length);
+    let title = [s.inlineTitle, ...titleLines.map((l) => l.text)].filter(Boolean).join(' ');
     if (!title) title = s.kind === 'chapter' ? `Chapter ${s.number}` : s.label;
 
     const bodyLines = [];
@@ -306,6 +308,7 @@ export async function extractBook(data, opts = {}) {
       number: s.number,
       kind: s.kind,
       title: title.replace(/\s+/g, ' ').trim(),
+      label: s.kind === 'chapter' ? undefined : s.label, // "Introduction", "Introdução", "Epilogue"…
       startPage: s.page,
       endPage,
       body,
