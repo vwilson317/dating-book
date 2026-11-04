@@ -2,9 +2,26 @@
 // To add a language: add it to LANGS, add a block to `ui`, and add its heading words to
 // scripts/release/languages.mjs.
 
+// `timeZones`: visitors whose device clock is set to one of these land on that language's
+// home page (a location guess that needs no lookup). Everyone else gets the default language.
 export const LANGS = {
-  en: { label: 'English', short: 'EN', locale: 'en-US', ogLocale: 'en_US' },
-  pt: { label: 'Português', short: 'PT', locale: 'pt-BR', ogLocale: 'pt_BR' },
+  en: { label: 'English', short: 'EN', flag: '🇺🇸', locale: 'en-US', ogLocale: 'en_US', timeZones: [] },
+  pt: {
+    label: 'Português',
+    short: 'PT',
+    flag: '🇧🇷',
+    locale: 'pt-BR',
+    ogLocale: 'pt_BR',
+    timeZones: [
+      // Brazil
+      'America/Sao_Paulo', 'America/Rio_Branco', 'America/Manaus', 'America/Porto_Velho', 'America/Boa_Vista',
+      'America/Eirunepe', 'America/Cuiaba', 'America/Campo_Grande', 'America/Belem', 'America/Santarem',
+      'America/Araguaina', 'America/Fortaleza', 'America/Recife', 'America/Maceio', 'America/Bahia',
+      'America/Noronha',
+      // Portugal, Angola, Mozambique
+      'Europe/Lisbon', 'Atlantic/Azores', 'Atlantic/Madeira', 'Africa/Luanda', 'Africa/Maputo',
+    ],
+  },
 } as const;
 
 export type Lang = keyof typeof LANGS;

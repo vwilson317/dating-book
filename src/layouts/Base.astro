@@ -86,6 +86,29 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
         } catch (e) {}
       })();
     </script>
+    {
+      lang === DEFAULT_LANG && path === '/' && (
+        <script is:inline define:vars={{ zones: Object.fromEntries(LANG_CODES.map((l) => [l, LANGS[l].timeZones])), homes: Object.fromEntries(LANG_CODES.map((l) => [l, localePath(l, '/')])) }}>
+          // First visit to the home page (the Instagram bio link): pick the language from the
+          // visitor's location, guessed from their device time zone. A choice they made wins,
+          // and links inside the site or to a specific chapter are never redirected.
+          try {
+            var pref = localStorage.getItem('lang-pref');
+            var internal = document.referrer && new URL(document.referrer).origin === location.origin;
+            if (!pref && !internal) {
+              var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+              for (var l in zones) {
+                if (zones[l].indexOf(tz) !== -1 && homes[l] !== '/') {
+                  sessionStorage.setItem('lang-auto', JSON.stringify({ to: l, tz: tz }));
+                  location.replace(homes[l] + location.search + location.hash);
+                  break;
+                }
+              }
+            }
+          } catch (e) {}
+        </script>
+      )
+    }
     <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -138,7 +161,7 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
         <span class="brand-mark" aria-hidden="true">RMB</span>
         <span class="brand-name">{s.bookTitle}</span>
       </a>
-      <nav aria-label="Main">
+      <nav aria-label="Main" class="site-nav">
         {
           nav.map((n) => (
             <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>
@@ -146,13 +169,20 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
             </a>
           ))
         }
+        <button type="button" class="install-btn" id="install-btn" hidden>{s.getApp}</button>
+      </nav>
+      <div class="header-tools">
         <span class="lang-switch" role="group" aria-label={s.languageLabel}>
           {
             LANG_CODES.map((l) =>
               l === lang ? (
-                <span aria-current="true" title={LANGS[l].label}>{LANGS[l].short}</span>
+                <span aria-current="true" title={LANGS[l].label}>
+                  <span class="flag" aria-hidden="true">{LANGS[l].flag}</span>
+                  {LANGS[l].short}
+                </span>
               ) : (
-                <a href={alternates[l]} hreflang={l} lang={l} title={LANGS[l].label} data-lang-switch={l} data-track="language_switched" data-prop-to={l} data-prop-from={lang} data-prop-via="header">
+                <a href={alternates[l]} hreflang={l} lang={l} title={LANGS[l].label} aria-label={LANGS[l].label} data-lang-switch={l} data-track="language_switched" data-prop-to={l} data-prop-from={lang} data-prop-via="header">
+                  <span class="flag" aria-hidden="true">{LANGS[l].flag}</span>
                   {LANGS[l].short}
                 </a>
               ),
@@ -170,8 +200,7 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
         >
           <span aria-hidden="true">Aa</span>
         </button>
-        <button type="button" class="install-btn" id="install-btn" hidden>{s.getApp}</button>
-      </nav>
+      </div>
     </header>
 
     <main id="main">
@@ -259,6 +288,7 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
       <form method="dialog"><button class="btn">{s.gotIt}</button></form>
     </dialog>
 
+    <script type="application/json" id="lang-zones" set:html={JSON.stringify(Object.fromEntries(LANG_CODES.map((l) => [l, LANGS[l].timeZones])))} />
     {feedbackOn && <div id="wa-config" hidden data-number={SITE.whatsapp} data-name={SITE.authorFirstName} />}
 
     <script>
