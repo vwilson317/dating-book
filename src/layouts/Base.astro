@@ -53,7 +53,20 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
 
     <!-- PWA -->
     <link rel="manifest" href={manifest} />
-    <meta name="theme-color" content={SITE.themeColor} />
+    <meta name="theme-color" content="#faf5ec" media="(prefers-color-scheme: light)" data-scheme="light" />
+    <meta name="theme-color" content="#17130f" media="(prefers-color-scheme: dark)" data-scheme="dark" />
+    <script is:inline>
+      // Apply saved reading settings before the page paints (see src/scripts/prefs.ts)
+      (function () {
+        try {
+          var p = JSON.parse(localStorage.getItem('reading-prefs') || '{}'), d = document.documentElement;
+          if (p.theme && p.theme !== 'auto') d.dataset.theme = p.theme;
+          if (p.size != null && p.size !== 1) d.dataset.size = p.size;
+          if (p.font === 'sans') d.dataset.font = 'sans';
+          if (p.spacing === 'relaxed') d.dataset.spacing = 'relaxed';
+        } catch (e) {}
+      })();
+    </script>
     <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -119,6 +132,17 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
             )
           }
         </span>
+        <button
+          type="button"
+          class="settings-btn"
+          id="settings-btn"
+          aria-controls="reading-settings"
+          aria-expanded="false"
+          aria-label={s.readingSettings}
+          title={s.readingSettings}
+        >
+          <span aria-hidden="true">Aa</span>
+        </button>
         <button type="button" class="install-btn" id="install-btn" hidden>{s.getApp}</button>
       </nav>
     </header>
@@ -137,6 +161,57 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
       </p>
       <p class="muted">© {new Date().getFullYear()} {SITE.author}. {s.rights}</p>
     </footer>
+
+    <dialog id="reading-settings" class="settings-panel" aria-label={s.readingSettings}>
+      <div class="settings-head">
+        <h2>{s.readingSettings}</h2>
+        <button type="button" class="btn btn--small" data-close>{s.done}</button>
+      </div>
+
+      <fieldset>
+        <legend>{s.theme}</legend>
+        <div class="seg seg--themes">
+          {
+            (['auto', 'light', 'sepia', 'dark'] as const).map((v) => (
+              <label class={`swatch swatch--${v}`}>
+                <input type="radio" name="theme" value={v} />
+                <span>{{ auto: s.themeAuto, light: s.themeLight, sepia: s.themeSepia, dark: s.themeDark }[v]}</span>
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>{s.textSize}</legend>
+        <div class="size-row">
+          <button type="button" class="size-btn" data-size="down" aria-label={s.smaller}><span class="a-small">A</span></button>
+          <span class="size-dots" aria-hidden="true">{[0, 1, 2, 3, 4].map(() => <span />)}</span>
+          <button type="button" class="size-btn" data-size="up" aria-label={s.larger}><span class="a-large">A</span></button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>{s.font}</legend>
+        <div class="seg">
+          <label><input type="radio" name="font" value="serif" /><span class="font-serif">{s.fontSerif}</span></label>
+          <label><input type="radio" name="font" value="sans" /><span class="font-sans">{s.fontSans}</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>{s.spacing}</legend>
+        <div class="seg">
+          <label><input type="radio" name="spacing" value="normal" /><span>{s.spacingNormal}</span></label>
+          <label><input type="radio" name="spacing" value="relaxed" /><span class="spaced">{s.spacingRelaxed}</span></label>
+        </div>
+      </fieldset>
+
+      <label class="awake-row">
+        <span>{s.keepAwake}</span>
+        <input type="checkbox" name="awake" role="switch" />
+      </label>
+    </dialog>
 
     <dialog id="ios-install" class="sheet">
       <h2>{s.iosTitle}</h2>

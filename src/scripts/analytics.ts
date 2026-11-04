@@ -41,6 +41,11 @@ export function initAnalytics() {
   ready = true;
 }
 
+/** Attach properties to every future event (e.g. the reader's display settings) */
+export function setSuperProps(props: Record<string, unknown>) {
+  if (ready) posthog.register(props);
+}
+
 export function track(event: string, props: Record<string, unknown> = {}) {
   if (ready) {
     posthog.capture(event, props, { transport: 'sendBeacon' });

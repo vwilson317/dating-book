@@ -9,6 +9,7 @@
 //                       If the reader comes back and keeps reading, it's sent again with updated
 //                       totals and the same read_id. Use the latest one per read_id (see README).
 import { track } from './analytics';
+import { getProgress, saveProgress, fill } from './progress';
 
 const IDLE_AFTER_MS = 60_000; // stop counting time after a minute with no scroll/touch/key
 const SKIM_WPM = 700; // faster than this means they scrolled through without reading
@@ -87,6 +88,7 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
     maxPct = 100;
     if (!started) start();
     const secs = activeSeconds();
+    saveProgress(base.lang, { ...position(), pct: 100, finished: true });
     track('chapter_finished', {
       ...base,
       active_seconds: secs,
@@ -94,6 +96,53 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
     });
     obs.disconnect();
   }).observe(end);
+
+  // ---- resume where you left off ----
+  // Position = where the top of the screen is in the chapter text, saved on the device.
+  const saved = getProgress(base.lang, base.chapter);
+  const topPct = () => {
+    const rect = prose.getBoundingClientRect();
+    return rect.height > 0 ? Math.min(100, Math.max(0, (-rect.top / rect.height) * 100)) : 0;
+  };
+  const position = () => ({
+    number: base.chapter,
+    url: location.pathname,
+    pct: Math.round(topPct() * 10) / 10,
+    finished: finished || !!saved?.finished,
+    updated: Date.now(),
+  });
+  let saveTimer = 0;
+  document.addEventListener(
+    'scroll',
+    () => {
+      clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(() => saveProgress(base.lang, position()), 400);
+    },
+    { passive: true },
+  );
+  window.addEventListener('pagehide', () => saveProgress(base.lang, position()));
+
+  const resumeBtn = document.getElementById('resume-btn') as HTMLButtonElement | null;
+  if (resumeBtn && saved && !saved.finished && saved.pct >= 3 && saved.pct <= 95 && topPct() < 2) {
+    resumeBtn.textContent = fill(resumeBtn.dataset.label!, { pct: Math.round(saved.pct) });
+    resumeBtn.hidden = false;
+    const hide = () => resumeBtn.classList.add('is-gone');
+    resumeBtn.addEventListener('click', () => {
+      const rect = prose.getBoundingClientRect();
+      window.scrollTo({ top: window.scrollY + rect.top + (saved.pct / 100) * rect.height - 24, behavior: 'smooth' });
+      track('reading_resumed', { ...base, percent: Math.round(saved.pct) });
+      hide();
+    });
+    // get out of the way once they start reading from the top instead
+    const onScrollAway = () => {
+      if (topPct() > 5 && !resumeBtn.classList.contains('is-gone')) {
+        hide();
+        document.removeEventListener('scroll', onScrollAway);
+      }
+    };
+    document.addEventListener('scroll', onScrollAway, { passive: true });
+    track('resume_offered', { ...base, percent: Math.round(saved.pct) });
+  }
 
   // ---- visit summary ----
   const summary = () => {

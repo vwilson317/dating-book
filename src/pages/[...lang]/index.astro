@@ -28,7 +28,13 @@ const featured = editions.find((e) => e.data.featured) ?? editions[0];
     <div class="hero-ctas">
       {
         first && (
-          <a class="btn btn--primary" href={chapterUrl(first)} data-track="cta_clicked" data-prop-cta="start_reading">
+          <a
+            class="btn btn--primary"
+            href={chapterUrl(first)}
+            data-track="cta_clicked"
+            data-prop-cta="start_reading"
+            data-continue={s.continueChapter}
+          >
             {s.startWith(first.data.number)}
           </a>
         )

@@ -218,6 +218,32 @@ Instagram opens links in its own in-app browser. That browser can't install the 
 
 After that, every push to the production branch deploys.
 
+## Reading comfort
+
+The **Aa** button in the header opens reading settings. Everything is saved on the reader's device and applies to every page:
+
+- **Theme:** Auto (follows the phone), Light, Sepia, Dark. Settings are applied before the page draws, so there's no white flash in dark mode. The browser's toolbar color matches the theme.
+- **Text size:** five steps.
+- **Font:** Serif (Literata, made for long reading on screens) or Sans.
+- **Spacing:** Normal, or Relaxed (more room between lines, letters, and words), which helps many readers, including people with dyslexia.
+- **Keep screen on while reading:** stops the phone from dimming mid-chapter. It's only active on chapter pages, and only shown on browsers that support it.
+
+Other things that help people keep reading:
+
+- **Continue where you left off:** each reader's place in a chapter is saved on their phone. Coming back to a chapter shows a "Continue where you left off · 40%" button, and the home page's main button becomes "Continue Chapter N".
+- **Progress on chapter cards:** "✓ Read" or "40% read".
+- **Typesetting:** hyphenation in the page's language, no lonely one-word last lines, and balanced headings.
+
+These events show whether the settings help:
+
+| Event | Properties |
+|---|---|
+| `reading_settings_opened` | — |
+| `reading_settings_changed` | `setting` (theme, size, font, spacing, awake), `value` |
+| `resume_offered`, `reading_resumed` | `chapter`, `percent` and the usual reading properties |
+
+Every event also carries the reader's current `theme`, `text_size`, `font`, `spacing`, and `keep_awake`. You can break the completion funnel down by `text_size` to see whether readers who enlarge the text finish more chapters.
+
 ## How the PWA works
 
 - `public/manifest.webmanifest` holds the app name, icons, and colors.

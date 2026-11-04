@@ -28,6 +28,7 @@ const soon = status === 'coming-soon';
           <span>{formatDate(published, lang)}</span>
           <span aria-hidden="true">·</span>
           <span>{s.minRead(readingMinutes(chapter.body))}</span>
+          <span class="card-progress" data-progress={number} data-read-label={s.readBadge} data-pct-label={s.pctRead} hidden />
         </>
       )
     }

@@ -1,6 +1,10 @@
 import { initAnalytics, track, isStandalone, inAppBrowser } from './analytics';
+import { initSettings } from './settings';
+import { initProgressUI } from './progress';
 
 initAnalytics();
+initSettings();
+initProgressUI();
 
 // ---- Click tracking -------------------------------------------------------
 // Any element with data-track="event_name" sends that event when clicked.

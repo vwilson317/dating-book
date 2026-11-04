@@ -43,6 +43,7 @@ const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
 
 <Base lang={lang} title={`${s.chapter(number)}: ${title}`} description={excerpt} type="article" alternates={alternates}>
   <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+  <button type="button" class="resume-btn" id="resume-btn" data-label={s.resume} hidden></button>
 
   <article
     class="chapter"
