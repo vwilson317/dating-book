@@ -1,4 +1,5 @@
 ---
+sample: true  # placeholder; removed automatically by your first `npm run release`
 number: 1
 title: "Sample Chapter One"
 excerpt: "Placeholder teaser — one or two sentences that make someone tap 'Read'. This shows on cards and in link previews."

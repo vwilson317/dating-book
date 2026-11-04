@@ -17,9 +17,12 @@ export async function getEditions() {
   return all.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 }
 
+export function wordCount(body = ''): number {
+  return body.replace(/[*_#>`\\]/g, ' ').trim().split(/\s+/).filter((w) => /\w/.test(w)).length;
+}
+
 export function readingMinutes(body = ''): number {
-  const words = body.trim().split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 230));
+  return Math.max(1, Math.round(wordCount(body) / 230));
 }
 
 export function formatDate(d: Date): string {

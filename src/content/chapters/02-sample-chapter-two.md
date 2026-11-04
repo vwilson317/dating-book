@@ -1,4 +1,5 @@
 ---
+sample: true  # placeholder; removed automatically by your first `npm run release`
 number: 2
 title: "Sample Chapter Two"
 excerpt: "Another placeholder teaser. Each chapter can list as many PDF versions as you want."

@@ -1,4 +1,5 @@
 ---
+sample: true  # placeholder; removed automatically by your first `npm run release`
 number: 3
 title: "Sample Chapter Three"
 excerpt: "Chapters marked coming-soon show up as a teaser card so followers know more is on the way."

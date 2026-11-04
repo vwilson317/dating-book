@@ -2,7 +2,7 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import PdfVersions from '../../components/PdfVersions.astro';
-import { getPublishedChapters, chapterUrl, formatDate, readingMinutes } from '../../lib/content';
+import { getPublishedChapters, chapterUrl, formatDate, readingMinutes, wordCount } from '../../lib/content';
 import { SITE } from '../../site.config';
 
 export async function getStaticPaths() {
@@ -22,7 +22,13 @@ const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
 <Base title={`Chapter ${number}: ${title}`} description={excerpt} type="article">
   <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
 
-  <article class="chapter" data-chapter={number} data-title={title}>
+  <article
+    class="chapter"
+    data-chapter={number}
+    data-title={title}
+    data-version={chapter.data.versions[0]?.label ?? 'v1'}
+    data-words={wordCount(chapter.body)}
+  >
     <header class="chapter-head">
       <p class="eyebrow">
         Chapter {number}{location && <span> · {location}</span>}
@@ -77,37 +83,13 @@ const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
   </article>
 
   <script>
-    import { track } from '../../scripts/analytics';
+    import { initReading } from '../../scripts/reading';
 
-    const article = document.querySelector<HTMLElement>('.chapter')!;
-    const bar = document.getElementById('progress-bar')!;
-    const props = { chapter: article.dataset.chapter, title: article.dataset.title };
-    const start = Date.now();
-
-    // Reading progress bar + 25/50/75% milestones
-    const milestones = new Set<number>();
-    const onScroll = () => {
-      const rect = article.getBoundingClientRect();
-      const total = rect.height - window.innerHeight;
-      const pct = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 1;
-      bar.style.transform = `scaleX(${pct})`;
-      for (const m of [25, 50, 75]) {
-        if (pct * 100 >= m && !milestones.has(m)) {
-          milestones.add(m);
-          track('chapter_progress', { ...props, percent: m });
-        }
-      }
-    };
-    document.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-
-    // Fires once when the reader reaches the end of the chapter text
-    const end = document.getElementById('chapter-end')!;
-    new IntersectionObserver((entries, obs) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        track('chapter_finished', { ...props, seconds_on_page: Math.round((Date.now() - start) / 1000) });
-        obs.disconnect();
-      }
-    }).observe(end);
+    initReading(
+      document.querySelector<HTMLElement>('.chapter')!,
+      document.querySelector<HTMLElement>('.prose')!,
+      document.getElementById('chapter-end')!,
+      document.getElementById('progress-bar')!,
+    );
   </script>
 </Base>
