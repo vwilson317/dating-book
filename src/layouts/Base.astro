@@ -47,6 +47,7 @@ const otherLangs = LANG_CODES.filter((l) => l !== lang);
 const nav = [
   { href: localePath(lang, '/chapters/'), label: s.navChapters },
   { href: localePath(lang, '/downloads/'), label: s.navDownloads },
+  { href: localePath(lang, '/contact/'), label: s.navContact },
 ];
 const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
 const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/manifest.webmanifest`;

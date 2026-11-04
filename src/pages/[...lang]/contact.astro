@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import QuizPromo from '../../components/QuizPromo.astro';
+import { SITE, instagramUrl } from '../../site.config';
+import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
+import { pageSchema } from '../../lib/seo';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
+---
+
+<Base
+  lang={lang}
+  title={s.contactTitle}
+  description={s.contactDescription}
+  jsonLd={pageSchema(lang, Astro.site, s.contactTitle, localePath(lang, '/contact/'), 'ContactPage')}
+>
+  <header class="page-head">
+    <p class="eyebrow">{s.contactEyebrow}</p>
+    <h1>{s.contactTitle}</h1>
+    <p class="muted">{s.contactLede}</p>
+  </header>
+
+  <section class="contact-grid">
+    {
+      feedbackOn && (
+        <div class="contact-card">
+          <h2>💬 {s.contactWaTitle}</h2>
+          <p class="muted">{s.contactWaBody}</p>
+          <a href="#" class="btn btn--primary" data-wa-general={s.waGeneralMsg} data-source="contact" target="_blank" rel="noopener">
+            {s.contactWaCta}
+          </a>
+        </div>
+      )
+    }
+    <div class="contact-card">
+      <h2>📸 {s.contactIgTitle}</h2>
+      <p class="muted">{s.contactIgBody}</p>
+      <a class="btn" href={instagramUrl} data-track="instagram_clicked" data-prop-location="contact" rel="me noopener">
+        {s.follow(SITE.instagram)}
+      </a>
+    </div>
+  </section>
+
+  <section class="contact-date">
+    <h2>{s.contactDateTitle}</h2>
+    <QuizPromo lang={lang} place="contact" />
+  </section>
+</Base>

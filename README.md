@@ -331,7 +331,7 @@ The reader's own message is never sent to PostHog, only whether they edited it a
 
 ## Quiz: "So you want to date the gringo?"
 
-The quiz lives at `/quiz/` and `/pt/quiz/`. It's promoted with a card on the home page and at the end of every chapter. It has three questions, and each one calls back to a moment in the book, with a link to that chapter:
+The quiz lives at `/quiz/` and `/pt/quiz/`. It's promoted with a card on the home page and on the Contact page (`/contact/`, `/pt/contact/`). It has three questions, and each one calls back to a moment in the book, with a link to that chapter:
 
 1. **Introduction:** the jacket over the puddle. Best answer: the shirt-as-umbrella date from Chapter 9.
 2. **Chapter 4:** "Make sure you choose the right one." → "Are you toxic?"
@@ -354,7 +354,7 @@ At the end, the reader is reminded of the "Front or back?" moment from Chapter 7
 
 | Event | Properties |
 |---|---|
-| `quiz_promo_clicked` | `place` (home, chapter_end) |
+| `quiz_promo_clicked` | `place` (home, contact) |
 | `quiz_started` | — |
 | `quiz_answered` | `question`, `question_number`, `answer`, `points`, `changed` |
 | `quiz_completed` | `score`, `max`, `tier`, `seconds`, `answers` (one per question) |

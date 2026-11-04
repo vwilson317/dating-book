@@ -3,7 +3,6 @@ import { render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 import PdfVersions from '../../../components/PdfVersions.astro';
 import Feedback from '../../../components/Feedback.astro';
-import QuizPromo from '../../../components/QuizPromo.astro';
 import { SITE } from '../../../site.config';
 import { chapterSchema, abs } from '../../../lib/seo';
 import {
@@ -109,7 +108,6 @@ const modified = chapter.data.versions[0]?.date ?? published;
     </aside>
 
     <Feedback lang={lang} number={number} label={label} title={title} />
-    <QuizPromo lang={lang} place="chapter_end" />
 
     <nav class="pager" aria-label="Chapter navigation">
       {

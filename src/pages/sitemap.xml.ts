@@ -19,9 +19,9 @@ export const GET: APIRoute = async ({ site }) => {
   type Entry = { loc: string; lastmod?: Date | null; alternates: Partial<Record<Lang, string>> };
   const entries: Entry[] = [];
 
-  for (const p of ['/', '/chapters/', '/downloads/', '/quiz/']) {
+  for (const p of ['/', '/chapters/', '/downloads/', '/contact/', '/quiz/']) {
     const alternates = Object.fromEntries(LANG_CODES.map((l) => [l, localePath(l, p)]));
-    for (const l of LANG_CODES) entries.push({ loc: localePath(l, p), lastmod: p === '/quiz/' ? null : newest(l), alternates });
+    for (const l of LANG_CODES) entries.push({ loc: localePath(l, p), lastmod: p === '/quiz/' || p === '/contact/' ? null : newest(l), alternates });
   }
   for (const l of LANG_CODES) {
     for (const c of byLang[l]) {
