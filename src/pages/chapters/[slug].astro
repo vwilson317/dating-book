@@ -1,0 +1,113 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import PdfVersions from '../../components/PdfVersions.astro';
+import { getPublishedChapters, chapterUrl, formatDate, readingMinutes } from '../../lib/content';
+import { SITE } from '../../site.config';
+
+export async function getStaticPaths() {
+  const chapters = await getPublishedChapters();
+  return chapters.map((chapter, i) => ({
+    params: { slug: chapter.id },
+    props: { chapter, prev: chapters[i - 1], next: chapters[i + 1] },
+  }));
+}
+
+const { chapter, prev, next } = Astro.props;
+const { Content } = await render(chapter);
+const { number, title, excerpt, location, published } = chapter.data;
+const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
+---
+
+<Base title={`Chapter ${number}: ${title}`} description={excerpt} type="article">
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
+
+  <article class="chapter" data-chapter={number} data-title={title}>
+    <header class="chapter-head">
+      <p class="eyebrow">
+        Chapter {number}{location && <span> · {location}</span>}
+      </p>
+      <h1>{title}</h1>
+      <p class="chapter-meta">
+        {formatDate(published)} · {readingMinutes(chapter.body)} min read
+      </p>
+      <PdfVersions chapter={chapter} compact />
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <div id="chapter-end"></div>
+
+    <aside class="chapter-end">
+      <p class="eyebrow">End of Chapter {number}</p>
+      <h2>Take it with you</h2>
+      <PdfVersions chapter={chapter} />
+      <button class="btn btn--ghost" type="button" data-share={shareUrl} data-share-title={`${title} · ${SITE.shortTitle}`}>
+        Share this chapter
+      </button>
+    </aside>
+
+    <nav class="pager" aria-label="Chapter navigation">
+      {
+        prev ? (
+          <a href={chapterUrl(prev)} class="pager-link">
+            <span class="muted small">← Previous</span>
+            <span>{prev.data.title}</span>
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        next ? (
+          <a href={chapterUrl(next)} class="pager-link pager-link--next" data-track="next_chapter_clicked" data-prop-from={String(number)}>
+            <span class="muted small">Next →</span>
+            <span>{next.data.title}</span>
+          </a>
+        ) : (
+          <a href="/chapters/" class="pager-link pager-link--next">
+            <span class="muted small">That's all for now</span>
+            <span>See what's coming →</span>
+          </a>
+        )
+      }
+    </nav>
+  </article>
+
+  <script>
+    import { track } from '../../scripts/analytics';
+
+    const article = document.querySelector<HTMLElement>('.chapter')!;
+    const bar = document.getElementById('progress-bar')!;
+    const props = { chapter: article.dataset.chapter, title: article.dataset.title };
+    const start = Date.now();
+
+    // Reading progress bar + 25/50/75% milestones
+    const milestones = new Set<number>();
+    const onScroll = () => {
+      const rect = article.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const pct = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 1;
+      bar.style.transform = `scaleX(${pct})`;
+      for (const m of [25, 50, 75]) {
+        if (pct * 100 >= m && !milestones.has(m)) {
+          milestones.add(m);
+          track('chapter_progress', { ...props, percent: m });
+        }
+      }
+    };
+    document.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Fires once when the reader reaches the end of the chapter text
+    const end = document.getElementById('chapter-end')!;
+    new IntersectionObserver((entries, obs) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        track('chapter_finished', { ...props, seconds_on_page: Math.round((Date.now() - start) / 1000) });
+        obs.disconnect();
+      }
+    }).observe(end);
+  </script>
+</Base>

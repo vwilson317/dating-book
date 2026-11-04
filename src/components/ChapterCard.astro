@@ -1,0 +1,32 @@
+---
+import type { Chapter } from '../lib/content';
+import { chapterUrl, formatDate, readingMinutes } from '../lib/content';
+
+interface Props { chapter: Chapter }
+const { chapter } = Astro.props;
+const { number, title, excerpt, location, published, status } = chapter.data;
+const soon = status === 'coming-soon';
+---
+
+<article class:list={['card', { 'card--soon': soon }]}>
+  <p class="eyebrow">
+    Chapter {number}{location && <span> · {location}</span>}
+  </p>
+  <h3 class="card-title">
+    {soon ? title : <a href={chapterUrl(chapter)} class="stretched">{title}</a>}
+  </h3>
+  <p class="card-excerpt">{excerpt}</p>
+  <p class="card-meta">
+    {
+      soon ? (
+        <span class="pill">Coming {formatDate(published)}</span>
+      ) : (
+        <>
+          <span>{formatDate(published)}</span>
+          <span aria-hidden="true">·</span>
+          <span>{readingMinutes(chapter.body)} min read</span>
+        </>
+      )
+    }
+  </p>
+</article>

@@ -1,0 +1,17 @@
+---
+import Base from '../../layouts/Base.astro';
+import ChapterCard from '../../components/ChapterCard.astro';
+import { getVisibleChapters } from '../../lib/content';
+
+const chapters = await getVisibleChapters();
+---
+
+<Base title="Chapters" description="Every chapter released so far.">
+  <header class="page-head">
+    <p class="eyebrow">Table of contents</p>
+    <h1>Chapters</h1>
+  </header>
+  <div class="card-grid">
+    {chapters.map((c) => <ChapterCard chapter={c} />)}
+  </div>
+</Base>

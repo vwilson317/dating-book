@@ -1,0 +1,56 @@
+---
+import type { Chapter } from '../lib/content';
+import { formatDate } from '../lib/content';
+
+interface Props { chapter: Chapter; compact?: boolean }
+const { chapter, compact = false } = Astro.props;
+const { versions, number } = chapter.data;
+const [latest, ...older] = versions;
+const fileName = (f: string) => f.split('/').pop();
+---
+
+{
+  latest && (
+    <div class:list={['pdf-box', { 'pdf-box--compact': compact }]}>
+      <a
+        class="btn btn--primary"
+        href={latest.file}
+        download={fileName(latest.file)}
+        data-track="pdf_downloaded"
+        data-prop-kind="chapter"
+        data-prop-chapter={String(number)}
+        data-prop-version={latest.label}
+        data-prop-file={latest.file}
+      >
+        ↓ Download PDF <span class="btn-sub">{latest.label} · {formatDate(latest.date)}</span>
+      </a>
+      {latest.notes && !compact && <p class="muted small">{latest.notes}</p>}
+      {
+        older.length > 0 && (
+          <details class="versions">
+            <summary>Earlier versions ({older.length})</summary>
+            <ul>
+              {older.map((v) => (
+                <li>
+                  <a
+                    href={v.file}
+                    download={fileName(v.file)}
+                    data-track="pdf_downloaded"
+                    data-prop-kind="chapter"
+                    data-prop-chapter={String(number)}
+                    data-prop-version={v.label}
+                    data-prop-file={v.file}
+                  >
+                    {v.label}
+                  </a>
+                  <span class="muted"> · {formatDate(v.date)}</span>
+                  {v.notes && <span class="muted"> — {v.notes}</span>}
+                </li>
+              ))}
+            </ul>
+          </details>
+        )
+      }
+    </div>
+  )
+}

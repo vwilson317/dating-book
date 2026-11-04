@@ -1,0 +1,86 @@
+---
+import Base from '../layouts/Base.astro';
+import ChapterCard from '../components/ChapterCard.astro';
+import { SITE, instagramUrl } from '../site.config';
+import { getVisibleChapters, getEditions, chapterUrl, formatDate } from '../lib/content';
+
+const chapters = await getVisibleChapters();
+const published = chapters.filter((c) => c.data.status === 'published');
+const first = published[0];
+const latest = [...published].sort((a, b) => b.data.published.getTime() - a.data.published.getTime())[0];
+const editions = await getEditions();
+const featured = editions.find((e) => e.data.featured) ?? editions[0];
+---
+
+<Base>
+  <section class="hero">
+    <p class="eyebrow">A book in progress · released chapter by chapter</p>
+    <h1 class="hero-title">
+      Read My Book
+      <span class="hero-sub">Misadventures of a Gringo Dating Abroad</span>
+    </h1>
+    <p class="hero-lede">
+      Free chapters, straight from the manuscript. Read them here, take them with you as a PDF, and come back when the
+      next one drops.
+    </p>
+    <div class="hero-ctas">
+      {
+        first && (
+          <a class="btn btn--primary" href={chapterUrl(first)} data-track="cta_clicked" data-prop-cta="start_reading">
+            Start with Chapter {first.data.number}
+          </a>
+        )
+      }
+      {
+        featured && (
+          <a
+            class="btn"
+            href={featured.data.file}
+            download
+            data-track="pdf_downloaded"
+            data-prop-kind="edition"
+            data-prop-version={featured.id}
+            data-prop-file={featured.data.file}
+          >
+            ↓ {featured.data.title}
+          </a>
+        )
+      }
+    </div>
+    <div class="stamp" aria-hidden="true">
+      <span>Est.</span><strong>Abroad</strong><span>{new Date().getFullYear()}</span>
+    </div>
+  </section>
+
+  {
+    latest && latest !== first && (
+      <section class="latest">
+        <p class="eyebrow">Newest chapter · {formatDate(latest.data.published)}</p>
+        <h2>
+          <a href={chapterUrl(latest)}>
+            {latest.data.number}. {latest.data.title} →
+          </a>
+        </h2>
+        <p>{latest.data.excerpt}</p>
+      </section>
+    )
+  }
+
+  <section>
+    <div class="section-head">
+      <h2>Chapters</h2>
+      <a href="/chapters/">All chapters →</a>
+    </div>
+    <div class="card-grid">
+      {chapters.map((c) => <ChapterCard chapter={c} />)}
+    </div>
+  </section>
+
+  <section class="follow">
+    <h2>New chapters drop on Instagram first</h2>
+    <p>Follow along for release dates, behind-the-scenes stories, and the occasional regret.</p>
+    <a class="btn" href={instagramUrl} data-track="instagram_clicked" data-prop-location="home" rel="me noopener">
+      Follow @{SITE.instagram}
+    </a>
+  </section>
+</Base>

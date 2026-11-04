@@ -1,0 +1,66 @@
+---
+import Base from '../layouts/Base.astro';
+import PdfVersions from '../components/PdfVersions.astro';
+import { getPublishedChapters, getEditions, chapterUrl, formatDate } from '../lib/content';
+
+const chapters = await getPublishedChapters();
+const editions = await getEditions();
+---
+
+<Base title="Downloads" description="Download chapters and full editions as PDFs.">
+  <header class="page-head">
+    <p class="eyebrow">PDFs</p>
+    <h1>Downloads</h1>
+    <p class="muted">Every version stays here, so you can always grab the one you want.</p>
+  </header>
+
+  {
+    editions.length > 0 && (
+      <section>
+        <h2>Full editions</h2>
+        <ul class="download-list">
+          {editions.map((e) => (
+            <li class="download-row">
+              <div>
+                <h3>{e.data.title}</h3>
+                {e.data.description && <p class="muted">{e.data.description}</p>}
+                <p class="muted small">{formatDate(e.data.date)}</p>
+              </div>
+              <a
+                class="btn btn--primary"
+                href={e.data.file}
+                download
+                data-track="pdf_downloaded"
+                data-prop-kind="edition"
+                data-prop-version={e.id}
+                data-prop-file={e.data.file}
+              >
+                ↓ PDF
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section>
+    <h2>By chapter</h2>
+    <ul class="download-list">
+      {
+        chapters
+          .filter((c) => c.data.versions.length)
+          .map((c) => (
+            <li class="download-row download-row--stack">
+              <h3>
+                <a href={chapterUrl(c)}>
+                  {c.data.number}. {c.data.title}
+                </a>
+              </h3>
+              <PdfVersions chapter={c} />
+            </li>
+          ))
+      }
+    </ul>
+  </section>
+</Base>
