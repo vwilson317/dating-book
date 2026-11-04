@@ -367,6 +367,32 @@ Useful insights:
 - **Score distribution:** `quiz_completed`, broken down by `tier`.
 - **Most popular answers:** `quiz_answered`, broken down by `question`, then by `answer`.
 
+## SEO
+
+What's built in:
+
+- **Sitemap** at `/sitemap.xml`, covering every page in both languages. Each page is linked to its translation (hreflang), so Google shows English searchers the English page and Portuguese searchers the Portuguese one.
+- **robots.txt**, pointing search engines to the sitemap.
+- **RSS feeds** at `/rss.xml` and `/pt/rss.xml`, so feed readers and search engines pick up new chapters quickly.
+- **Structured data (schema.org):**
+  - The home page describes the book, with its Portuguese translation and you as the author (linked to your Instagram).
+  - Each chapter is described as a chapter of that book, with its publish and update dates, word count, PDF, and breadcrumbs.
+- **A share image for every chapter** (`/og/<lang>/<chapter>.png`), showing that chapter's title. These are built on each deploy, so links shared in WhatsApp, Instagram DMs, and iMessage show the chapter.
+- **Titles, descriptions, canonical URLs, and per-language link previews** on every page. A chapter's description is its excerpt.
+- **Kept out of search results:**
+  - The offline and 404 pages.
+  - Raw PDFs, so searchers land on the chapter pages, which are mobile-friendly and tracked.
+  - Netlify deploy previews and branch deploys, so test copies don't compete with the real site.
+
+**After the first deploy:**
+
+1. **Google Search Console:** add your site, verify it (on Netlify, the DNS or HTML-file method is easiest), then go to *Sitemaps* and submit `sitemap.xml`. This is the biggest single step for getting indexed quickly.
+2. **Bing Webmaster Tools:** you can import your site straight from Search Console. Bing also powers DuckDuckGo and ChatGPT search.
+3. **Custom domain:** if you add one in Netlify, it's used automatically for canonical URLs, the sitemap, and share images, because Netlify sets the `URL` variable. To force a different address, set `SITE_URL` in Netlify's environment variables.
+4. **Instagram bio:** link to the site from your Instagram bio and posts. Links from a real profile help search engines trust a new site.
+
+New chapters are added to the sitemap and RSS feeds automatically on each release.
+
 ## How the PWA works
 
 - `public/manifest.webmanifest` holds the app name, icons, and colors.

@@ -2,7 +2,8 @@
 import Base from '../../../layouts/Base.astro';
 import ChapterCard from '../../../components/ChapterCard.astro';
 import { getVisibleChapters } from '../../../lib/content';
-import { langPaths, t, type Lang } from '../../../i18n/ui';
+import { langPaths, localePath, t, type Lang } from '../../../i18n/ui';
+import { pageSchema } from '../../../lib/seo';
 
 export const getStaticPaths = langPaths;
 
@@ -11,7 +12,12 @@ const s = t(lang);
 const chapters = await getVisibleChapters(lang);
 ---
 
-<Base lang={lang} title={s.chaptersTitle} description={s.chaptersDescription}>
+<Base
+  lang={lang}
+  title={s.chaptersTitle}
+  description={s.chaptersDescription}
+  jsonLd={pageSchema(lang, Astro.site, s.chaptersTitle, localePath(lang, '/chapters/'), 'CollectionPage')}
+>
   <header class="page-head">
     <p class="eyebrow">{s.chaptersEyebrow}</p>
     <h1>{s.chaptersTitle}</h1>

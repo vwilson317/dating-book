@@ -5,6 +5,7 @@ import QuizPromo from '../../components/QuizPromo.astro';
 import { SITE, instagramUrl } from '../../site.config';
 import { getVisibleChapters, getEditions, chapterUrl, chapterLabel, formatDate } from '../../lib/content';
 import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
+import { homeSchema } from '../../lib/seo';
 
 export const getStaticPaths = langPaths;
 
@@ -18,7 +19,7 @@ const editions = await getEditions(lang);
 const featured = editions.find((e) => e.data.featured) ?? editions[0];
 ---
 
-<Base lang={lang}>
+<Base lang={lang} jsonLd={homeSchema(lang, Astro.site)}>
   <section class="hero">
     <p class="eyebrow">{s.heroEyebrow}</p>
     <h1 class="hero-title">

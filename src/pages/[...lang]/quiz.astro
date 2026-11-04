@@ -2,7 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import { SITE } from '../../site.config';
 import { getPublishedChapters, chapterUrl, chapterLabel } from '../../lib/content';
-import { langPaths, t, type Lang } from '../../i18n/ui';
+import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
+import { pageSchema } from '../../lib/seo';
 import { quiz, maxScore } from '../../i18n/quiz';
 
 export const getStaticPaths = langPaths;
@@ -29,7 +30,7 @@ const data = {
 };
 ---
 
-<Base lang={lang} title={q.title} description={q.lede}>
+<Base lang={lang} title={q.title} description={q.lede} jsonLd={pageSchema(lang, Astro.site, q.title, localePath(lang, '/quiz/'))}>
   <section class="quiz" id="quiz">
     <script type="application/json" id="quiz-data" set:html={JSON.stringify(data)} />
 

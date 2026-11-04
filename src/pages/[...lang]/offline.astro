@@ -8,7 +8,7 @@ const lang = Astro.props.lang as Lang;
 const s = t(lang);
 ---
 
-<Base lang={lang} title={s.offlineTitle}>
+<Base lang={lang} title={s.offlineTitle} noindex>
   <header class="page-head center">
     <p class="eyebrow">{s.offlineEyebrow}</p>
     <h1>{s.offlineTitle}</h1>

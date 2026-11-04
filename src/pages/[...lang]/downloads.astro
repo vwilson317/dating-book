@@ -2,7 +2,8 @@
 import Base from '../../layouts/Base.astro';
 import PdfVersions from '../../components/PdfVersions.astro';
 import { getPublishedChapters, getEditions, chapterUrl, formatDate } from '../../lib/content';
-import { langPaths, t, type Lang } from '../../i18n/ui';
+import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
+import { pageSchema } from '../../lib/seo';
 
 export const getStaticPaths = langPaths;
 
@@ -12,7 +13,12 @@ const chapters = (await getPublishedChapters(lang)).filter((c) => c.data.version
 const editions = await getEditions(lang);
 ---
 
-<Base lang={lang} title={s.downloadsTitle} description={s.downloadsDescription}>
+<Base
+  lang={lang}
+  title={s.downloadsTitle}
+  description={s.downloadsDescription}
+  jsonLd={pageSchema(lang, Astro.site, s.downloadsTitle, localePath(lang, '/downloads/'))}
+>
   <header class="page-head">
     <p class="eyebrow">{s.downloadsEyebrow}</p>
     <h1>{s.downloadsTitle}</h1>

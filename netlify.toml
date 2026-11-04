@@ -29,6 +29,12 @@
   [headers.values]
     Content-Type = "application/manifest+json"
 
+# PDFs stay downloadable but out of search results, so searchers land on the chapter pages
+[[headers]]
+  for = "/pdfs/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+
 [[headers]]
   for = "/_astro/*"
   [headers.values]

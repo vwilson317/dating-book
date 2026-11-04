@@ -14,13 +14,13 @@
     "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/literata": "^5.3.0",
     "astro": "^7.4.5",
-    "posthog-js": "^1.445.4"
+    "posthog-js": "^1.445.4",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "diff": "^9.0.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.5.438",
-    "sharp": "^0.35.5",
     "yaml": "^2.9.1"
   }
 }

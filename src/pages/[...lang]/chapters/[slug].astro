@@ -5,6 +5,7 @@ import PdfVersions from '../../../components/PdfVersions.astro';
 import Feedback from '../../../components/Feedback.astro';
 import QuizPromo from '../../../components/QuizPromo.astro';
 import { SITE } from '../../../site.config';
+import { chapterSchema, abs } from '../../../lib/seo';
 import {
   getPublishedChapters,
   chapterUrl,
@@ -23,30 +24,40 @@ export async function getStaticPaths() {
   return LANG_CODES.flatMap((lang) =>
     byLang[lang].map((chapter, i, list) => {
       // The same chapter (by number) in the other languages, for the language switcher
-      const alternates = Object.fromEntries(
-        LANG_CODES.map((l) => {
-          const twin = byLang[l].find((c) => c.data.number === chapter.data.number);
-          return [l, twin ? chapterUrl(twin) : localePath(l, '/chapters/')];
-        }),
-      );
+      const twins = LANG_CODES.map((l) => [l, byLang[l].find((c) => c.data.number === chapter.data.number)] as const);
+      const alternates = Object.fromEntries(twins.map(([l, twin]) => [l, twin ? chapterUrl(twin) : localePath(l, '/chapters/')]));
+      const untranslated = twins.filter(([, twin]) => !twin).map(([l]) => l);
       return {
         params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: chapterSlug(chapter) },
-        props: { lang, chapter, prev: list[i - 1], next: list[i + 1], alternates },
+        props: { lang, chapter, prev: list[i - 1], next: list[i + 1], alternates, untranslated },
       };
     }),
   );
 }
 
-const { chapter, prev, next, alternates } = Astro.props;
+const { chapter, prev, next, alternates, untranslated } = Astro.props;
 const lang = Astro.props.lang as Lang;
 const s = t(lang);
 const { Content } = await render(chapter);
 const { number, title, excerpt, location, published } = chapter.data;
 const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
 const label = chapterLabel(chapter);
+const ogImage = `/og/${lang}/${chapterSlug(chapter)}.png`;
+const modified = chapter.data.versions[0]?.date ?? published;
 ---
 
-<Base lang={lang} title={`${label}: ${title}`} description={excerpt} type="article" alternates={alternates}>
+<Base
+  lang={lang}
+  title={`${label}: ${title}`}
+  description={excerpt}
+  type="article"
+  image={ogImage}
+  alternates={alternates}
+  untranslated={untranslated}
+  published={published}
+  modified={modified}
+  jsonLd={chapterSchema(chapter, Astro.site, abs(ogImage, Astro.site))}
+>
   <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
   <button type="button" class="resume-btn" id="resume-btn" data-label={s.resume} hidden></button>
   {
