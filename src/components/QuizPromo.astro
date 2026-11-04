@@ -1,0 +1,20 @@
+---
+import { localePath, type Lang } from '../i18n/ui';
+import { quiz } from '../i18n/quiz';
+
+interface Props {
+  lang: Lang;
+  place: 'home' | 'chapter_end';
+}
+const { lang, place } = Astro.props;
+const q = quiz[lang];
+---
+
+<a class="quiz-promo" href={localePath(lang, '/quiz/')} data-track="quiz_promo_clicked" data-prop-place={place}>
+  <span class="quiz-promo-emoji" aria-hidden="true">💘</span>
+  <span>
+    <strong>{q.promo.replace(/^💘\s*/, '')}</strong>
+    <span class="quiz-promo-body">{q.promoBody}</span>
+  </span>
+  <span class="quiz-promo-arrow" aria-hidden="true">→</span>
+</a>

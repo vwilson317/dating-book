@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 import PdfVersions from '../../../components/PdfVersions.astro';
 import Feedback from '../../../components/Feedback.astro';
+import QuizPromo from '../../../components/QuizPromo.astro';
 import { SITE } from '../../../site.config';
 import {
   getPublishedChapters,
@@ -97,6 +98,7 @@ const label = chapterLabel(chapter);
     </aside>
 
     <Feedback lang={lang} number={number} label={label} title={title} />
+    <QuizPromo lang={lang} place="chapter_end" />
 
     <nav class="pager" aria-label="Chapter navigation">
       {

@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import ChapterCard from '../../components/ChapterCard.astro';
+import QuizPromo from '../../components/QuizPromo.astro';
 import { SITE, instagramUrl } from '../../site.config';
 import { getVisibleChapters, getEditions, chapterUrl, chapterLabel, formatDate } from '../../lib/content';
 import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
@@ -84,6 +85,10 @@ const featured = editions.find((e) => e.data.featured) ?? editions[0];
     <div class="card-grid">
       {chapters.map((c) => <ChapterCard chapter={c} />)}
     </div>
+  </section>
+
+  <section class="quiz-promo-wrap">
+    <QuizPromo lang={lang} place="home" />
   </section>
 
   <section class="follow">

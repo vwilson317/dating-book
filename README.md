@@ -307,13 +307,7 @@ Readers can reach you on WhatsApp in three ways, each with a message already wri
 
 All of it works in Portuguese too ("O que achou deste capítulo?", 😂 Morri, 🙈 Já passei por isso…). Edit the wording and reactions in `src/i18n/ui.ts`.
 
-**Turn it on:** set your number in `src/site.config.ts` as country code + number, digits only:
-
-```ts
-whatsapp: '5511912345678',
-```
-
-While it's empty, feedback is hidden on the live site. It still shows in `npm run dev`, with a yellow note.
+**Your number** is set in `src/site.config.ts` (`whatsapp`), as country code + number, digits only. If you clear it, feedback is hidden on the live site. It still shows in `npm run dev`, with a yellow note.
 
 > Your number will be public. Anyone, including bots that scrape sites, can see it in the page and in the `wa.me` links. A WhatsApp Business account or a second number lets you use labels, quick replies, and an away message, and keeps your personal number private.
 
@@ -334,6 +328,44 @@ The reader's own message is never sent to PostHog, only whether they edited it a
 - **From reaction to message:** Funnel `feedback_reaction` → `feedback_whatsapp_opened`.
 
 `feedback_whatsapp_opened` counts taps on the button. WhatsApp doesn't report whether the message was actually sent.
+
+## Quiz: "So you want to date the gringo?"
+
+The quiz lives at `/quiz/` and `/pt/quiz/`. It's promoted with a card on the home page and at the end of every chapter. It has three questions, and each one calls back to a moment in the book, with a link to that chapter:
+
+1. **Introduction:** the jacket over the puddle. Best answer: the shirt-as-umbrella date from Chapter 9.
+2. **Chapter 4:** "Make sure you choose the right one." → "Are you toxic?"
+3. **Chapter 3:** the fortune cookie, and "How long have you been dating your boyfriend?"
+
+Each answer is worth 0–3 points and gets a joke reaction. Scores up to 9 map to a tier:
+
+| Score | Tier |
+|---|---|
+| 9 | 🧩 Puzzle partner |
+| 7–8 | 🚲 Tandem-bike getaway partner |
+| 4–6 | 😏 Situationship material |
+| 0–3 | 🏖️ Zand erover (sand over it) |
+
+At the end, the reader is reminded of the "Front or back?" moment from Chapter 7 and asked to write their own opening line. Their WhatsApp message to you is pre-filled with their score and tier, and **Send** stays blocked until they've written a line. They can also share their score through their phone's share sheet.
+
+**Edit everything in `src/i18n/quiz.ts`:** questions, answers, points, joke reactions, tiers, and the English and Portuguese text. The maximum score is calculated automatically, so adding a question just works.
+
+**PostHog events:**
+
+| Event | Properties |
+|---|---|
+| `quiz_promo_clicked` | `place` (home, chapter_end) |
+| `quiz_started` | — |
+| `quiz_answered` | `question`, `question_number`, `answer`, `points`, `changed` |
+| `quiz_completed` | `score`, `max`, `tier`, `seconds`, `answers` (one per question) |
+| `quiz_whatsapp_blocked` | They tapped Send before writing a line |
+| `feedback_whatsapp_opened` | `source: quiz`, `score`, `tier`, `line_chars` (the line itself is never sent) |
+| `quiz_shared`, `quiz_restarted` | `score` / `previous_score` |
+
+Useful insights:
+- **Funnel:** `quiz_promo_clicked` → `quiz_started` → `quiz_completed` → `feedback_whatsapp_opened` (source = quiz).
+- **Score distribution:** `quiz_completed`, broken down by `tier`.
+- **Most popular answers:** `quiz_answered`, broken down by `question`, then by `answer`.
 
 ## How the PWA works
 
