@@ -37,6 +37,7 @@ const nav = [
   { href: localePath(lang, '/chapters/'), label: s.navChapters },
   { href: localePath(lang, '/downloads/'), label: s.navDownloads },
 ];
+const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
 const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/manifest.webmanifest`;
 ---
 
@@ -159,6 +160,15 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
           @{SITE.instagram}
         </a>
       </p>
+      {
+        feedbackOn && (
+          <p>
+            <a href="#" class="footer-wa" data-wa-general={s.waGeneralMsg} data-source="footer" rel="noopener" target="_blank">
+              {s.footerFeedback}
+            </a>
+          </p>
+        )
+      }
       <p class="muted">© {new Date().getFullYear()} {SITE.author}. {s.rights}</p>
     </footer>
 
@@ -222,6 +232,8 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
       </ol>
       <form method="dialog"><button class="btn">{s.gotIt}</button></form>
     </dialog>
+
+    {feedbackOn && <div id="wa-config" hidden data-number={SITE.whatsapp} data-name={SITE.authorFirstName} />}
 
     <script>
       import '../scripts/app.ts';

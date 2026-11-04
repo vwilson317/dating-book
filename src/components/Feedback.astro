@@ -1,0 +1,66 @@
+---
+// End-of-chapter reactions + a WhatsApp-style message composer.
+// Tapping a reaction is recorded right away (even if they never send anything);
+// the composer then opens with a pre-written message they can edit and send on WhatsApp.
+import { SITE } from '../site.config';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+  number: number;
+  title: string;
+}
+const { lang, number, title } = Astro.props;
+const s = t(lang);
+const enabled = !!SITE.whatsapp || import.meta.env.DEV;
+---
+
+{
+  enabled && (
+    <section
+      class="feedback"
+      id="feedback"
+      data-chapter={number}
+      data-title={title}
+      data-msg={s.waReactionMsg}
+      data-name={SITE.authorFirstName}
+      aria-labelledby="feedback-title"
+    >
+      {!SITE.whatsapp && <p class="dev-note">Dev only: set SITE.whatsapp in src/site.config.ts. This box is hidden on the live site until you do.</p>}
+      <h2 id="feedback-title">{s.feedbackTitle}</h2>
+      <p class="muted">{s.feedbackBody}</p>
+
+      <div class="reactions" role="group" aria-label={s.feedbackTitle}>
+        {s.reactions.map((r) => (
+          <button type="button" class="reaction" data-reaction={r.id} data-emoji={r.emoji} data-label={r.label} aria-pressed="false">
+            <span class="reaction-emoji" aria-hidden="true">{r.emoji}</span>
+            <span class="reaction-label">{r.label}</span>
+          </button>
+        ))}
+      </div>
+
+      <div class="chat" id="feedback-chat" hidden>
+        <p class="chat-thanks">{s.reactionThanks}</p>
+        <div class="chat-window">
+          <div class="chat-head">
+            <span class="chat-avatar" aria-hidden="true">{SITE.authorFirstName[0]}</span>
+            <span>
+              <strong>{SITE.authorFirstName}</strong>
+              <span class="chat-sub">{s.waEditHint}</span>
+            </span>
+          </div>
+          <label class="chat-bubble">
+            <span class="sr-only">{s.waEditHint}</span>
+            <textarea id="feedback-text" rows="4" />
+          </label>
+          <div class="chat-actions">
+            <a class="wa-send" id="feedback-send" href="#" target="_blank" rel="noopener">
+              <span>{s.waSend}</span>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21 12 3.4 3.6 3.4 10.2 15 12 3.4 13.8z" /></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

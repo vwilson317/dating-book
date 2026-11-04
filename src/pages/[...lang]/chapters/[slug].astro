@@ -2,6 +2,8 @@
 import { render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 import PdfVersions from '../../../components/PdfVersions.astro';
+import Feedback from '../../../components/Feedback.astro';
+import { SITE } from '../../../site.config';
 import {
   getPublishedChapters,
   chapterUrl,
@@ -44,6 +46,13 @@ const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
 <Base lang={lang} title={`${s.chapter(number)}: ${title}`} description={excerpt} type="article" alternates={alternates}>
   <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress-bar"></div></div>
   <button type="button" class="resume-btn" id="resume-btn" data-label={s.resume} hidden></button>
+  {
+    (SITE.whatsapp || import.meta.env.DEV) && (
+      <a class="quote-btn" id="quote-btn" href="#" target="_blank" rel="noopener" data-msg={s.waQuoteMsg} hidden>
+        {s.quoteButton.replace('{name}', SITE.authorFirstName)}
+      </a>
+    )
+  }
 
   <article
     class="chapter"
@@ -83,6 +92,8 @@ const shareUrl = new URL(chapterUrl(chapter), Astro.site).toString();
         {s.share}
       </button>
     </aside>
+
+    <Feedback lang={lang} number={number} title={title} />
 
     <nav class="pager" aria-label="Chapter navigation">
       {

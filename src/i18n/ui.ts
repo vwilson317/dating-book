@@ -124,6 +124,26 @@ export const ui = {
     continueChapter: 'Continue Chapter {n}',
     readBadge: '✓ Read',
     pctRead: '{pct}% read',
+
+    // Feedback via WhatsApp. {name}, {n}, {title}, {emoji}, {label}, {quote} are filled in on the page.
+    feedbackTitle: 'How did that one land?',
+    feedbackBody: 'Tap a reaction. If you want, send it to me on WhatsApp, along with anything else you want to say.',
+    reactions: [
+      { id: 'lol', emoji: '😂', label: 'Dying' },
+      { id: 'red_flag', emoji: '🚩', label: 'Red flag' },
+      { id: 'been_there', emoji: '🙈', label: 'Been there' },
+      { id: 'poor_guy', emoji: '🥲', label: 'Poor guy' },
+      { id: 'more', emoji: '🔥', label: 'Need more' },
+    ],
+    reactionThanks: 'Got it, thanks! Want to tell me more?',
+    waReactionMsg: 'Hey {name}! I just read Chapter {n}, "{title}": {emoji} {label}.\n\n',
+    waQuoteMsg: 'Hey {name}! This line from Chapter {n}, "{title}", got me:\n\n"{quote}"\n\n',
+    waGeneralMsg: "Hey {name}! I'm reading Read My Book and ",
+    waSend: 'Send on WhatsApp',
+    waEditHint: 'Edit the message before you send it',
+    waFrom: 'opens WhatsApp',
+    quoteButton: '💬 Send this line to {name}',
+    footerFeedback: '💬 Send me feedback on WhatsApp',
   },
 
   pt: {
@@ -219,6 +239,25 @@ export const ui = {
     continueChapter: 'Continuar o Capítulo {n}',
     readBadge: '✓ Lido',
     pctRead: '{pct}% lido',
+
+    feedbackTitle: 'O que achou deste capítulo?',
+    feedbackBody: 'Toque numa reação. Se quiser, me mande pelo WhatsApp, com o que mais quiser dizer.',
+    reactions: [
+      { id: 'lol', emoji: '😂', label: 'Morri' },
+      { id: 'red_flag', emoji: '🚩', label: 'Red flag' },
+      { id: 'been_there', emoji: '🙈', label: 'Já passei por isso' },
+      { id: 'poor_guy', emoji: '🥲', label: 'Coitado' },
+      { id: 'more', emoji: '🔥', label: 'Quero mais' },
+    ],
+    reactionThanks: 'Anotado, valeu! Quer me contar mais?',
+    waReactionMsg: 'Oi {name}! Acabei de ler o Capítulo {n}, "{title}": {emoji} {label}.\n\n',
+    waQuoteMsg: 'Oi {name}! Esse trecho do Capítulo {n}, "{title}", me pegou:\n\n"{quote}"\n\n',
+    waGeneralMsg: 'Oi {name}! Estou lendo o Read My Book e ',
+    waSend: 'Enviar no WhatsApp',
+    waEditHint: 'Edite a mensagem antes de enviar',
+    waFrom: 'abre o WhatsApp',
+    quoteButton: '💬 Mandar este trecho para o {name}',
+    footerFeedback: '💬 Me mande seu feedback no WhatsApp',
   },
 } satisfies Record<Lang, Record<string, unknown>>;
 

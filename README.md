@@ -234,15 +234,106 @@ Other things that help people keep reading:
 - **Progress on chapter cards:** "✓ Read" or "40% read".
 - **Typesetting:** hyphenation in the page's language, no lonely one-word last lines, and balanced headings.
 
-These events show whether the settings help:
+### Reader preferences in PostHog
+
+**Every event, including the first page view,** carries the reader's settings and what their device is set to:
+
+| Property | Meaning |
+|---|---|
+| `theme` | What they picked: `auto`, `light`, `sepia`, `dark` |
+| `theme_shown` | What they actually see. For `auto`, this resolves to `light` or `dark` from their phone |
+| `text_size` | `0`–`4` (`1` is the default) |
+| `font` | `serif` / `sans` |
+| `spacing` | `normal` / `relaxed` |
+| `keep_awake` | Keep-screen-on turned on |
+| `customized` | `true` if they changed anything from the defaults |
+| `os_dark_mode` | Phone/computer set to dark mode |
+| `os_reduced_motion` | Reduce Motion turned on in accessibility settings |
+| `browser_font_px` | Browser's base text size. Above `16` usually means they've enlarged text system-wide |
+| `wake_lock_supported` | Whether keep-screen-on can work on this device |
+
+PostHog adds the device details itself: **`$device_type`** (Mobile / Tablet / Desktop), `$os` (iOS, Android…), `$browser`, `$screen_width`, `$viewport_width`. Combined with `in_app_browser` (instagram / none) and `display_mode` (browser / installed app), that covers "on what device".
 
 | Event | Properties |
 |---|---|
 | `reading_settings_opened` | — |
-| `reading_settings_changed` | `setting` (theme, size, font, spacing, awake), `value` |
+| `reading_settings_changed` | `setting` (theme, size, font, spacing, awake), `from`, `value`, `page_type` (chapter / other) |
 | `resume_offered`, `reading_resumed` | `chapter`, `percent` and the usual reading properties |
 
-Every event also carries the reader's current `theme`, `text_size`, `font`, `spacing`, and `keep_awake`. You can break the completion funnel down by `text_size` to see whether readers who enlarge the text finish more chapters.
+**Insights to set up**
+
+- **Theme by device.** Trends → `$pageview`, count *Unique users*. Break down by `theme_shown`. Then add a second breakdown, `$device_type` (or `$os`).
+- **How many readers customize at all.** Trends → `$pageview`, *Unique users*, broken down by `customized`.
+- **What people change.** Trends → `reading_settings_changed`, broken down by `setting`, then by `value`.
+- **Do settings help people finish?** Funnel `chapter_started` → `chapter_finished`, broken down by `text_size`, `theme_shown`, or `spacing`.
+
+**Current preferences per reader, by device (SQL insight).** This counts each reader once, using their most recent settings:
+
+```sql
+SELECT
+  device,
+  os,
+  theme_shown,
+  text_size,
+  font,
+  spacing,
+  count() AS readers
+FROM (
+  SELECT
+    distinct_id,
+    argMax(properties.$device_type, timestamp) AS device,
+    argMax(properties.$os, timestamp) AS os,
+    argMax(properties.theme_shown, timestamp) AS theme_shown,
+    argMax(properties.text_size, timestamp) AS text_size,
+    argMax(properties.font, timestamp) AS font,
+    argMax(properties.spacing, timestamp) AS spacing
+  FROM events
+  WHERE event = '$pageview' AND timestamp > now() - INTERVAL 30 DAY
+  GROUP BY distinct_id
+)
+GROUP BY device, os, theme_shown, text_size, font, spacing
+ORDER BY readers DESC
+```
+
+> A "reader" in PostHog is one browser on one device. Settings are saved per browser too, so the same person reading in Instagram's in-app browser and then in Safari counts twice and can have different settings in each. Your `in_app_browser` breakdowns will show how much of that happens.
+
+## Reader feedback (WhatsApp)
+
+Readers can reach you on WhatsApp in three ways, each with a message already written for them to edit:
+
+1. **Chapter reactions.** At the end of every chapter: 😂 Dying · 🚩 Red flag · 🙈 Been there · 🥲 Poor guy · 🔥 Need more. Tapping one is recorded in PostHog right away, whether or not they send anything. A WhatsApp-style message then appears, e.g. *"Hey Vincent! I just read Chapter 3, "Salsa, Badly": 🚩 Red flag."* They can add their own words and tap **Send on WhatsApp**.
+2. **Send a line.** Highlighting a passage in a chapter shows a **💬 Send this line to Vincent** button, which opens WhatsApp with the quote.
+3. **Footer link.** "💬 Send me feedback on WhatsApp" on every page.
+
+All of it works in Portuguese too ("O que achou deste capítulo?", 😂 Morri, 🙈 Já passei por isso…). Edit the wording and reactions in `src/i18n/ui.ts`.
+
+**Turn it on:** set your number in `src/site.config.ts` as country code + number, digits only:
+
+```ts
+whatsapp: '5511912345678',
+```
+
+While it's empty, feedback is hidden on the live site. It still shows in `npm run dev`, with a yellow note.
+
+> Your number will be public. Anyone, including bots that scrape sites, can see it in the page and in the `wa.me` links. A WhatsApp Business account or a second number lets you use labels, quick replies, and an away message, and keeps your personal number private.
+
+**PostHog events:**
+
+| Event | Properties |
+|---|---|
+| `feedback_reaction` | `chapter`, `reaction` (lol, red_flag, been_there, poor_guy, more), `changed` (switched from another reaction) |
+| `feedback_whatsapp_opened` | `source` (reaction, quote, footer), `chapter`, `reaction`, `edited`, `added_chars` |
+| `quote_shared` | `chapter`, `quote` (first 140 characters of the passage), `quote_length` |
+
+The reader's own message is never sent to PostHog, only whether they edited it and how much they added.
+
+**Insights to set up**
+
+- **Reactions per chapter:** Trends → `feedback_reaction`, broken down by `chapter`, then by `reaction`.
+- **Most-quoted lines:** Trends → `quote_shared`, broken down by `quote`, shown as a table.
+- **From reaction to message:** Funnel `feedback_reaction` → `feedback_whatsapp_opened`.
+
+`feedback_whatsapp_opened` counts taps on the button. WhatsApp doesn't report whether the message was actually sent.
 
 ## How the PWA works
 

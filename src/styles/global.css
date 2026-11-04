@@ -1038,3 +1038,221 @@ body {
 .card-progress.is-read {
   color: var(--accent);
 }
+
+/* ---------- Feedback (WhatsApp) ---------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.feedback {
+  margin: 0 0 2rem;
+  padding: 1.75rem 1.25rem;
+  text-align: center;
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius);
+}
+.feedback h2 {
+  font-size: 1.5rem;
+}
+.feedback > p {
+  max-width: 26rem;
+  margin: 0 auto 1.25rem;
+  font-size: 1rem;
+}
+.dev-note {
+  padding: 0.5rem;
+  border-radius: 8px;
+  background: #fff3b0;
+  color: #5a4a00;
+  font-family: var(--sans);
+  font-size: 0.8rem !important;
+}
+
+.reactions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.9rem 0.4rem 0.6rem;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.reaction-emoji {
+  font-size: 1.3rem;
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+.reaction:active {
+  transform: scale(0.96);
+}
+.reaction[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.reaction[aria-pressed='true'] .reaction-emoji {
+  transform: scale(1.35) rotate(-8deg);
+}
+
+.chat {
+  margin-top: 1.5rem;
+  text-align: left;
+  animation: chat-in 0.35s ease both;
+}
+.chat[hidden] {
+  display: none;
+}
+@keyframes chat-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.chat-thanks {
+  text-align: center;
+  font-family: var(--sans);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--teal);
+}
+.chat-window {
+  max-width: 26rem;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 16px;
+  /* WhatsApp-ish chat wallpaper, in both themes */
+  background: #efe7dc;
+  color: #111b21;
+  box-shadow: 0 12px 30px -16px rgb(0 0 0 / 0.4);
+  font-family: var(--sans);
+}
+:root[data-theme='dark'] .chat-window {
+  background: #0b141a;
+  color: #e9edef;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .chat-window {
+    background: #0b141a;
+    color: #e9edef;
+  }
+}
+.chat-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.8rem;
+  background: #075e54;
+  color: #fff;
+  font-size: 0.95rem;
+}
+.chat-avatar {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--accent);
+  font-family: var(--serif-display);
+  font-weight: 700;
+}
+.chat-sub {
+  display: block;
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+.chat-bubble {
+  position: relative;
+  display: block;
+  margin: 1rem 0.9rem 0.5rem auto;
+  width: 85%;
+  border-radius: 10px;
+  background: #d9fdd3;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 0.12);
+}
+:root[data-theme='dark'] .chat-bubble {
+  background: #005c4b;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .chat-bubble {
+    background: #005c4b;
+  }
+}
+.chat-bubble textarea {
+  display: block;
+  width: 100%;
+  min-height: 6.5rem;
+  padding: 0.6rem 0.75rem;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  resize: vertical;
+}
+.chat-bubble textarea:focus {
+  outline: 2px solid #25d366;
+}
+.chat-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 0.25rem 0.9rem 0.9rem;
+}
+.wa-send {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: #25d366;
+  color: #0b141a;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+/* "Send this line" button that appears under highlighted text */
+.quote-btn {
+  position: absolute;
+  z-index: 45;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 1.5rem);
+  padding: 0.55rem 0.95rem;
+  border-radius: 999px;
+  background: #25d366;
+  color: #0b141a;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 8px 20px -8px rgb(0 0 0 / 0.5);
+}
+.quote-btn[hidden] {
+  display: none;
+}
+.footer-wa {
+  font-weight: 600;
+}
