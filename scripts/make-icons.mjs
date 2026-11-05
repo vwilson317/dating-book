@@ -43,6 +43,23 @@ const ogFor = ({ eyebrow, subtitle, stamp, title = 'Read My Book', subtitleSize 
 const og = ogFor({ eyebrow: 'FREE CHAPTERS · PDF DOWNLOADS', subtitle: 'Misadventures of a Gringo Dating Abroad', stamp: 'Abroad' });
 const ogPt = ogFor({ eyebrow: 'CAPÍTULOS GRÁTIS · PDFS PARA BAIXAR', subtitle: 'Desventuras de um Gringo Namorando no Exterior', stamp: 'Exterior', title: 'Leia Meu Livro', subtitleSize: 40 });
 
+// Podcast cover (Spotify / Apple Podcasts): square, 1400–3000 px
+const coverFor = ({ title, subtitle, eyebrow, stamp, subtitleSize = 150 }) => `
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="3000" viewBox="0 0 3000 3000">
+  <rect width="3000" height="3000" fill="${CREAM}"/>
+  <rect x="90" y="90" width="2820" height="2820" fill="none" stroke="${ACCENT}" stroke-width="10" stroke-dasharray="44 30"/>
+  <text x="1500" y="700" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="96" font-weight="700" letter-spacing="18" fill="#1f6f6b">${eyebrow}</text>
+  ${title.map((line, i) => `<text x="1500" y="${1180 + i * 330}" text-anchor="middle" font-family="Georgia, serif" font-size="340" font-weight="700" fill="${INK}">${line}</text>`).join('')}
+  ${subtitle.map((line, i) => `<text x="1500" y="${1960 + i * subtitleSize * 1.25}" text-anchor="middle" font-family="Georgia, serif" font-style="italic" font-size="${subtitleSize}" fill="${ACCENT}">${line}</text>`).join('')}
+  <g transform="rotate(-12 1500 2500)">
+    <circle cx="1500" cy="2500" r="210" fill="none" stroke="${ACCENT}" stroke-width="16"/>
+    <circle cx="1500" cy="2500" r="178" fill="none" stroke="${ACCENT}" stroke-width="6"/>
+    <text x="1500" y="2526" text-anchor="middle" font-family="Georgia, serif" font-size="${stamp.length > 6 ? 62 : 78}" font-weight="700" fill="${ACCENT}">${stamp}</text>
+  </g>
+</svg>`;
+const cover = coverFor({ eyebrow: 'THE AUDIOBOOK', title: ['Read', 'My Book'], subtitle: ['Misadventures of a Gringo', 'Dating Abroad'], stamp: 'Abroad' });
+const coverPt = coverFor({ eyebrow: 'O AUDIOLIVRO', title: ['Leia', 'Meu Livro'], subtitle: ['Desventuras de um Gringo', 'Namorando no Exterior'], stamp: 'Exterior' });
+
 await mkdir('public/icons', { recursive: true });
 const png = (svg, out, size) => sharp(Buffer.from(svg)).resize(size, size).png().toFile(out);
 
@@ -53,5 +70,7 @@ await png(stamp(512), 'public/icons/apple-touch-icon.png', 180);
 await writeFile('public/icons/favicon.svg', favicon);
 await sharp(Buffer.from(og)).png().toFile('public/og.png');
 await sharp(Buffer.from(ogPt)).png().toFile('public/og-pt.png');
+await sharp(Buffer.from(cover)).jpeg({ quality: 88 }).toFile('public/podcast-cover.jpg');
+await sharp(Buffer.from(coverPt)).jpeg({ quality: 88 }).toFile('public/podcast-cover-pt.jpg');
 
-console.log('Icons and og.png written.');
+console.log('Icons, og.png and podcast covers written.');

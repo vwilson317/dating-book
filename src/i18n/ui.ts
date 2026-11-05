@@ -123,6 +123,10 @@ export const ui = {
     nowPlaying: 'Now playing',
     openChapter: 'Open it →',
     backToPlayer: 'Show player',
+    onSpotify: 'Spotify',
+    podcastDescription:
+      'The audiobook of "Read My Book: Misadventures of a Gringo Dating Abroad", one chapter per episode. An American guy moves to South America, dates with no shared language, and narrates his own humiliations with all the sarcasm they deserve. New chapters as they are written.',
+    readAlong: (url: string) => `Read along: ${url}`,
 
     // PDFs
     downloadPdf: '↓ Download PDF',
@@ -269,6 +273,10 @@ export const ui = {
     nowPlaying: 'Tocando agora',
     openChapter: 'Abrir →',
     backToPlayer: 'Mostrar player',
+    onSpotify: 'Spotify',
+    podcastDescription:
+      'O audiolivro de "Leia Meu Livro: Desventuras de um Gringo Namorando no Exterior", um capítulo por episódio. Um americano se muda para a América do Sul, namora sem falar a mesma língua e narra as próprias humilhações com todo o sarcasmo que elas merecem. Novos capítulos conforme forem escritos.',
+    readAlong: (url: string) => `Leia junto: ${url}`,
 
     downloadPdf: '↓ Baixar PDF',
     earlierVersions: (n: number) => `Versões anteriores (${n})`,

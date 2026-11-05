@@ -95,6 +95,19 @@ To replace a recording, overwrite the file and commit. Readers get the new one, 
 - Long chapters work best in **Studio** (Projects), which handles the whole text in one go. With the regular text-to-speech page, paste a few paragraphs at a time and join the clips.
 - Download as MP3. 128 kbps is fine (about 1 MB a minute); a lower bitrate keeps the repo smaller.
 
+**Spotify (and Apple Podcasts):** the site publishes the audiobook as a podcast, one show per language. The feeds are `/podcast.xml` (English) and `/pt/podcast.xml` (Português). Each chapter with audio is an episode, in book order. The show is marked explicit, because the chapters have swearing. The square cover art is `public/podcast-cover.jpg` and `podcast-cover-pt.jpg`, made by `npm run icons`.
+
+To get on Spotify (once per language):
+
+1. Set `podcast.email` in `src/site.config.ts` to an address you can check. Spotify emails a code there to confirm the show is yours, and the address is public in the feed. Commit and deploy.
+2. Make sure at least one chapter in that language has audio and is deployed. Spotify won't accept a feed with no episodes.
+3. Go to [creators.spotify.com](https://creators.spotify.com), choose to add an existing podcast, and paste `https://<your-site>/podcast.xml` (or `/pt/podcast.xml`). Verify with the emailed code and pick the category. It's usually live within a few hours.
+4. Paste the show's Spotify link into `podcast.spotify` in `src/site.config.ts`. The player then shows a "Spotify ↗" button.
+
+After that you don't need to do anything on Spotify. Add an MP3, commit, and the new episode shows up after Spotify next checks the feed (usually within a few hours). Replacing an MP3 updates the episode instead of adding a duplicate. For Apple Podcasts, submit the same URLs at [podcastsconnect.apple.com](https://podcastsconnect.apple.com).
+
+Keep the site's address stable once a show is live: Spotify fetches the feed and MP3s from it. If you move to a new domain, Netlify can redirect the old `podcast.xml`, but it's simplest to pick the final domain before submitting.
+
 **The player:** play/pause, back 15 s / forward 30 s, a seek bar, speed (1× to 2×), and an MP3 download. It remembers where each reader stopped in each chapter and their speed. While audio plays and the reader scrolls past the player, a mini player follows at the bottom of the screen. Lock-screen and headphone controls work, including next/previous chapter. When a chapter ends it moves on to the next one (readers can turn that off), and this works with the screen off. Listening to the end marks the chapter ✓ Read.
 
 | Event | When | Extra properties |
