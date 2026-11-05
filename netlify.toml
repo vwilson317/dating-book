@@ -35,7 +35,7 @@
   [headers.values]
     X-Robots-Tag = "noindex"
 
-# Narration MP3s have a content hash in the name, so they never change
+# Narration MP3s are linked with ?v=<content hash>, so each URL never changes
 [[headers]]
   for = "/audio/*"
   [headers.values]

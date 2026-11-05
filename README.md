@@ -75,22 +75,25 @@ If the title is on its own line, set it larger than the body text. The script sk
 
 ## Audiobook (narrated chapters)
 
-Every published chapter can have an audio version in English and Portuguese, read by OpenAI's text-to-speech (`gpt-4o-mini-tts`) with instructions to sound dry and sarcastic. Chapters with audio get a player at the top of the page and a 🎧 badge on their cards. Chapters without audio show no player.
+Each chapter can have an audio version in English and Portuguese. You record the MP3s (for example with ElevenLabs) and put them in the repo. Chapters with audio get a player at the top of the page and a 🎧 badge on their cards. Chapters without audio show no player.
 
-**Record it:**
+**Add audio:**
 
-1. Get an API key at [platform.openai.com](https://platform.openai.com/api-keys) and put it in `.env` as `OPENAI_API_KEY=...`.
-2. `npm run narrate -- --dry-run` lists what would be recorded and roughly what it costs (about $0.015 a minute, so about $2 for the whole book in both languages).
-3. `npm run narrate` records the chapters that are new or changed.
-4. Listen to a few, then commit `public/audio/` and `src/content/audio.json`.
+1. `npm run audio -- --export` writes each chapter's narration text to `narration/en/` and `narration/pt/` (not committed). It's the chapter text with the Markdown cleaned up (`\[T\]` becomes `T`), the title read out first ("Chapter 3. Title."), and `…` at scene breaks. Paste it into ElevenLabs.
+2. Download each recording as MP3 and save it as `public/audio/en/03.mp3` (or `pt/`). Any name that starts with the chapter number works: `3.mp3`, `03-how-long.mp3`. The introduction is `00.mp3`.
+3. `npm run audio` checks them: it lists each new or replaced file with its length, the chapters still without audio, and any file it can't match to a chapter. It also runs before every build, so this step is optional.
+4. Commit `public/audio/` and `src/content/audio.json`.
 
-It also runs before every `npm run build`. Without a key it records nothing, lists the chapters that have no audio, and the build carries on. Don't put the key in Netlify: it would record again on every deploy, since nothing generated during a build is saved. Record on your machine and commit the files. Set `NARRATE=off` to skip the step entirely.
+To replace a recording, overwrite the file and commit. Readers get the new one, because the site links each file with a hash of its contents.
 
-A chapter is recorded again only when its text, the voice, or the direction changes. After a `npm run release` that changed chapter 4, `npm run narrate` re-records just chapter 4. Old MP3s are deleted. Other options: `--lang pt`, `--chapter 3`, `--force`.
+**After a release:** if a chapter's text changes after you added its audio, `npm run audio` (and every build) warns: "Chapter 4's text changed after its audio was added." Export again, re-record that chapter, and replace the file. The old audio keeps playing until you do.
 
-**Change how it sounds** in `scripts/narration/config.mjs`: the voice for each language (try them at [openai.fm](https://www.openai.fm)), the acting direction (the sarcasm lives here, written in English for EN and in Portuguese for PT, asking for a Carioca accent), the bitrate, and the pauses after the title and at scene breaks (`* * *`). Changing anything there re-records that language on the next run.
-
-The audio is about 48 kbps mono, roughly 21 MB per hour. The whole book in both languages is about 50 MB.
+**Getting the sarcastic tone in ElevenLabs:**
+- Use the **Eleven v3** model. It's the most expressive and understands audio tags in square brackets. Add a few where they help: `[sarcastic]`, `[deadpan]`, `[sighs]`, `[dramatic pause]`, `[mock serious]`, `[laughs]`. A tag at the start of a paragraph sets its tone. Don't tag every line.
+- Lower **Stability** (Creative or Natural) gives more expressive, sarcastic delivery. High stability sounds flat.
+- To design a voice: *"American man in his 30s telling his own dating disasters to friends at a bar. Dry, deadpan, sarcastic, self-deprecating. Unhurried, with small pauses before punchlines."* For Portuguese: *"Homem brasileiro de uns 30 anos, sotaque carioca, contando os próprios desastres amorosos para os amigos num bar. Seco, debochado, sarcástico, autodepreciativo. Sem pressa, com pausinhas antes da piada."*
+- Long chapters work best in **Studio** (Projects), which handles the whole text in one go. With the regular text-to-speech page, paste a few paragraphs at a time and join the clips.
+- Download as MP3. 128 kbps is fine (about 1 MB a minute); a lower bitrate keeps the repo smaller.
 
 **The player:** play/pause, back 15 s / forward 30 s, a seek bar, speed (1× to 2×), and an MP3 download. It remembers where each reader stopped in each chapter and their speed. While audio plays and the reader scrolls past the player, a mini player follows at the bottom of the screen. Lock-screen and headphone controls work, including next/previous chapter. When a chapter ends it moves on to the next one (readers can turn that off), and this works with the screen off. Listening to the end marks the chapter ✓ Read.
 

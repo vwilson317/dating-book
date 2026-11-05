@@ -46,7 +46,7 @@ export const chapterLabel = (c: Chapter) => c.data.label ?? t(chapterLang(c)).ch
 
 export const chapterUrl = (c: Chapter) => localePath(chapterLang(c), `/chapters/${chapterSlug(c)}/`);
 
-// Narrated audio, recorded by `npm run narrate` (scripts/narrate.mjs). Keyed "<lang>:<number>".
+// Narrated audio: MP3s in public/audio/<lang>/, indexed by `npm run audio` (scripts/audio.mjs). Keyed "<lang>:<number>".
 import audioManifest from '../content/audio.json';
 
 export interface ChapterAudio {
