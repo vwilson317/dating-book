@@ -35,6 +35,13 @@
   [headers.values]
     X-Robots-Tag = "noindex"
 
+# Narration MP3s are linked with ?v=<content hash>, so each URL never changes
+[[headers]]
+  for = "/audio/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    X-Robots-Tag = "noindex"
+
 [[headers]]
   for = "/_astro/*"
   [headers.values]

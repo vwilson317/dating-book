@@ -40,6 +40,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/ingest')) return; // analytics proxy
+  if (url.pathname.startsWith('/audio/')) return; // narration streams with range requests; let the browser handle it
 
   // Pages: network first so readers always get the latest text; fall back to cache, then offline page.
   if (req.mode === 'navigate') {

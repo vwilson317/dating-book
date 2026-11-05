@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 import PdfVersions from '../../../components/PdfVersions.astro';
 import Feedback from '../../../components/Feedback.astro';
+import AudioPlayer from '../../../components/AudioPlayer.astro';
 import { SITE } from '../../../site.config';
 import { chapterSchema, abs } from '../../../lib/seo';
 import {
@@ -28,13 +29,13 @@ export async function getStaticPaths() {
       const untranslated = twins.filter(([, twin]) => !twin).map(([l]) => l);
       return {
         params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: chapterSlug(chapter) },
-        props: { lang, chapter, prev: list[i - 1], next: list[i + 1], alternates, untranslated },
+        props: { lang, chapter, prev: list[i - 1], next: list[i + 1], playlist: list, alternates, untranslated },
       };
     }),
   );
 }
 
-const { chapter, prev, next, alternates, untranslated } = Astro.props;
+const { chapter, prev, next, playlist, alternates, untranslated } = Astro.props;
 const lang = Astro.props.lang as Lang;
 const s = t(lang);
 const { Content } = await render(chapter);
@@ -83,6 +84,7 @@ const modified = chapter.data.versions[0]?.date ?? published;
       <p class="chapter-meta">
         {formatDate(published, lang)} · {s.minRead(readingMinutes(chapter.body))}
       </p>
+      <AudioPlayer chapter={chapter} playlist={playlist} />
       <PdfVersions chapter={chapter} compact />
     </header>
 

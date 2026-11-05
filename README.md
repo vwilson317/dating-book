@@ -73,6 +73,41 @@ If the title is on its own line, set it larger than the body text. The script sk
 - **Chapters are matched by number**, within each language. EN chapter 4 and PT chapter 4 are treated as the same chapter for the language switcher, so keep the numbering the same in both manuscripts. If you insert a chapter in the middle and renumber the rest, every chapter after it will look changed.
 - **Re-exporting with a different layout is fine.** Changing fonts or margins doesn't create new versions; only changes to the words, italics, or paragraph breaks do.
 
+## Audiobook (narrated chapters)
+
+Each chapter can have an audio version in English and Portuguese. You record the MP3s (for example with ElevenLabs) and put them in the repo. Chapters with audio get a player at the top of the page and a 🎧 badge on their cards. Chapters without audio show no player.
+
+**Add audio:**
+
+1. `npm run audio -- --export` writes each chapter's narration text to `narration/en/` and `narration/pt/` (not committed). It's the chapter text with the Markdown cleaned up (`\[T\]` becomes `T`), the title read out first ("Chapter 3. Title."), and `…` at scene breaks. Paste it into ElevenLabs.
+2. Download each recording as MP3 and save it as `public/audio/en/03.mp3` (or `pt/`). Any name that starts with the chapter number works: `3.mp3`, `03-how-long.mp3`. The introduction is `00.mp3`.
+3. `npm run audio` checks them: it lists each new or replaced file with its length, the chapters still without audio, and any file it can't match to a chapter. It also runs before every build, so this step is optional.
+4. Commit `public/audio/` and `src/content/audio.json`.
+
+To replace a recording, overwrite the file and commit. Readers get the new one, because the site links each file with a hash of its contents.
+
+**After a release:** if a chapter's text changes after you added its audio, `npm run audio` (and every build) warns: "Chapter 4's text changed after its audio was added." Export again, re-record that chapter, and replace the file. The old audio keeps playing until you do.
+
+**Getting the sarcastic tone in ElevenLabs:**
+- Use the **Eleven v3** model. It's the most expressive and understands audio tags in square brackets. Add a few where they help: `[sarcastic]`, `[deadpan]`, `[sighs]`, `[dramatic pause]`, `[mock serious]`, `[laughs]`. A tag at the start of a paragraph sets its tone. Don't tag every line.
+- Lower **Stability** (Creative or Natural) gives more expressive, sarcastic delivery. High stability sounds flat.
+- To design a voice: *"American man in his 30s telling his own dating disasters to friends at a bar. Dry, deadpan, sarcastic, self-deprecating. Unhurried, with small pauses before punchlines."* For Portuguese: *"Homem brasileiro de uns 30 anos, sotaque carioca, contando os próprios desastres amorosos para os amigos num bar. Seco, debochado, sarcástico, autodepreciativo. Sem pressa, com pausinhas antes da piada."*
+- Long chapters work best in **Studio** (Projects), which handles the whole text in one go. With the regular text-to-speech page, paste a few paragraphs at a time and join the clips.
+- Download as MP3. 128 kbps is fine (about 1 MB a minute); a lower bitrate keeps the repo smaller.
+
+**The player:** play/pause, back 15 s / forward 30 s, a seek bar, speed (1× to 2×), and an MP3 download. It remembers where each reader stopped in each chapter and their speed. While audio plays and the reader scrolls past the player, a mini player follows at the bottom of the screen. Lock-screen and headphone controls work, including next/previous chapter. When a chapter ends it moves on to the next one (readers can turn that off), and this works with the screen off. Listening to the end marks the chapter ✓ Read.
+
+| Event | When | Extra properties |
+|---|---|---|
+| `audio_started` | First play of a chapter in a visit | `resumed_at` (seconds, if it picked up where they left off), `speed` |
+| `audio_progress` | Passes 25 / 50 / 75 / 90% | `percent` |
+| `audio_finished` | Reaches the end | `speed` |
+| `audio_listened` | Summary when the reader leaves or moves to the next chapter | `seconds_listened`, `max_percent`, `speed`, `summary_number` |
+| `audio_next_chapter` | Plays into the next chapter automatically | `to` |
+| `audio_speed_changed`, `audio_downloaded` | Speed button / MP3 download | `speed` |
+
+All of them include `chapter`, `lang`, `title`, `version`, `duration` and `listen_id`.
+
 ## Languages on the site
 
 - English lives at `/`, Portuguese at `/pt/`. Every page has an EN/PT switcher, and chapters link to the same chapter in the other language.
