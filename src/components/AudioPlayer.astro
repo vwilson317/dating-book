@@ -1,0 +1,95 @@
+---
+// Narrated audio for a chapter, plus a mini player that follows you down the page while it plays.
+// The whole language's chapters are passed in as a playlist, so it can keep going into the next
+// chapter without reloading the page (works from the lock screen too).
+import type { Chapter } from '../lib/content';
+import { chapterAudio, chapterLang, chapterLabel, chapterUrl, formatClock } from '../lib/content';
+import { SITE } from '../site.config';
+import { t } from '../i18n/ui';
+
+interface Props { chapter: Chapter; playlist: Chapter[] }
+const { chapter, playlist } = Astro.props;
+const audio = chapterAudio(chapter);
+const lang = chapterLang(chapter);
+const s = t(lang);
+
+const tracks = playlist.flatMap((c) => {
+  const a = chapterAudio(c);
+  return a
+    ? [{ number: c.data.number, label: chapterLabel(c), title: c.data.title, url: chapterUrl(c), src: a.file, duration: a.duration, version: c.data.versions[0]?.label ?? 'v1' }]
+    : [];
+});
+const meta = { lang, current: chapter.data.number, artist: SITE.author, album: s.bookTitle, artwork: '/icons/icon-512.png' };
+const fileName = audio?.file.split('/').pop();
+
+const playIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"/></svg>';
+const pauseIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+---
+
+{
+  audio && (
+    <section class="listen" id="listen" aria-label={s.listen(Math.round(audio.duration / 60))}>
+      <audio preload="none" src={audio.file} />
+      <script type="application/json" id="listen-data" set:html={JSON.stringify({ meta, tracks })} />
+
+      <div class="listen-head">
+        <button type="button" class="listen-play" data-play aria-label={s.play} data-label-play={s.play} data-label-pause={s.pause}>
+          <span class="i-play" set:html={playIcon} />
+          <span class="i-pause" set:html={pauseIcon} />
+        </button>
+        <div class="listen-info">
+          <p class="listen-title" data-listen-title>{s.listen(Math.round(audio.duration / 60))}</p>
+          <p class="listen-sub" data-sub data-resume={s.resumeFrom} data-default={s.listenSub}>{s.listenSub}</p>
+          <p class="listen-now" data-now hidden>
+            <span>{s.nowPlaying}:</span> <a data-now-link href="#">{s.openChapter}</a>
+          </p>
+        </div>
+      </div>
+
+      <input class="listen-seek" data-seek type="range" min="0" max={audio.duration} step="1" value="0" aria-label={s.seek} />
+      <div class="listen-times">
+        <span data-cur>0:00</span>
+        <span data-left>-{formatClock(audio.duration)}</span>
+      </div>
+
+      <div class="listen-tools">
+        <button type="button" class="listen-tool" data-skip="-15" aria-label={s.back15}>↺ 15</button>
+        <button type="button" class="listen-tool listen-speed" data-speed aria-label={s.speed}>1×</button>
+        <button type="button" class="listen-tool" data-skip="30" aria-label={s.fwd30}>30 ↻</button>
+        <a
+          class="listen-tool listen-dl"
+          href={audio.file}
+          download={fileName}
+          data-track="audio_downloaded"
+          data-prop-chapter={String(chapter.data.number)}
+        >
+          {s.downloadMp3}
+        </a>
+      </div>
+      <label class="listen-auto">
+        <input type="checkbox" data-autonext checked />
+        <span>{s.autoNext}</span>
+      </label>
+    </section>
+
+    <div class="listen-mini" id="listen-mini" hidden>
+      <div class="listen-mini-bar" data-mini-bar />
+      <button type="button" class="listen-play listen-play--small" data-play aria-label={s.play}>
+        <span class="i-play" set:html={playIcon} />
+        <span class="i-pause" set:html={pauseIcon} />
+      </button>
+      <button type="button" class="listen-mini-info" data-mini-show aria-label={s.backToPlayer}>
+        <span class="listen-mini-title" data-mini-title />
+        <span class="listen-mini-time" data-mini-time />
+      </button>
+      <button type="button" class="listen-tool" data-skip="-15" aria-label={s.back15}>↺ 15</button>
+    </div>
+  )
+}
+
+<script>
+  import { initListen } from '../scripts/listen';
+
+  const root = document.getElementById('listen');
+  if (root) initListen(root, document.getElementById('listen-mini')!);
+</script>

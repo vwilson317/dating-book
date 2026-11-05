@@ -73,6 +73,38 @@ If the title is on its own line, set it larger than the body text. The script sk
 - **Chapters are matched by number**, within each language. EN chapter 4 and PT chapter 4 are treated as the same chapter for the language switcher, so keep the numbering the same in both manuscripts. If you insert a chapter in the middle and renumber the rest, every chapter after it will look changed.
 - **Re-exporting with a different layout is fine.** Changing fonts or margins doesn't create new versions; only changes to the words, italics, or paragraph breaks do.
 
+## Audiobook (narrated chapters)
+
+Every published chapter can have an audio version in English and Portuguese, read by OpenAI's text-to-speech (`gpt-4o-mini-tts`) with instructions to sound dry and sarcastic. Chapters with audio get a player at the top of the page and a 🎧 badge on their cards. Chapters without audio show no player.
+
+**Record it:**
+
+1. Get an API key at [platform.openai.com](https://platform.openai.com/api-keys) and put it in `.env` as `OPENAI_API_KEY=...`.
+2. `npm run narrate -- --dry-run` lists what would be recorded and roughly what it costs (about $0.015 a minute, so about $2 for the whole book in both languages).
+3. `npm run narrate` records the chapters that are new or changed.
+4. Listen to a few, then commit `public/audio/` and `src/content/audio.json`.
+
+It also runs before every `npm run build`. Without a key it records nothing, lists the chapters that have no audio, and the build carries on. Don't put the key in Netlify: it would record again on every deploy, since nothing generated during a build is saved. Record on your machine and commit the files. Set `NARRATE=off` to skip the step entirely.
+
+A chapter is recorded again only when its text, the voice, or the direction changes. After a `npm run release` that changed chapter 4, `npm run narrate` re-records just chapter 4. Old MP3s are deleted. Other options: `--lang pt`, `--chapter 3`, `--force`.
+
+**Change how it sounds** in `scripts/narration/config.mjs`: the voice for each language (try them at [openai.fm](https://www.openai.fm)), the acting direction (the sarcasm lives here, written in English for EN and in Portuguese for PT, asking for a Carioca accent), the bitrate, and the pauses after the title and at scene breaks (`* * *`). Changing anything there re-records that language on the next run.
+
+The audio is about 48 kbps mono, roughly 21 MB per hour. The whole book in both languages is about 50 MB.
+
+**The player:** play/pause, back 15 s / forward 30 s, a seek bar, speed (1× to 2×), and an MP3 download. It remembers where each reader stopped in each chapter and their speed. While audio plays and the reader scrolls past the player, a mini player follows at the bottom of the screen. Lock-screen and headphone controls work, including next/previous chapter. When a chapter ends it moves on to the next one (readers can turn that off), and this works with the screen off. Listening to the end marks the chapter ✓ Read.
+
+| Event | When | Extra properties |
+|---|---|---|
+| `audio_started` | First play of a chapter in a visit | `resumed_at` (seconds, if it picked up where they left off), `speed` |
+| `audio_progress` | Passes 25 / 50 / 75 / 90% | `percent` |
+| `audio_finished` | Reaches the end | `speed` |
+| `audio_listened` | Summary when the reader leaves or moves to the next chapter | `seconds_listened`, `max_percent`, `speed`, `summary_number` |
+| `audio_next_chapter` | Plays into the next chapter automatically | `to` |
+| `audio_speed_changed`, `audio_downloaded` | Speed button / MP3 download | `speed` |
+
+All of them include `chapter`, `lang`, `title`, `version`, `duration` and `listen_id`.
+
 ## Languages on the site
 
 - English lives at `/`, Portuguese at `/pt/`. Every page has an EN/PT switcher, and chapters link to the same chapter in the other language.

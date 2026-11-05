@@ -45,3 +45,19 @@ export function formatDate(d: Date, lang: Lang): string {
 export const chapterLabel = (c: Chapter) => c.data.label ?? t(chapterLang(c)).chapter(c.data.number);
 
 export const chapterUrl = (c: Chapter) => localePath(chapterLang(c), `/chapters/${chapterSlug(c)}/`);
+
+// Narrated audio, recorded by `npm run narrate` (scripts/narrate.mjs). Keyed "<lang>:<number>".
+import audioManifest from '../content/audio.json';
+
+export interface ChapterAudio {
+  file: string;
+  duration: number; // seconds
+  bytes: number;
+}
+
+export function chapterAudio(c: Chapter): ChapterAudio | undefined {
+  return (audioManifest as Record<string, ChapterAudio>)[`${chapterLang(c)}:${c.data.number}`];
+}
+
+/** 754 -> "12:34" */
+export const formatClock = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;

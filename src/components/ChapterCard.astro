@@ -1,6 +1,6 @@
 ---
 import type { Chapter } from '../lib/content';
-import { chapterUrl, chapterLang, chapterLabel, formatDate, readingMinutes } from '../lib/content';
+import { chapterUrl, chapterLang, chapterLabel, chapterAudio, formatDate, readingMinutes } from '../lib/content';
 import { t } from '../i18n/ui';
 
 interface Props { chapter: Chapter }
@@ -9,6 +9,7 @@ const lang = chapterLang(chapter);
 const s = t(lang);
 const { number, title, excerpt, location, published, status } = chapter.data;
 const soon = status === 'coming-soon';
+const audio = soon ? undefined : chapterAudio(chapter);
 ---
 
 <article class:list={['card', { 'card--soon': soon }]}>
@@ -28,6 +29,12 @@ const soon = status === 'coming-soon';
           <span>{formatDate(published, lang)}</span>
           <span aria-hidden="true">·</span>
           <span>{s.minRead(readingMinutes(chapter.body))}</span>
+          {audio && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{s.listenBadge(Math.round(audio.duration / 60))}</span>
+            </>
+          )}
           <span class="card-progress" data-progress={number} data-read-label={s.readBadge} data-pct-label={s.pctRead} hidden />
         </>
       )
