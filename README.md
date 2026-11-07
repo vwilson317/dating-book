@@ -108,6 +108,34 @@ To replace a recording, overwrite the file and commit. Readers get the new one, 
 
 All of them include `chapter`, `lang`, `title`, `version`, `duration` and `listen_id`.
 
+## Selling the book (Stripe)
+
+`/buy/` (and `/pt/buy/`) is a page where readers can pay for the book, $3.99 or more if they like. Use it as the link in ads. Everything stays free on the rest of the site; this is the "contribute" version. After paying, buyers land on `/thanks/`, which has the full-book PDF, every audiobook MP3, and a WhatsApp button to send the name they want in the acknowledgments. Until a Stripe link is set, the buy button and the footer link are hidden on the live site.
+
+**Set it up (about 10 minutes, no code):**
+
+1. In the Stripe dashboard, open **Payment Links** and create a new one.
+2. Choose **Customers choose what to pay**. Set the suggested amount to $3.99 and the minimum to $3.99. (For a fixed price instead, create a $3.99 product and set `payWhatYouWant: false` in `src/site.config.ts`.)
+3. Under **Options**, add a custom field: *Name for the book's acknowledgments*, text, optional.
+4. Under **After payment**, choose not to show the confirmation page and redirect to `https://<your-site>/thanks/?session_id={CHECKOUT_SESSION_ID}`.
+5. Create the link and paste it into `support.stripe.en` in `src/site.config.ts`.
+6. Do the same for Portuguese, redirecting to `/pt/thanks/?session_id={CHECKOUT_SESSION_ID}`, and paste it into `support.stripe.pt`. Turn on **Adaptive Pricing** (Settings → Payments) so Brazilian buyers see and pay in reais.
+7. Commit and deploy.
+
+Each payment shows the buyer's acknowledgment name (if they gave one) in Stripe. Collect them for the finished book.
+
+**For ads,** link to `https://<your-site>/buy/?utm_source=instagram&utm_campaign=<ad name>`. The campaign is passed to Stripe as the payment's *client reference ID* (for example `en_instagram_launch`), so you can see which ad each sale came from. The page also opens Stripe checkout in the page's language.
+
+| Event | When | Properties |
+|---|---|---|
+| `buy_clicked` | Taps a buy button | `location` (hero/perks), `ref` |
+| `purchase_completed` | Lands on the thank-you page from Stripe (counted once per checkout) | `session_id` |
+| `buy_page_clicked`, `buy_read_free_clicked` | Footer "Buy the book" link / "Read it free" | |
+
+Funnel in PostHog: `$pageview` on `/buy/` → `buy_clicked` → `purchase_completed`, broken down by `$initial_utm_campaign`.
+
+The page text, price shown, and perks are in `src/i18n/buy.ts` and `SITE.support` in `src/site.config.ts`. The price on the page is just text; the real price is whatever the Stripe link charges, so change both together.
+
 ## Languages on the site
 
 - English lives at `/`, Portuguese at `/pt/`. Every page has an EN/PT switcher, and chapters link to the same chapter in the other language.

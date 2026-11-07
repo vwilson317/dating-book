@@ -1,0 +1,124 @@
+---
+// /thanks/ and /pt/thanks/: where Stripe sends buyers after they pay (set as the Payment Link's
+// confirmation redirect, with ?session_id={CHECKOUT_SESSION_ID}). Everything here is free on the
+// site anyway, so the page doesn't need to check the payment. Kept out of search results.
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../site.config';
+import { getEditions, getPublishedChapters, chapterAudio, chapterLabel, formatClock } from '../../lib/content';
+import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
+import { buy } from '../../i18n/buy';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+const b = buy[lang];
+const editions = await getEditions(lang);
+const book = editions.find((e) => e.data.featured) ?? editions[0];
+const audio = (await getPublishedChapters(lang)).flatMap((c) => {
+  const a = chapterAudio(c);
+  return a ? [{ c, a }] : [];
+});
+const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
+const fileName = (f: string) => f.split('?')[0].split('/').pop();
+const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
+---
+
+<Base lang={lang} title={b.thanksTitle} description={b.thanksLede} noindex>
+  <header class="page-head">
+    <p class="eyebrow">{b.thanksEyebrow} 🎉</p>
+    <h1>{b.thanksHeading}</h1>
+    <p class="buy-lede">{b.thanksLede}</p>
+  </header>
+
+  <section class="thanks-downloads">
+    <h2>{b.downloadsTitle}</h2>
+    {
+      book && (
+        <a
+          class="btn btn--primary"
+          href={book.data.file}
+          download={fileName(book.data.file)}
+          data-track="pdf_downloaded"
+          data-prop-kind="edition"
+          data-prop-file={book.data.file}
+          data-prop-location="thanks"
+        >
+          {b.pdfCta} <span class="btn-sub">{book.data.title}</span>
+        </a>
+      )
+    }
+    {
+      audio.length > 0 && (
+        <div class="thanks-audio">
+          <h3>🎧 {b.audioTitle}</h3>
+          <p class="muted small">{b.audioBody}</p>
+          <ul>
+            {audio.map(({ c, a }) => (
+              <li>
+                <a
+                  href={a.file}
+                  download={fileName(a.file)}
+                  data-track="audio_downloaded"
+                  data-prop-chapter={String(c.data.number)}
+                  data-prop-location="thanks"
+                >
+                  <span>
+                    {chapterLabel(c)}: {c.data.title}
+                  </span>
+                  <span class="muted">{formatClock(a.duration)} ↓</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+    <a href={localePath(lang, '/chapters/')} class="thanks-read">{b.readCta}</a>
+  </section>
+
+  <section class="contact-grid thanks-more">
+    {
+      feedbackOn && (
+        <div class="contact-card">
+          <h2>✍️ {b.nameTitle}</h2>
+          <p class="muted">{b.nameBody}</p>
+          <a href="#" class="btn" data-wa-general={b.waNameMsg} data-source="thanks_name" target="_blank" rel="noopener">
+            {b.nameCta}
+          </a>
+        </div>
+      )
+    }
+    <div class="contact-card">
+      <h2>📣 {b.shareTitle}</h2>
+      <p class="muted">{b.shareBody}</p>
+      <button class="btn" type="button" data-share={shareUrl} data-share-title={`${s.bookTitle}: ${s.bookSubtitle}`} data-copied={s.linkCopied}>
+        {b.share}
+      </button>
+    </div>
+  </section>
+
+  <script>
+    import { track } from '../../scripts/analytics';
+
+    // Count the purchase once per checkout (Stripe adds ?session_id=... to the redirect), then clean
+    // the URL so a bookmarked or shared copy of this page doesn't count again.
+    const params = new URLSearchParams(location.search);
+    const session = params.get('session_id');
+    if (session) {
+      const key = `purchase:${session}`;
+      let seen = false;
+      try {
+        seen = !!localStorage.getItem(key);
+        localStorage.setItem(key, '1');
+        localStorage.setItem('supporter', '1');
+      } catch {
+        /* private mode */
+      }
+      if (!seen) track('purchase_completed', { lang: document.documentElement.lang, session_id: session });
+      params.delete('session_id');
+      const qs = params.toString();
+      history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : '') + location.hash);
+    }
+  </script>
+</Base>
