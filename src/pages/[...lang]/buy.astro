@@ -1,0 +1,128 @@
+---
+// /buy/ and /pt/buy/: pay for the book (Stripe Payment Link). The link to use in ads.
+// Everything is still free on the site; this is the "contribute" version.
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../site.config';
+import { getPublishedChapters, chapterAudio } from '../../lib/content';
+import { langPaths, localePath, LANGS, t, type Lang } from '../../i18n/ui';
+import { pageSchema } from '../../lib/seo';
+import { buy, fillPrice } from '../../i18n/buy';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+const b = buy[lang];
+const price = SITE.support.price[lang];
+const p = (tpl: string) => fillPrice(tpl, price);
+const stripe = SITE.support.stripe[lang];
+const hasAudio = (await getPublishedChapters(lang)).some((c) => chapterAudio(c));
+const perks = b.perks.filter((perk) => !('needsAudio' in perk) || hasAudio);
+---
+
+<Base
+  lang={lang}
+  title={b.title}
+  description={p(b.description)}
+  jsonLd={pageSchema(lang, Astro.site, b.title, localePath(lang, '/buy/'), 'WebPage')}
+>
+  <section class="buy-hero">
+    <div>
+      <p class="eyebrow">{p(b.eyebrow)}</p>
+      <h1>{b.heading}</h1>
+      <p class="buy-lede">{p(b.lede)}</p>
+      <div class="buy-cta">
+        {
+          stripe || import.meta.env.DEV ? (
+            <a
+              class="btn btn--primary buy-btn"
+              href={stripe || '#stripe-link-not-set'}
+              data-stripe={stripe}
+              data-locale={LANGS[lang].locale}
+              data-track="buy_clicked"
+              data-prop-location="hero"
+            >
+              {p(b.cta)}
+            </a>
+          ) : null
+        }
+        {!stripe && import.meta.env.DEV && <p class="small buy-warn">{b.notSet}</p>}
+        {SITE.support.payWhatYouWant && <p class="muted small">{b.payMore}</p>}
+        <p class="muted small">🔒 {b.secure}</p>
+      </div>
+    </div>
+    <div class="buy-cover" aria-hidden="true">
+      <p class="buy-cover-title">{s.bookTitle}</p>
+      <p class="buy-cover-sub">{s.bookSubtitle}</p>
+      <p class="buy-cover-author">{SITE.author}</p>
+      <span class="buy-cover-stamp">{s.stampMid}</span>
+    </div>
+  </section>
+
+  <section class="buy-perks">
+    <h2>{p(b.getTitle)}</h2>
+    <ul>
+      {
+        perks.map((perk) => (
+          <li>
+            <span class="buy-perk-icon" aria-hidden="true">{perk.icon}</span>
+            <div>
+              <h3>{perk.title}</h3>
+              <p class="muted">{perk.body}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    {
+      (stripe || import.meta.env.DEV) && (
+        <a
+          class="btn btn--primary buy-btn"
+          href={stripe || '#stripe-link-not-set'}
+          data-stripe={stripe}
+          data-locale={LANGS[lang].locale}
+          data-track="buy_clicked"
+          data-prop-location="perks"
+        >
+          {p(b.cta)}
+        </a>
+      )
+    }
+  </section>
+
+  <section class="contact-card buy-free">
+    <h2>{b.freeTitle}</h2>
+    <p class="muted">{b.freeBody}</p>
+    <a class="btn" href={localePath(lang, '/chapters/')} data-track="buy_read_free_clicked">{b.freeCta}</a>
+  </section>
+
+  <section class="buy-faq">
+    <h2>{b.faqTitle}</h2>
+    {
+      b.faq.map((f) => (
+        <details>
+          <summary>{f.q}</summary>
+          <p class="muted">{f.a}</p>
+        </details>
+      ))
+    }
+  </section>
+
+  <script>
+    // Tag each checkout with where the buyer came from (e.g. the Instagram ad campaign), so it shows
+    // up in Stripe as the payment's client_reference_id, and open checkout in the page's language.
+    const params = new URLSearchParams(location.search);
+    const source = [params.get('utm_source'), params.get('utm_campaign') || params.get('utm_content')]
+      .filter(Boolean)
+      .join('_');
+    const ref = `${document.documentElement.lang}_${source || 'direct'}`.replace(/[^\w-]/g, '-').slice(0, 200);
+    document.querySelectorAll<HTMLAnchorElement>('a[data-stripe]').forEach((a) => {
+      if (!a.dataset.stripe) return;
+      const url = new URL(a.dataset.stripe);
+      url.searchParams.set('client_reference_id', ref);
+      url.searchParams.set('locale', a.dataset.locale === 'pt-BR' ? 'pt-BR' : 'en');
+      a.href = url.toString();
+      a.dataset.propRef = ref;
+    });
+  </script>
+</Base>
