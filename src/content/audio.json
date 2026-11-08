@@ -1,1 +1,98 @@
-{}
+{
+  "en:0": {
+    "file": "/audio/en/00.mp3?v=60dee4b561",
+    "hash": "60dee4b561",
+    "duration": 253,
+    "bytes": 4057348,
+    "textHash": "9293b801c7",
+    "added": "2026-11-08"
+  },
+  "en:1": {
+    "file": "/audio/en/1chapter.mp3?v=fce1a6e5a3",
+    "hash": "fce1a6e5a3",
+    "duration": 298,
+    "bytes": 4779163,
+    "textHash": "a2ccea9cc0",
+    "added": "2026-11-08"
+  },
+  "en:2": {
+    "file": "/audio/en/2chapter.mp3?v=f8002747c6",
+    "hash": "f8002747c6",
+    "duration": 277,
+    "bytes": 4452737,
+    "textHash": "e41c8b4426",
+    "added": "2026-11-08"
+  },
+  "en:3": {
+    "file": "/audio/en/3chapter.mp3?v=671ad7a629",
+    "hash": "671ad7a629",
+    "duration": 411,
+    "bytes": 6595614,
+    "textHash": "0384f3f7d9",
+    "added": "2026-11-08"
+  },
+  "en:4": {
+    "file": "/audio/en/4chapter.mp3?v=baaf600e29",
+    "hash": "baaf600e29",
+    "duration": 269,
+    "bytes": 4322334,
+    "textHash": "c472f8c9d8",
+    "added": "2026-11-08"
+  },
+  "en:5": {
+    "file": "/audio/en/5chapter.mp3?v=da0f784272",
+    "hash": "da0f784272",
+    "duration": 284,
+    "bytes": 4565586,
+    "textHash": "6b5577ddce",
+    "added": "2026-11-08"
+  },
+  "en:6": {
+    "file": "/audio/en/6japan.mp3?v=c960db611b",
+    "hash": "c960db611b",
+    "duration": 205,
+    "bytes": 3289139,
+    "textHash": "e19f0fc176",
+    "added": "2026-11-08"
+  },
+  "en:7": {
+    "file": "/audio/en/7never.mp3?v=84d1d0018e",
+    "hash": "84d1d0018e",
+    "duration": 271,
+    "bytes": 4354099,
+    "textHash": "b10b8e14aa",
+    "added": "2026-11-08"
+  },
+  "en:8": {
+    "file": "/audio/en/8sand.mp3?v=9da0343edc",
+    "hash": "9da0343edc",
+    "duration": 313,
+    "bytes": 5017400,
+    "textHash": "4cefb6683b",
+    "added": "2026-11-08"
+  },
+  "en:9": {
+    "file": "/audio/en/9shirt.mp3?v=3c60fcddf1",
+    "hash": "3c60fcddf1",
+    "duration": 170,
+    "bytes": 2734925,
+    "textHash": "9ad7531337",
+    "added": "2026-11-08"
+  },
+  "en:10": {
+    "file": "/audio/en/10love.mp3?v=8c9703b9a9",
+    "hash": "8c9703b9a9",
+    "duration": 183,
+    "bytes": 2947666,
+    "textHash": "ce48f6e91a",
+    "added": "2026-11-08"
+  },
+  "en:11": {
+    "file": "/audio/en/11dez.mp3?v=05538eceeb",
+    "hash": "05538eceeb",
+    "duration": 265,
+    "bytes": 4256714,
+    "textHash": "ef3bc5b4d3",
+    "added": "2026-11-08"
+  }
+}
