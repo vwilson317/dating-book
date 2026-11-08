@@ -60,12 +60,21 @@ document.querySelectorAll<HTMLButtonElement>('[data-share]').forEach((btn) => {
         setTimeout(() => (btn.textContent = old), copied ? 2000 : 8000);
         if (!copied) return;
       }
-      track('shared', { url: data.url, method: useSheet ? 'native' : 'clipboard' });
+      track('shared', { url: data.url, method: useSheet ? 'native' : 'clipboard', location: btn.dataset.shareLocation ?? 'page' });
     } catch {
       /* user cancelled */
     }
   });
 });
+
+// ---- Back to top ----------------------------------------------------------
+const toTop = document.getElementById('to-top');
+if (toTop) {
+  const update = () => (toTop.hidden = window.scrollY < 600);
+  document.addEventListener('scroll', update, { passive: true });
+  update();
+  toTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+}
 
 // ---- Dismissible banners --------------------------------------------------
 document.querySelectorAll<HTMLButtonElement>('[data-dismiss]').forEach((btn) => {

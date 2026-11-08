@@ -1,6 +1,6 @@
-// Reading analytics for chapter pages.
+// Reading analytics for chapter pages and the landing page accordion.
 //
-// Events (all include chapter, lang, title, version, words_total, read_id):
+// Events (all include chapter, lang, title, version, words_total, read_id, source):
 //   chapter_started   – reader actually began reading (15s of active reading or 10% of the text)
 //   chapter_progress  – passed 25 / 50 / 75 / 90% of the text
 //   chapter_finished  – reached the end of the text
@@ -14,7 +14,22 @@ import { getProgress, saveProgress, fill } from './progress';
 const IDLE_AFTER_MS = 60_000; // stop counting time after a minute with no scroll/touch/key
 const SKIM_WPM = 700; // faster than this means they scrolled through without reading
 
-export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLElement, bar?: HTMLElement) {
+export function initReading(
+  article: HTMLElement,
+  prose: HTMLElement,
+  end: HTMLElement,
+  bar?: HTMLElement,
+  source: 'chapter_page' | 'landing' = 'chapter_page',
+) {
+  // On the landing page many chapters share one page, so only count the one being read,
+  // and leave reading position alone (that belongs to the chapter pages).
+  const inline = source === 'landing';
+  const beingRead = () => {
+    if (!inline) return true;
+    if (!(article as HTMLDetailsElement).open) return false;
+    const rect = prose.getBoundingClientRect();
+    return rect.top < window.innerHeight / 2 && rect.bottom > 0;
+  };
   const wordsTotal = Number(article.dataset.words) || 0;
   const readId = crypto.randomUUID?.() ?? String(Math.random()).slice(2);
   const base = {
@@ -24,6 +39,7 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
     version: article.dataset.version,
     words_total: wordsTotal,
     read_id: readId,
+    source,
   };
 
   let maxPct = 0; // 0..100, how much of the text has been on screen
@@ -45,7 +61,7 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
   // ---- active time ----
   const tick = () => {
     const now = Date.now();
-    if (document.visibilityState === 'visible' && now - lastInteraction < IDLE_AFTER_MS) {
+    if (document.visibilityState === 'visible' && now - lastInteraction < IDLE_AFTER_MS && beingRead()) {
       activeMs += now - lastTick;
     }
     lastTick = now;
@@ -63,13 +79,15 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
 
   // ---- depth ----
   const onScroll = () => {
+    if (inline && !beingRead()) return;
     const rect = prose.getBoundingClientRect();
     const seen = window.innerHeight - rect.top; // px of text that has scrolled into view
     const pct = rect.height > 0 ? Math.min(100, Math.max(0, (seen / rect.height) * 100)) : 100;
     if (bar) bar.style.transform = `scaleX(${pct / 100})`;
     if (pct <= maxPct) return;
     maxPct = Math.round(pct);
-    if (!started && maxPct >= 10) start();
+    // Opening a chapter on the landing page already shows 10% of it, so require scrolling into the text
+    if (!started && maxPct >= 10 && (!inline || rect.top < 0)) start();
     for (const m of [25, 50, 75, 90]) {
       if (maxPct >= m && !milestones.has(m)) {
         milestones.add(m);
@@ -79,6 +97,7 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
   };
   document.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', onScroll, { passive: true });
+  if (inline) article.addEventListener('toggle', onScroll);
   onScroll();
 
   // ---- finished ----
@@ -108,21 +127,23 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
   const position = () => ({
     number: base.chapter,
     label: article.dataset.label,
-    url: location.pathname,
+    url: article.dataset.url ?? location.pathname,
     pct: Math.round(topPct() * 10) / 10,
     finished: finished || !!saved?.finished,
     updated: Date.now(),
   });
-  let saveTimer = 0;
-  document.addEventListener(
-    'scroll',
-    () => {
-      clearTimeout(saveTimer);
-      saveTimer = window.setTimeout(() => saveProgress(base.lang, position()), 400);
-    },
-    { passive: true },
-  );
-  window.addEventListener('pagehide', () => saveProgress(base.lang, position()));
+  if (!inline) {
+    let saveTimer = 0;
+    document.addEventListener(
+      'scroll',
+      () => {
+        clearTimeout(saveTimer);
+        saveTimer = window.setTimeout(() => saveProgress(base.lang, position()), 400);
+      },
+      { passive: true },
+    );
+    window.addEventListener('pagehide', () => saveProgress(base.lang, position()));
+  }
 
   const resumeBtn = document.getElementById('resume-btn') as HTMLButtonElement | null;
   if (resumeBtn && saved && !saved.finished && saved.pct >= 3 && saved.pct <= 95 && topPct() < 2) {
@@ -163,6 +184,7 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
     };
   };
   const send = () => {
+    if (inline && maxPct === 0) return; // this chapter was never on screen
     const s = summary();
     const key = `${s.percent_read}|${s.active_seconds}|${s.finished}`;
     if (key === lastSent) return; // nothing new since the last summary

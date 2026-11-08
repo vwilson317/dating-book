@@ -1,7 +1,8 @@
 ---
-// /thanks/ and /pt/thanks/: where Stripe sends buyers after they pay (set as the Payment Link's
-// confirmation redirect, with ?session_id={CHECKOUT_SESSION_ID}). Everything here is free on the
-// site anyway, so the page doesn't need to check the payment. Kept out of search results.
+// /thanks/ and /pt/thanks/: where Stripe sends buyers after they pay (the Checkout Session's
+// success_url, with ?session_id={CHECKOUT_SESSION_ID}). Everything here is free on the site anyway,
+// so the page doesn't need to check the payment; the webhook records it (netlify/functions/
+// stripe-webhook.ts). Kept out of search results.
 import Base from '../../layouts/Base.astro';
 import { SITE } from '../../site.config';
 import { getEditions, getPublishedChapters, chapterAudio, chapterLabel, formatClock } from '../../lib/content';
@@ -22,6 +23,7 @@ const audio = (await getPublishedChapters(lang)).flatMap((c) => {
 const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
 const fileName = (f: string) => f.split('?')[0].split('/').pop();
 const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
+const tierIds = SITE.support.tiers.map((tier) => tier.id);
 ---
 
 <Base lang={lang} title={b.thanksTitle} description={b.thanksLede} noindex>
@@ -77,7 +79,7 @@ const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
     <a href={localePath(lang, '/chapters/')} class="thanks-read">{b.readCta}</a>
   </section>
 
-  <section class="contact-grid thanks-more">
+  <section class="contact-grid thanks-more" data-tier-ids={tierIds.join(',')}>
     {
       feedbackOn && (
         <div class="contact-card">
@@ -89,6 +91,21 @@ const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
         </div>
       )
     }
+    {
+      feedbackOn && (
+        <div class="contact-card" data-min-tier="instagram" hidden>
+          <h2>📝 {b.storyTitle}</h2>
+          <p class="muted">{b.storyBody}</p>
+          <a href="#" class="btn" data-wa-general={b.waStoryMsg} data-source="thanks_story" target="_blank" rel="noopener">
+            {b.storyCta}
+          </a>
+        </div>
+      )
+    }
+    <div class="contact-card" data-min-tier="story" hidden>
+      <h2>📚 {b.editionTitle}</h2>
+      <p class="muted">{b.editionBody}</p>
+    </div>
     <div class="contact-card">
       <h2>📣 {b.shareTitle}</h2>
       <p class="muted">{b.shareBody}</p>
@@ -105,6 +122,14 @@ const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
     // the URL so a bookmarked or shared copy of this page doesn't count again.
     const params = new URLSearchParams(location.search);
     const session = params.get('session_id');
+
+    // Each tier's Stripe link redirects here with ?tier=..., which shows that tier's next steps.
+    const tier = params.get('tier');
+    const tierIds = document.querySelector<HTMLElement>('[data-tier-ids]')!.dataset.tierIds!.split(',');
+    document.querySelectorAll<HTMLElement>('[data-min-tier]').forEach((card) => {
+      card.hidden = !tier || tierIds.indexOf(tier) < tierIds.indexOf(card.dataset.minTier!);
+    });
+
     if (session) {
       const key = `purchase:${session}`;
       let seen = false;
@@ -115,7 +140,7 @@ const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
       } catch {
         /* private mode */
       }
-      if (!seen) track('purchase_completed', { lang: document.documentElement.lang, session_id: session });
+      if (!seen) track('purchase_completed', { lang: document.documentElement.lang, session_id: session, tier });
       params.delete('session_id');
       const qs = params.toString();
       history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : '') + location.hash);

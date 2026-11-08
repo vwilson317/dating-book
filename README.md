@@ -110,35 +110,39 @@ All of them include `chapter`, `lang`, `title`, `version`, `duration` and `liste
 
 ## Contributions (Stripe)
 
-`/buy/` (and `/pt/buy/`) is a page where readers can contribute $3.99 or more to help promote the book. The book itself is never charged for and stays free on the site. Use this page as the link in ads. After paying, buyers land on `/thanks/`, which has the full-book PDF, every audiobook MP3, and a WhatsApp button to send the name they want in the acknowledgments. Until a Stripe link is set, the buy button and the footer link are hidden on the live site.
+`/buy/` (and `/pt/buy/`) is a page where readers can contribute to help promote the book. The book itself is never charged for and stays free on the site. Use this page as the link in ads. There are three tiers: **$3.99** (name in the acknowledgments), **$5.99** (name + their story shared on your Instagram), and **$20** (both, plus a chance to have their story in a later edition). After paying, contributors land on `/thanks/`, which has the full-book PDF, audiobook MP3s, and WhatsApp buttons for their name and, on higher tiers, their story.
 
-**Set it up (about 10 minutes, no code):**
+Contribute buttons post to `/api/checkout` (`netlify/functions/checkout.ts`), which opens a Stripe Checkout Session in the reader's language. Stripe then calls `/api/stripe-webhook` (`netlify/functions/stripe-webhook.ts`), which saves one record per paid session in the `contributions` Netlify Blobs store, even if the reader closed the tab. Stories come through the WhatsApp button on the thank-you page because Stripe's custom fields are short. **Live mode is a deliberate opt-in:** the functions and setup script refuse a live key unless `STRIPE_ALLOW_LIVE=true` is also set (`netlify/lib/stripe.ts`). Live keys, live Price IDs and the live webhook secret must be set together.
 
-1. In the Stripe dashboard, open **Payment Links** and create a new one.
-2. Choose **Customers choose what to pay**. Set the suggested amount to $3.99 and the minimum to $3.99. (For a fixed price instead, create a $3.99 product and set `payWhatYouWant: false` in `src/site.config.ts`.)
-3. Under **Options**, add a custom field: *Name for the book's acknowledgments*, text, optional.
-4. Under **After payment**, choose not to show the confirmation page and redirect to `https://<your-site>/thanks/?session_id={CHECKOUT_SESSION_ID}`.
-5. Create the link and paste it into `support.stripe.en` in `src/site.config.ts`.
-6. Do the same for Portuguese, redirecting to `/pt/thanks/?session_id={CHECKOUT_SESSION_ID}`, and paste it into `support.stripe.pt`. Turn on **Adaptive Pricing** (Settings → Payments) so Brazilian buyers see and pay in reais.
-7. Commit and deploy.
+**Set it up locally,** with Test mode on in the Stripe dashboard and the [Stripe CLI](https://docs.stripe.com/stripe-cli) installed:
 
-Each payment shows the buyer's acknowledgment name (if they gave one) in Stripe. Collect them for the finished book.
+1. Copy `.env.example` to `.env` and set `STRIPE_SECRET_KEY` (Developers → API keys).
+2. Run `npm run stripe:setup` and paste the three `STRIPE_PRICE_*` lines it prints into `.env`.
+3. Run `stripe listen --forward-to localhost:8888/api/stripe-webhook` and put the `whsec_…` value it prints in `.env` as `STRIPE_WEBHOOK_SECRET`.
+4. Stop any running `npm run dev` (Astro allows one per project), then run `npx netlify-cli dev` and open `http://localhost:8888/buy/`. Plain `npm run dev` has no functions, so the buttons won't work there.
+5. Pay with `4242 4242 4242 4242`, any future date and any CVC. To test a decline, use `4000 0000 0000 0002`.
+
+`stripe trigger checkout.session.completed` only proves delivery: its sample session has no tier, so the webhook ignores it. A record is only written by a real test checkout through the site.
+
+**Set it up on Netlify** (Site configuration → Environment variables): add the variables above plus `PUBLIC_CHECKOUT_ENABLED=true`, which shows the buttons. Create a test endpoint under Developers → Webhooks for `https://<your-site>/api/stripe-webhook` with `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` and `payment_intent.payment_failed`, and use its signing secret as `STRIPE_WEBHOOK_SECRET`. The `whsec_` from `stripe listen` only works locally. Turn on **Adaptive Pricing** (Settings → Payments) so Brazilian contributors see and pay in reais.
+
+Each payment shows the contributor's tier, acknowledgment name and contact details in Stripe, and the same details are in the `contributions` store (Netlify → Blobs). Collect the names for the finished book, and use the contact details to follow up about stories. Ask people who send a story to include the name they used at checkout, so you can match it to their payment.
 
 **For ads,** link to `https://<your-site>/buy/?utm_source=instagram&utm_campaign=<ad name>`. The campaign is passed to Stripe as the payment's *client reference ID* (for example `en_instagram_launch`), so you can see which ad each sale came from. The page also opens Stripe checkout in the page's language.
 
 | Event | When | Properties |
 |---|---|---|
-| `buy_clicked` | Taps a buy button | `location` (hero/perks), `ref` |
-| `purchase_completed` | Lands on the thank-you page from Stripe (counted once per checkout) | `session_id` |
+| `buy_clicked` | Taps a contribute button | `location` (hero/support_modal), `tier` (name/instagram/story), `price`, `prompt` (three/finished/manual, prompt only), `ref` |
+| `purchase_completed` | Lands on the thank-you page from Stripe (counted once per checkout) | `session_id`, `tier` |
 | `buy_page_clicked`, `buy_read_free_clicked` | Footer "Contribute" link / "Read it free" | |
-| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `chapters_read` |
+| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `from` (automatic/fab/landing_top), `chapters_read` |
 | `support_fab_hidden`, `support_fab_restored` | Reader hides or brings back the floating button | |
 
-The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same Stripe link and stay hidden on the live site until it is set. The prompt opens once after 3 finished chapters and once after every published chapter. Its text is under `support` in `src/i18n/buy.ts`.
+The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same checkout and stay hidden on the live site until `PUBLIC_CHECKOUT_ENABLED=true`. The contribute button at the top of the home page opens it too. The prompt opens once after 3 finished chapters and once after every published chapter. Its text is under `support` in `src/i18n/buy.ts`.
 
 Funnel in PostHog: `$pageview` on `/buy/` → `buy_clicked` → `purchase_completed`, broken down by `$initial_utm_campaign`.
 
-The page text, price shown, and perks are in `src/i18n/buy.ts` and `SITE.support` in `src/site.config.ts`. The price on the page is just text; the real price is whatever the Stripe link charges, so change both together.
+The page text, price shown, and perks are in `src/i18n/buy.ts` and `SITE.support` in `src/site.config.ts`. The price on the page is just text; the real price is whatever the Stripe Price charges, so change both together.
 
 ## Languages on the site
 
@@ -198,7 +202,7 @@ Change the author and Instagram handle in `src/site.config.ts`, and the book tit
 
 Events go through a `/ingest` proxy on your own domain (set up in `netlify.toml`) so ad blockers don't drop them. **If your PostHog project is on EU cloud**, change `us` to `eu` in the two proxy URLs in `netlify.toml` and in `ui_host` in `src/scripts/analytics.ts`.
 
-### Reading events (chapter pages)
+### Reading events (chapter pages and the home page accordion)
 
 Every reading event includes `chapter`, `lang`, `title`, `version` (the chapter's latest version, e.g. `v2`), `words_total`, and `read_id` (one ID per visit to a chapter page).
 
@@ -211,6 +215,8 @@ Every reading event includes `chapter`, `lang`, `title`, `version` (the chapter'
 
 "Active" time only counts while the page is on screen and the reader has scrolled or touched it in the last 60 seconds. Time with the phone in a pocket doesn't inflate the numbers.
 
+Every reading event has a `source` property: `chapter_page` or `landing` (the home page accordion). Break down by `source` to compare them. On the home page, time only counts for the chapter on screen, and a chapter that was never on screen sends nothing.
+
 If a reader switches away and comes back to the same tab, `chapter_read` is sent again with updated totals and the same `read_id`, and `summary_number` goes up by one. For exact per-visit numbers, use the latest summary for each `read_id` (the SQL below does this).
 
 ### Other events
@@ -220,12 +226,19 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 | `$pageview` / `$pageleave` | automatic |
 | `pdf_downloaded` | any PDF click; props: `kind` (chapter/edition), `chapter`, `version`, `file` |
 | `next_chapter_clicked` | reader taps "Next →" |
-| `cta_clicked`, `instagram_clicked`, `shared` | buttons |
+| `instagram_clicked` | Instagram links; props: `location` (footer/home/contact/support_modal) |
+| `shared` | share buttons; props: `url`, `method` (native/clipboard), `location` (page/support_modal) |
+| `landing_chapter_opened` | reader taps a chapter open on the home page; props: `chapter`, `lang`, `title`, `words_total`, `source` |
+| `landing_next_auto_opened` | reader reaches the end of a chapter and the next one opens; same props (`chapter` is the one just finished) |
+| `landing_chapter_page_clicked` | "better reading experience and audio" button; props: `chapter`, `audio` |
+| `back_to_top_clicked` | back-to-top button |
 | `in_app_browser_seen` | page opened inside the Instagram/Facebook/TikTok browser |
 | `language_suggested`, `language_switched` | "read in the other language" link shown / EN-PT switch used; props: `from`, `to`, `via` |
 | `install_clicked`, `install_prompt_result`, `app_installed` | PWA install funnel |
 
 ### Insights to set up in PostHog
+
+**Contribute prompt (funnel).** Funnel: `support_prompt_shown` → `buy_clicked` (location = support_modal) → `purchase_completed`, broken down by `kind`. Break `buy_clicked` down by `tier` to see which tier people choose. Compare with `shared` and `instagram_clicked` (location = support_modal) to see who chose a free way to help.
 
 **Completion rate per chapter (funnel).** New insight → Funnel: `chapter_started` → `chapter_finished`. Under "Breakdown", choose the event property `chapter`. This counts people: of the readers who started a chapter, the share who finished it on any visit. For per-visit completion, use `pct_finished` from the SQL below.
 
@@ -272,6 +285,7 @@ To track new buttons without writing code, add `data-track="event_name"` and `da
 Add UTM tags so PostHog can show which posts drive traffic:
 
 - Bio: `https://YOURSITE/?utm_source=instagram&utm_medium=bio`
+- A chapter on the home page, already open: `https://YOURSITE/?utm_source=instagram&utm_medium=story#chapter-5`
 - Story link sticker: `https://YOURSITE/chapters/the-slug/?utm_source=instagram&utm_medium=story&utm_campaign=ch4-launch`
 
 Instagram opens links in its own in-app browser. That browser can't install the app and handles downloads poorly, so the home page is built for it: a contribute button at the top, then every chapter readable in place in an accordion, with a button to each chapter page for audio and the full reading experience. Visitors in those apps also see no download buttons on chapter pages. The "Open in browser" banner only appears on the Downloads page, where it matters.

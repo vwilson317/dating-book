@@ -10,14 +10,17 @@
     "preview": "astro preview",
     "icons": "node scripts/make-icons.mjs",
     "release": "node scripts/release.mjs",
-    "audio": "node scripts/audio.mjs"
+    "audio": "node scripts/audio.mjs",
+    "stripe:setup": "node --env-file=.env scripts/stripe-setup.mjs"
   },
   "dependencies": {
     "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/literata": "^5.3.0",
+    "@netlify/blobs": "^11.1.8",
     "astro": "^7.4.5",
     "posthog-js": "^1.445.4",
-    "sharp": "^0.35.5"
+    "sharp": "^0.35.5",
+    "stripe": "^23.1.0"
   },
   "devDependencies": {
     "diff": "^9.0.0",

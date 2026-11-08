@@ -10,14 +10,22 @@ export const SITE = {
   whatsapp: '16789826137',
   themeColor: '#c2532f',
 
-  // "Contribute" (/buy/ and /pt/buy/, the link for ads) and the thank-you page buyers land on.
-  // Create a Stripe Payment Link per language (see README) and paste its URL (https://buy.stripe.com/...).
-  // Until a link is set, the contribute buttons are hidden on the live site.
+  // Contribution tiers, lowest first (used by the contribute prompt, /buy/ and /thanks/).
+  // Contributing stays hidden on the live site until PUBLIC_CHECKOUT_ENABLED=true (see README).
+  // Tier text is in src/i18n/buy.ts. The real price is set in Stripe (STRIPE_PRICE_* env vars), so
+  // change both together.
   support: {
-    price: { en: '$3.99', pt: 'US$ 3,99' }, // what the page says; the real price is set in Stripe
-    payWhatYouWant: true, // true if the Stripe link lets buyers choose the amount (shows "pay more" note)
-    stripe: { en: '', pt: '' },
+    tiers: [
+      { id: 'name', price: { en: '$3.99', pt: 'US$ 3,99' } },
+      { id: 'instagram', price: { en: '$5.99', pt: 'US$ 5,99' } },
+      { id: 'story', price: { en: '$20', pt: 'US$ 20' } },
+    ],
   },
 };
 
 export const instagramUrl = `https://instagram.com/${SITE.instagram}`;
+
+export const checkoutEnabled = import.meta.env.PUBLIC_CHECKOUT_ENABLED === 'true';
+
+/** Tiers readers can choose in this language. In dev all of them show, even with checkout off. */
+export const supportTiers = (_lang: 'en' | 'pt') => (checkoutEnabled || import.meta.env.DEV ? SITE.support.tiers : []);

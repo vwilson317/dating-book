@@ -70,6 +70,8 @@ export const ui = {
     // Home
     heroEyebrow: 'A book in progress · released chapter by chapter',
     heroLede: 'Free chapters, straight from the manuscript. Read them here, take them with you as a PDF, and come back when the next one drops.',
+    backToTop: 'Back to top',
+    keepGoing: 'Thanks for reading.',
     landingLede: 'Free to read, no signup. Tap a chapter and start.',
     landingCtaNote: "The book is free and I'll never charge for it. Contributions go to promoting it.",
     betterReading: 'For a better reading experience and the audio version, go to the chapter page →',
@@ -221,6 +223,8 @@ export const ui = {
 
     heroEyebrow: 'Um livro em andamento · lançado capítulo por capítulo',
     heroLede: 'Capítulos grátis, direto do manuscrito. Leia aqui, leve em PDF e volte quando o próximo sair.',
+    backToTop: 'Voltar ao topo',
+    keepGoing: 'Obrigado por ler.',
     landingLede: 'Grátis para ler, sem cadastro. Toque em um capítulo e comece.',
     landingCtaNote: 'O livro é grátis e eu nunca vou cobrar por ele. As contribuições vão para a divulgação.',
     betterReading: 'Para uma leitura melhor e a versão em áudio, vá para a página do capítulo →',

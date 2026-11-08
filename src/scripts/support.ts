@@ -31,9 +31,9 @@ const write = (key: string, value: string) => {
 };
 
 // Tag each checkout with where the buyer came from (e.g. the Instagram ad campaign), so it shows up
-// in Stripe as the payment's client_reference_id, and open checkout in the page's language. The
-// source is remembered because readers reach checkout several pages after landing.
-function tagCheckoutLinks() {
+// in Stripe as the payment's client_reference_id. The source is remembered because readers reach
+// checkout several pages after landing.
+function tagCheckoutForms() {
   const params = new URLSearchParams(location.search);
   const landed = [params.get('utm_source'), params.get('utm_campaign') || params.get('utm_content')]
     .filter(Boolean)
@@ -41,18 +41,14 @@ function tagCheckoutLinks() {
   if (landed) write(SOURCE_KEY, landed);
   const source = landed || read(SOURCE_KEY) || 'direct';
   const ref = `${document.documentElement.lang}_${source}`.replace(/[^\w-]/g, '-').slice(0, 200);
-  document.querySelectorAll<HTMLAnchorElement>('a[data-stripe]').forEach((a) => {
-    if (!a.dataset.stripe) return;
-    const url = new URL(a.dataset.stripe);
-    url.searchParams.set('client_reference_id', ref);
-    url.searchParams.set('locale', a.dataset.locale === 'pt-BR' ? 'pt-BR' : 'en');
-    a.href = url.toString();
-    a.dataset.propRef = ref;
+  document.querySelectorAll<HTMLFormElement>('form[data-checkout]').forEach((form) => {
+    form.querySelector<HTMLInputElement>('input[name="ref"]')!.value = ref;
+    form.querySelector<HTMLElement>('[data-track]')!.dataset.propRef = ref;
   });
 }
 
 export function initSupport() {
-  tagCheckoutLinks();
+  tagCheckoutForms();
 
   if (read('supporter')) {
     document.querySelectorAll<HTMLElement>('[data-support-cta]').forEach((el) => (el.hidden = true));
@@ -68,14 +64,14 @@ export function initSupport() {
   const chaptersRead = () => allProgress(lang).filter((p) => p.finished).length;
   let openKind: Kind | null = null;
 
-  const open = (kind: Kind) => {
+  const open = (kind: Kind, from?: string) => {
     openKind = kind;
     modal.querySelectorAll<HTMLElement>('[data-variant]').forEach((el) => (el.hidden = el.dataset.variant !== kind));
     modal.setAttribute('aria-labelledby', `support-title-${kind}`);
-    modal.querySelector<HTMLElement>('[data-track="buy_clicked"]')!.dataset.propPrompt = kind;
+    modal.querySelectorAll<HTMLElement>('[data-track="buy_clicked"]').forEach((a) => (a.dataset.propPrompt = kind));
     modal.showModal();
     modal.scrollTop = 0;
-    track('support_prompt_shown', { kind, chapters_read: chaptersRead() });
+    track('support_prompt_shown', { kind, from: from ?? 'automatic', chapters_read: chaptersRead() });
   };
 
   modal.querySelectorAll('[data-support-close]').forEach((b) => b.addEventListener('click', () => modal.close()));
@@ -85,7 +81,9 @@ export function initSupport() {
   const setCollapsed = (collapsed: boolean) => fab.classList.toggle('is-collapsed', collapsed);
   setCollapsed(read(COLLAPSED_KEY) === '1');
   fab.hidden = false;
-  fab.querySelector('[data-support-open]')!.addEventListener('click', () => open('manual'));
+  document.querySelectorAll<HTMLElement>('[data-support-open]').forEach((b) =>
+    b.addEventListener('click', () => open('manual', b.dataset.supportOpen)),
+  );
   fab.querySelector('[data-support-hide]')!.addEventListener('click', () => {
     setCollapsed(true);
     write(COLLAPSED_KEY, '1');

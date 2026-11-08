@@ -4,7 +4,7 @@ import '@fontsource-variable/fraunces/wght-italic.css';
 import '@fontsource-variable/literata/wght.css';
 import '@fontsource-variable/literata/wght-italic.css';
 import '../styles/global.css';
-import { SITE, instagramUrl } from '../site.config';
+import { SITE, instagramUrl, supportTiers } from '../site.config';
 import { LANGS, LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../i18n/ui';
 import { buy } from '../i18n/buy';
 import Support from '../components/Support.astro';
@@ -246,7 +246,7 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
         )
       }
       {
-        (SITE.support.stripe[lang] || import.meta.env.DEV) && (
+        supportTiers(lang).length > 0 && (
           <p>
             <a href={localePath(lang, '/buy/')} class="footer-buy" data-track="buy_page_clicked" data-prop-location="footer">
               {buy[lang].footerLink}
@@ -319,6 +319,9 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
     </dialog>
 
     {showSupport && <Support lang={lang} />}
+    <button type="button" class="to-top" id="to-top" aria-label={s.backToTop} title={s.backToTop} data-track="back_to_top_clicked" hidden>
+      <span aria-hidden="true">↑</span>
+    </button>
 
     <script type="application/json" id="lang-zones" set:html={JSON.stringify(Object.fromEntries(LANG_CODES.map((l) => [l, LANGS[l].timeZones])))} />
     {feedbackOn && <div id="wa-config" hidden data-number={SITE.whatsapp} data-name={SITE.authorFirstName} />}

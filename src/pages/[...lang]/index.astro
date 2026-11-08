@@ -4,17 +4,18 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import QuizPromo from '../../components/QuizPromo.astro';
-import { SITE, instagramUrl } from '../../site.config';
+import { SITE, instagramUrl, supportTiers } from '../../site.config';
 import { getVisibleChapters, chapterUrl, chapterLabel, chapterAudio, formatDate, readingMinutes, wordCount } from '../../lib/content';
-import { langPaths, LANGS, t, type Lang } from '../../i18n/ui';
+import { langPaths, t, type Lang } from '../../i18n/ui';
 import { homeSchema } from '../../lib/seo';
 import { buy, fillPrice } from '../../i18n/buy';
 
 export const getStaticPaths = langPaths;
 
+const FIRST_OPEN = 1; // starts expanded: Chapter 1 hooks readers faster than the Introduction
 const lang = Astro.props.lang as Lang;
 const s = t(lang);
-const stripe = SITE.support.stripe[lang];
+const tiers = supportTiers(lang);
 const chapters = await Promise.all(
   (await getVisibleChapters(lang)).map(async (c) => ({
     c,
@@ -33,18 +34,11 @@ const chapters = await Promise.all(
   </header>
 
   {
-    (stripe || import.meta.env.DEV) && (
+    tiers.length > 0 && (
       <section class="landing-cta" data-support-cta>
-        <a
-          class="btn btn--primary"
-          href={stripe || '#stripe-link-not-set'}
-          data-stripe={stripe}
-          data-locale={LANGS[lang].locale}
-          data-track="buy_clicked"
-          data-prop-location="landing_top"
-        >
-          {fillPrice(buy[lang].support.cta, SITE.support.price[lang])}
-        </a>
+        <button type="button" class="btn btn--primary" data-support-open="landing_top">
+          {fillPrice(buy[lang].support.cta, tiers[0].price[lang])}
+        </button>
         <p>{s.landingCtaNote}</p>
       </section>
     )
@@ -66,7 +60,7 @@ const chapters = await Promise.all(
           </span>
         );
         return Content ? (
-          <details class="acc" data-acc data-chapter={c.data.number} data-title={c.data.title} data-label={label} data-url={chapterUrl(c)} data-words={wordCount(c.body)}>
+          <details class="acc" id={`chapter-${c.data.number}`} open={c.data.number === FIRST_OPEN} data-acc data-chapter={c.data.number} data-title={c.data.title} data-label={label} data-url={chapterUrl(c)} data-words={wordCount(c.body)} data-version={c.data.versions[0]?.label ?? 'v1'}>
             <summary>
               {head}
               <span class="acc-chevron" aria-hidden="true" />
@@ -79,6 +73,9 @@ const chapters = await Promise.all(
                 <Content />
               </div>
               <div data-acc-end />
+              <p class="acc-done" data-acc-done hidden>
+                <span class="acc-done-check" aria-hidden="true">✓</span> {s.keepGoing} <span class="acc-done-arrow" aria-hidden="true">↓</span>
+              </p>
             </div>
           </details>
         ) : (

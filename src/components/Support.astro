@@ -2,9 +2,10 @@
 // Floating "Contribute" button and the full-screen contribution prompt.
 // The prompt opens from the button, after 3 finished chapters, and after every chapter
 // (see src/scripts/support.ts). Hidden on the live site until a Stripe link is set.
-import { SITE, instagramUrl } from '../site.config';
-import { LANGS, localePath, t, type Lang } from '../i18n/ui';
-import { buy, fillPrice } from '../i18n/buy';
+import { instagramUrl, supportTiers } from '../site.config';
+import Tiers from './Tiers.astro';
+import { localePath, t, type Lang } from '../i18n/ui';
+import { buy } from '../i18n/buy';
 import { getPublishedChapters } from '../lib/content';
 
 interface Props {
@@ -12,9 +13,7 @@ interface Props {
 }
 const { lang } = Astro.props;
 const s = t(lang);
-const b = buy[lang];
-const c = b.support;
-const stripe = SITE.support.stripe[lang];
+const c = buy[lang].support;
 const total = (await getPublishedChapters(lang)).length;
 const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
 const variants = [
@@ -25,10 +24,10 @@ const variants = [
 ---
 
 {
-  (stripe || import.meta.env.DEV) && (
+  supportTiers(lang).length > 0 && (
     <>
       <div class="support-fab" id="support-fab" hidden>
-        <button type="button" class="support-fab-open" data-support-open>
+        <button type="button" class="support-fab-open" data-support-open="fab">
           <span aria-hidden="true">☕</span> {c.fab}
         </button>
         <button type="button" class="support-fab-hide" data-support-hide aria-label={c.hide} title={c.hide}>
@@ -55,20 +54,7 @@ const variants = [
           }
           <p class="support-promise">{c.promise}</p>
 
-          <a
-            class="btn btn--primary support-cta"
-            href={stripe || '#stripe-link-not-set'}
-            data-stripe={stripe}
-            data-locale={LANGS[lang].locale}
-            data-track="buy_clicked"
-            data-prop-location="support_modal"
-          >
-            {fillPrice(c.cta, SITE.support.price[lang])}
-          </a>
-          <p class="muted small">
-            {SITE.support.payWhatYouWant && `${b.payMore} `}
-            {c.thanks}
-          </p>
+          <Tiers lang={lang} location="support_modal" />
 
           <h3>{c.altTitle}</h3>
           <div class="support-alts">
@@ -78,6 +64,7 @@ const variants = [
               data-share={shareUrl}
               data-share-title={`${s.bookTitle}: ${s.bookSubtitle}`}
               data-copied={s.linkCopied}
+              data-share-location="support_modal"
             >
               {c.shareCta}
             </button>

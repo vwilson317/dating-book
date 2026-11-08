@@ -1,10 +1,11 @@
 ---
-// /buy/ and /pt/buy/: contribute to promoting the book (Stripe Payment Link). The link to use in ads.
+// /buy/ and /pt/buy/: contribute to promoting the book (Stripe Checkout). The link to use in ads.
+// Also where Stripe sends readers who cancel (?checkout=canceled).
 // The book itself is always free; the URL stays /buy/ so existing links keep working.
 import Base from '../../layouts/Base.astro';
-import { SITE } from '../../site.config';
-import { getPublishedChapters, chapterAudio } from '../../lib/content';
-import { langPaths, localePath, LANGS, t, type Lang } from '../../i18n/ui';
+import Tiers from '../../components/Tiers.astro';
+import { SITE, checkoutEnabled, supportTiers } from '../../site.config';
+import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
 import { pageSchema } from '../../lib/seo';
 import { buy, fillPrice } from '../../i18n/buy';
 
@@ -13,11 +14,7 @@ export const getStaticPaths = langPaths;
 const lang = Astro.props.lang as Lang;
 const s = t(lang);
 const b = buy[lang];
-const price = SITE.support.price[lang];
-const p = (tpl: string) => fillPrice(tpl, price);
-const stripe = SITE.support.stripe[lang];
-const hasAudio = (await getPublishedChapters(lang)).some((c) => chapterAudio(c));
-const perks = b.perks.filter((perk) => !('needsAudio' in perk) || hasAudio);
+const p = (tpl: string) => fillPrice(tpl, SITE.support.tiers[0].price[lang]);
 ---
 
 <Base
@@ -30,24 +27,12 @@ const perks = b.perks.filter((perk) => !('needsAudio' in perk) || hasAudio);
     <div>
       <p class="eyebrow">{p(b.eyebrow)}</p>
       <h1>{b.heading}</h1>
-      <p class="buy-lede">{p(b.lede)}</p>
+      <p class="buy-lede">{b.lede}</p>
       <div class="buy-cta">
-        {
-          stripe || import.meta.env.DEV ? (
-            <a
-              class="btn btn--primary buy-btn"
-              href={stripe || '#stripe-link-not-set'}
-              data-stripe={stripe}
-              data-locale={LANGS[lang].locale}
-              data-track="buy_clicked"
-              data-prop-location="hero"
-            >
-              {p(b.cta)}
-            </a>
-          ) : null
-        }
-        {!stripe && import.meta.env.DEV && <p class="small buy-warn">{b.notSet}</p>}
-        {SITE.support.payWhatYouWant && <p class="muted small">{b.payMore}</p>}
+        <p class="small buy-warn" data-checkout-notice="canceled" hidden>{b.checkout.canceled}</p>
+        <p class="small buy-warn" data-checkout-notice="error" hidden>{b.checkout.error}</p>
+        {supportTiers(lang).length > 0 && <Tiers lang={lang} location="hero" />}
+        {!checkoutEnabled && import.meta.env.DEV && <p class="small buy-warn">{b.notSet}</p>}
         <p class="muted small">🔒 {b.secure}</p>
       </div>
     </div>
@@ -57,37 +42,6 @@ const perks = b.perks.filter((perk) => !('needsAudio' in perk) || hasAudio);
       <p class="buy-cover-author">{SITE.author}</p>
       <span class="buy-cover-stamp">{s.stampMid}</span>
     </div>
-  </section>
-
-  <section class="buy-perks">
-    <h2>{p(b.getTitle)}</h2>
-    <ul>
-      {
-        perks.map((perk) => (
-          <li>
-            <span class="buy-perk-icon" aria-hidden="true">{perk.icon}</span>
-            <div>
-              <h3>{perk.title}</h3>
-              <p class="muted">{perk.body}</p>
-            </div>
-          </li>
-        ))
-      }
-    </ul>
-    {
-      (stripe || import.meta.env.DEV) && (
-        <a
-          class="btn btn--primary buy-btn"
-          href={stripe || '#stripe-link-not-set'}
-          data-stripe={stripe}
-          data-locale={LANGS[lang].locale}
-          data-track="buy_clicked"
-          data-prop-location="perks"
-        >
-          {p(b.cta)}
-        </a>
-      )
-    }
   </section>
 
   <section class="contact-card buy-free">
@@ -107,4 +61,11 @@ const perks = b.perks.filter((perk) => !('needsAudio' in perk) || hasAudio);
       ))
     }
   </section>
+
+  <script>
+    const status = new URLSearchParams(location.search).get('checkout');
+    document.querySelectorAll<HTMLElement>('[data-checkout-notice]').forEach((el) => {
+      el.hidden = el.dataset.checkoutNotice !== status;
+    });
+  </script>
 </Base>

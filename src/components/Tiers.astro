@@ -1,0 +1,40 @@
+---
+// The contribution tiers. Each one posts to /api/checkout (netlify/functions/checkout.ts), which
+// sends the reader to Stripe. A form rather than a link, so nothing can open a checkout by prefetching.
+import { supportTiers } from '../site.config';
+import type { Lang } from '../i18n/ui';
+import { buy } from '../i18n/buy';
+
+interface Props {
+  lang: Lang;
+  location: string; // where it's shown, for analytics
+}
+const { lang, location } = Astro.props;
+const text = buy[lang].support.tiers;
+---
+
+<div class="tiers">
+  {
+    supportTiers(lang).map((tier) => (
+      <form action="/api/checkout" method="post" data-checkout>
+        <input type="hidden" name="tier" value={tier.id} />
+        <input type="hidden" name="lang" value={lang} />
+        <input type="hidden" name="ref" value="" />
+        <button
+          class="tier"
+          type="submit"
+          data-track="buy_clicked"
+          data-prop-location={location}
+          data-prop-tier={tier.id}
+          data-prop-price={tier.price[lang]}
+        >
+          <span class="tier-price">{tier.price[lang]}</span>
+          <span>
+            <span class="tier-title">{text[tier.id as keyof typeof text].title}</span>
+            <span class="tier-body">{text[tier.id as keyof typeof text].body}</span>
+          </span>
+        </button>
+      </form>
+    ))
+  }
+</div>

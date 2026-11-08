@@ -5,6 +5,13 @@
 [build.environment]
   NODE_VERSION = "24"
 
+# `netlify dev` serves the site and the functions in netlify/functions together on :8888.
+[dev]
+  framework = "#custom"
+  command = "npm run dev"
+  targetPort = 4321
+  port = 8888
+
 # PostHog reverse proxy so ad blockers don't swallow analytics.
 # EU cloud: change "us" to "eu" in both URLs below and ui_host in src/scripts/analytics.ts.
 [[redirects]]
