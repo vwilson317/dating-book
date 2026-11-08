@@ -9,6 +9,15 @@ export const SITE = {
   // Leave empty to hide the feedback features on the live site.
   whatsapp: '16789826137',
   themeColor: '#c2532f',
+
+  // "Buy the book" (/buy/ and /pt/buy/, the link for ads) and the thank-you page buyers land on.
+  // Create a Stripe Payment Link per language (see README) and paste its URL (https://buy.stripe.com/...).
+  // Until a link is set, the buy button is hidden on the live site.
+  support: {
+    price: { en: '$3.99', pt: 'US$ 3,99' }, // what the page says; the real price is set in Stripe
+    payWhatYouWant: true, // true if the Stripe link lets buyers choose the amount (shows "pay more" note)
+    stripe: { en: '', pt: '' },
+  },
 };
 
 export const instagramUrl = `https://instagram.com/${SITE.instagram}`;

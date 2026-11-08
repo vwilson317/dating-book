@@ -6,6 +6,7 @@ import '@fontsource-variable/literata/wght-italic.css';
 import '../styles/global.css';
 import { SITE, instagramUrl } from '../site.config';
 import { LANGS, LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../i18n/ui';
+import { buy } from '../i18n/buy';
 
 interface Props {
   lang: Lang;
@@ -221,6 +222,15 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
           <p>
             <a href="#" class="footer-wa" data-wa-general={s.waGeneralMsg} data-source="footer" rel="noopener" target="_blank">
               {s.footerFeedback}
+            </a>
+          </p>
+        )
+      }
+      {
+        (SITE.support.stripe[lang] || import.meta.env.DEV) && (
+          <p>
+            <a href={localePath(lang, '/buy/')} class="footer-buy" data-track="buy_page_clicked" data-prop-location="footer">
+              {buy[lang].footerLink}
             </a>
           </p>
         )

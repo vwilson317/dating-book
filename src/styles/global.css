@@ -1789,3 +1789,198 @@ body.has-mini-player .resume-btn {
   font-size: 1.2rem;
   margin-bottom: 0.75rem;
 }
+
+/* ---------- Buy the book / thank you ---------- */
+
+.buy-hero {
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+  padding: 2.5rem 0 2rem;
+}
+@media (min-width: 52rem) {
+  .buy-hero {
+    grid-template-columns: 1fr 18rem;
+    gap: 3rem;
+  }
+}
+.buy-hero h1 {
+  margin: 0.25rem 0 1rem;
+}
+.buy-lede {
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+.buy-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+}
+.buy-cta p {
+  margin: 0;
+}
+.buy-btn {
+  min-width: 15rem;
+  font-size: 1.1rem;
+}
+.buy-warn {
+  color: var(--accent);
+}
+
+/* The cover, drawn in CSS so the ad landing page loads instantly */
+.buy-cover {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  width: min(15rem, 70vw);
+  margin: 0 auto;
+  padding: 2.2rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--accent);
+  color: #fff8f0;
+  border-radius: 4px 12px 12px 4px;
+  box-shadow: inset 6px 0 0 rgb(0 0 0 / 0.18), 0 24px 40px -18px rgb(0 0 0 / 0.55);
+  transform: rotate(2.5deg);
+}
+.buy-cover p {
+  margin: 0;
+}
+.buy-cover-title {
+  font-family: var(--serif-display);
+  font-size: 2.3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.buy-cover-sub {
+  margin-top: 0.9rem !important;
+  font-family: var(--serif-display);
+  font-style: italic;
+  font-size: 1rem;
+  line-height: 1.3;
+  opacity: 0.92;
+}
+.buy-cover-author {
+  margin-top: auto !important;
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.buy-cover-stamp {
+  position: absolute;
+  right: -1.2rem;
+  bottom: 30%;
+  display: grid;
+  place-items: center;
+  width: 5.2rem;
+  height: 5.2rem;
+  border: 3px double var(--accent);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--accent);
+  font-family: var(--serif-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  transform: rotate(-14deg);
+}
+
+.buy-perks {
+  margin: 1rem 0 2.5rem;
+}
+.buy-perks ul {
+  list-style: none;
+  margin: 1rem 0 1.5rem;
+  padding: 0;
+  display: grid;
+  gap: 1.1rem;
+}
+.buy-perks li {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+.buy-perk-icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  font-size: 1.25rem;
+}
+.buy-perks h3 {
+  margin: 0 0 0.15rem;
+  font-size: 1.05rem;
+}
+.buy-perks li p {
+  margin: 0;
+}
+.buy-free {
+  margin-bottom: 2.5rem;
+}
+.buy-faq {
+  margin-bottom: 2rem;
+}
+.buy-faq details {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.buy-faq summary {
+  font-weight: 600;
+  cursor: pointer;
+}
+.buy-faq details p {
+  margin: 0.5rem 0 0;
+}
+.footer-buy {
+  font-weight: 600;
+}
+
+.thanks-downloads {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+.thanks-downloads h2 {
+  margin: 0;
+}
+.thanks-audio {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+.thanks-audio h3 {
+  margin: 0;
+}
+.thanks-audio ul {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.thanks-audio a {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--line);
+  color: inherit;
+  text-decoration: none;
+}
+.thanks-audio a span:last-child {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.thanks-read {
+  font-weight: 600;
+}
+.thanks-more {
+  margin-bottom: 2rem;
+}
