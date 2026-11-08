@@ -6,6 +6,10 @@ excerpt: Ninguém disse que namorar seria fácil. Isso é ainda mais verdade qua
 published: 2026-11-04
 status: published
 versions:
+  - label: v2
+    date: 2026-11-08
+    file: /pdfs/pt/chapter-00-v2.pdf
+    notes: "Revisado: +9 / −10 palavras"
   - label: v1
     date: 2026-11-04
     file: /pdfs/pt/chapter-00-v1.pdf
@@ -13,7 +17,7 @@ versions:
 
 Ninguém disse que namorar seria fácil. Isso é ainda mais verdade quando você está namorando no exterior e não fala o idioma.
 
-Este livro é, antes de tudo, um relato das minhas experiências pessoais de namoro como um homem que hoje tem 38 anos, dos Estados Unidos (se você diz “US” em inglês, soa como “nós”, e você pode acabar num acordo que não queria ter). Moro no Rio há quase três anos e não falo português, e antes disso passei vários anos como nômade digital. Meu vocabulário continua sendo “obrigado”, “cerveja” e um sorriso que diz: “Olá, sou praticamente inofensivo.”
+Este livro é, antes de tudo, um relato das minhas experiências pessoais de namoro e de viagem como um homem que hoje tem 38 anos, dos Estados Unidos (se você disser “US”, pode acabar numa discussão que não queria ter). Moro no Rio há quase três anos e não falo português, e antes disso passei vários anos como nômade digital. Meu vocabulário continua sendo “obrigado”, “cerveja” e um sorriso que diz: “Olá, sou praticamente inofensivo.”
 
 A primeira história que me vem à cabeça é o meu primeiro “encontro” com uma PROFISSIONAL em Medellín. Terminou com ela me esculachando em inglês, em público, por uma hora, como se fôssemos casados e ela tivesse acabado de descobrir que eu estava dormindo com a mãe dela. Passei o ataque verbal inteiro tentando arrumar um Uber para ela voltar para casa. Olhando para trás, eu deveria ter fugido pela janela do banheiro.
 
@@ -35,7 +39,7 @@ Também sou um romântico incurável, e sou desde antes de saber o que era namor
 
 Essa tem sido a minha vida amorosa em uma pergunta. Grandes gestos, nenhum plano para o que vem depois.
 
-Este não é um manual, e não estou dizendo para você fazer o que eu fiz. É uma pilha de desastres amorosos com algumas lições práticas misturadas. Se um cara sem nenhuma lábia, sem português e com uma aba do Google Tradutor aberta sobreviveu a todos eles, você vai sobreviver ao seu próximo primeiro encontro.
+Este não é um manual, e não estou dizendo para você fazer o que eu fiz. É uma pilha de desastres amorosos e de viagem com algumas lições práticas misturadas. Se um cara sem nenhuma lábia, sem português e com uma aba do Google Tradutor aberta sobreviveu a todos eles, você vai sobreviver ao seu próximo primeiro encontro.
 
 Sei como esse tipo de livro pode soar. A imagem do tal do “passport bro” vem à mente. Sou um gringo num país onde isso ajuda/atrapalha, e estou dolorosamente ciente disso. Espero que as histórias mostrem que sou um homem bem-intencionado em busca de companhia numa terra estrangeira. Deixo você ser o juiz disso.
 

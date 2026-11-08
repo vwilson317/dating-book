@@ -7,6 +7,7 @@ import '../styles/global.css';
 import { SITE, instagramUrl } from '../site.config';
 import { LANGS, LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../i18n/ui';
 import { buy } from '../i18n/buy';
+import Support from '../components/Support.astro';
 
 interface Props {
   lang: Lang;
@@ -52,6 +53,8 @@ const nav = [
 ];
 const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
 const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/manifest.webmanifest`;
+const onDownloads = path.startsWith(localePath(lang, '/downloads/'));
+const showSupport = !/\/(buy|thanks)\/?$/.test(path);
 ---
 
 <!doctype html>
@@ -86,6 +89,10 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
           if (p.font === 'sans') d.dataset.font = 'sans';
           if (p.spacing === 'relaxed') d.dataset.spacing = 'relaxed';
         } catch (e) {}
+        // Same check as inAppBrowser() in analytics.ts. Set early so the simpler page never flashes.
+        if (/Instagram|FBAN|FBAV|FB_IAB|musical_ly|TikTok|BytedanceWebview/i.test(navigator.userAgent)) {
+          document.documentElement.dataset.inapp = '';
+        }
       })();
     </script>
     {
@@ -150,10 +157,14 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
   <body data-lang={lang}>
     <a class="skip" href="#main">{s.skip}</a>
 
-    <div class="inapp-banner" id="inapp-banner" hidden>
-      <p><strong>{s.inAppTitle}</strong> {s.inAppBody}</p>
-      <button type="button" class="icon-btn" data-dismiss="inapp-banner" aria-label={s.dismiss}>✕</button>
-    </div>
+    {
+      onDownloads && (
+        <div class="inapp-banner" id="inapp-banner" hidden>
+          <p><strong>{s.inAppTitle}</strong> {s.inAppBody}</p>
+          <button type="button" class="icon-btn" data-dismiss="inapp-banner" aria-label={s.dismiss}>✕</button>
+        </div>
+      )
+    }
 
     {
       otherLangs.map((l) => (
@@ -306,6 +317,8 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
       </ol>
       <form method="dialog"><button class="btn">{s.gotIt}</button></form>
     </dialog>
+
+    {showSupport && <Support lang={lang} />}
 
     <script type="application/json" id="lang-zones" set:html={JSON.stringify(Object.fromEntries(LANG_CODES.map((l) => [l, LANGS[l].timeZones])))} />
     {feedbackOn && <div id="wa-config" hidden data-number={SITE.whatsapp} data-name={SITE.authorFirstName} />}

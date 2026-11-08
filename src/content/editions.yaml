@@ -1,11 +1,25 @@
 # Full-book PDF downloads, newest first. `npm run release` adds to this automatically.
 # The entry with `featured: true` (per language) is promoted on that language's home page.
+- id: pt-early-reader-v2
+  lang: pt
+  title: Edição Antecipada (v2)
+  description: "Capítulos 0–17 em um só PDF. Novos ou revisados: 0, 9, 11, 12, 13, 14, 15, 16, 17."
+  date: 2026-11-08
+  file: /pdfs/pt/read-my-book-early-reader-v2.pdf
+  featured: true
 - id: pt-early-reader-v1
   lang: pt
   title: Edição Antecipada (v1)
   description: Capítulos 0–11 em um só PDF.
   date: 2026-11-04
   file: /pdfs/pt/read-my-book-early-reader-v1.pdf
+  featured: false
+- id: en-early-reader-v2
+  lang: en
+  title: Early Reader Edition (v2)
+  description: "Chapters 0–17 in one PDF. New or revised: 0, 9, 11, 12, 13, 14, 15, 16, 17."
+  date: 2026-11-08
+  file: /pdfs/en/read-my-book-early-reader-v2.pdf
   featured: true
 - id: en-early-reader-v1
   lang: en
@@ -13,4 +27,4 @@
   description: Chapters 0–11 in one PDF.
   date: 2026-11-04
   file: /pdfs/en/read-my-book-early-reader-v1.pdf
-  featured: true
+  featured: false

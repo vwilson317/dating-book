@@ -6,6 +6,10 @@ excerpt: No one said dating would be easy. That couldn't be more true when you'r
 published: 2026-11-04
 status: published
 versions:
+  - label: v2
+    date: 2026-11-08
+    file: /pdfs/en/chapter-00-v2.pdf
+    notes: "Revised: +5 / −1 words"
   - label: v1
     date: 2026-11-04
     file: /pdfs/en/chapter-00-v1.pdf
@@ -13,7 +17,7 @@ versions:
 
 No one said dating would be easy. That couldn't be more true when you're dating abroad and don't speak the language.
 
-This book is first and foremost an account of my personal lived experiences dating as a now 38-year-old man from the USA (if you say US you might get into an agreement you don't want to have). I've lived in Rio for almost three years and I don't speak Portuguese, and before that I spent several years as a digital nomad. My vocabulary is still "obrigado," "cerveja," and a smile that says, "Hello, I'm mostly harmless."
+This book is first and foremost an account of my personal lived experiences dating and traveling as a now 38-year-old man from the USA (if you say US you might get into an argument you don't want to have). I've lived in Rio for almost three years and I don't speak Portuguese, and before that I spent several years as a digital nomad. My vocabulary is still "obrigado," "cerveja," and a smile that says, "Hello, I'm mostly harmless."
 
 The first story that comes to mind is my first "date" with a PRO in Medellín. It ended with her berating me in English, in public, for an hour, as if we were married and she'd just found out I was sleeping with her mother. I spent the entire verbal assault trying to get her an Uber home. Looking back, I should have climbed out the bathroom window instead.
 
@@ -33,7 +37,7 @@ I'm also a hopeless romantic, and I have been since before I knew what dating wa
 
 That's been my love life in one question. Grand gestures, no plan for what comes after.
 
-This isn't a manual, and I'm not telling you to do what I did. It's a pile of dating disasters with a few practical lessons mixed in. If a guy with no game, no Portuguese, and a Google Translate survived every one of them, you'll survive your next first date.
+This isn't a manual, and I'm not telling you to do what I did. It's a pile of dating and travel disasters with a few practical lessons mixed in. If a guy with no game, no Portuguese, and a Google Translate survived every one of them, you'll survive your next first date.
 
 I know what this kind of book can sound like. The passport bro image comes to mind. I'm a gringo in a country where that helps/hurts, and I'm painfully aware of it. Hopefully the stories show that I'm a well-intentioned man looking for companionship in a foreign land. I'll let you be the judge of that.
 

@@ -108,9 +108,9 @@ To replace a recording, overwrite the file and commit. Readers get the new one, 
 
 All of them include `chapter`, `lang`, `title`, `version`, `duration` and `listen_id`.
 
-## Selling the book (Stripe)
+## Contributions (Stripe)
 
-`/buy/` (and `/pt/buy/`) is a page where readers can pay for the book, $3.99 or more if they like. Use it as the link in ads. Everything stays free on the rest of the site; this is the "contribute" version. After paying, buyers land on `/thanks/`, which has the full-book PDF, every audiobook MP3, and a WhatsApp button to send the name they want in the acknowledgments. Until a Stripe link is set, the buy button and the footer link are hidden on the live site.
+`/buy/` (and `/pt/buy/`) is a page where readers can contribute $3.99 or more to help promote the book. The book itself is never charged for and stays free on the site. Use this page as the link in ads. After paying, buyers land on `/thanks/`, which has the full-book PDF, every audiobook MP3, and a WhatsApp button to send the name they want in the acknowledgments. Until a Stripe link is set, the buy button and the footer link are hidden on the live site.
 
 **Set it up (about 10 minutes, no code):**
 
@@ -130,7 +130,11 @@ Each payment shows the buyer's acknowledgment name (if they gave one) in Stripe.
 |---|---|---|
 | `buy_clicked` | Taps a buy button | `location` (hero/perks), `ref` |
 | `purchase_completed` | Lands on the thank-you page from Stripe (counted once per checkout) | `session_id` |
-| `buy_page_clicked`, `buy_read_free_clicked` | Footer "Buy the book" link / "Read it free" | |
+| `buy_page_clicked`, `buy_read_free_clicked` | Footer "Contribute" link / "Read it free" | |
+| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `chapters_read` |
+| `support_fab_hidden`, `support_fab_restored` | Reader hides or brings back the floating button | |
+
+The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same Stripe link and stay hidden on the live site until it is set. The prompt opens once after 3 finished chapters and once after every published chapter. Its text is under `support` in `src/i18n/buy.ts`.
 
 Funnel in PostHog: `$pageview` on `/buy/` → `buy_clicked` → `purchase_completed`, broken down by `$initial_utm_campaign`.
 
@@ -270,7 +274,7 @@ Add UTM tags so PostHog can show which posts drive traffic:
 - Bio: `https://YOURSITE/?utm_source=instagram&utm_medium=bio`
 - Story link sticker: `https://YOURSITE/chapters/the-slug/?utm_source=instagram&utm_medium=story&utm_campaign=ch4-launch`
 
-Instagram opens links in its own in-app browser. That browser can't install the app and handles downloads poorly, so the site shows those visitors a small banner telling them to "Open in browser."
+Instagram opens links in its own in-app browser. That browser can't install the app and handles downloads poorly, so visitors there get a simpler page: one "start reading" button and no download buttons on the home page or chapters. The "Open in browser" banner only appears on the Downloads page, where it matters.
 
 ## Deploying to Netlify
 

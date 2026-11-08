@@ -1,0 +1,96 @@
+---
+// Floating "Contribute" button and the full-screen contribution prompt.
+// The prompt opens from the button, after 3 finished chapters, and after every chapter
+// (see src/scripts/support.ts). Hidden on the live site until a Stripe link is set.
+import { SITE, instagramUrl } from '../site.config';
+import { LANGS, localePath, t, type Lang } from '../i18n/ui';
+import { buy, fillPrice } from '../i18n/buy';
+import { getPublishedChapters } from '../lib/content';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const s = t(lang);
+const b = buy[lang];
+const c = b.support;
+const stripe = SITE.support.stripe[lang];
+const total = (await getPublishedChapters(lang)).length;
+const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
+const variants = [
+  { id: 'three', ...c.three },
+  { id: 'finished', ...c.finished },
+  { id: 'manual', ...c.manual },
+];
+---
+
+{
+  (stripe || import.meta.env.DEV) && (
+    <>
+      <div class="support-fab" id="support-fab" hidden>
+        <button type="button" class="support-fab-open" data-support-open>
+          <span aria-hidden="true">☕</span> {c.fab}
+        </button>
+        <button type="button" class="support-fab-hide" data-support-hide aria-label={c.hide} title={c.hide}>
+          ✕
+        </button>
+        <button type="button" class="support-fab-show" data-support-show aria-label={c.show} title={c.show}>
+          <span aria-hidden="true">☕</span>
+        </button>
+      </div>
+
+      <dialog class="support-modal" id="support-modal" data-total={total}>
+        <button type="button" class="icon-btn support-modal-x" data-support-close aria-label={s.dismiss}>
+          ✕
+        </button>
+        <div class="support-modal-body">
+          {
+            variants.map((v) => (
+              <div data-variant={v.id} hidden>
+                <p class="eyebrow">{v.eyebrow}</p>
+                <h2 id={`support-title-${v.id}`}>{v.heading}</h2>
+                <p class="support-lede">{v.lede}</p>
+              </div>
+            ))
+          }
+          <p class="support-promise">{c.promise}</p>
+
+          <a
+            class="btn btn--primary support-cta"
+            href={stripe || '#stripe-link-not-set'}
+            data-stripe={stripe}
+            data-locale={LANGS[lang].locale}
+            data-track="buy_clicked"
+            data-prop-location="support_modal"
+          >
+            {fillPrice(c.cta, SITE.support.price[lang])}
+          </a>
+          <p class="muted small">
+            {SITE.support.payWhatYouWant && `${b.payMore} `}
+            {c.thanks}
+          </p>
+
+          <h3>{c.altTitle}</h3>
+          <div class="support-alts">
+            <button
+              type="button"
+              class="btn"
+              data-share={shareUrl}
+              data-share-title={`${s.bookTitle}: ${s.bookSubtitle}`}
+              data-copied={s.linkCopied}
+            >
+              {c.shareCta}
+            </button>
+            <a class="btn" href={instagramUrl} data-track="instagram_clicked" data-prop-location="support_modal" rel="me noopener">
+              {c.commentCta}
+            </a>
+          </div>
+
+          <button type="button" class="support-later" data-support-close>
+            {c.later}
+          </button>
+        </div>
+      </dialog>
+    </>
+  )
+}

@@ -5,6 +5,10 @@ excerpt: When my ex-wife and I separated, I took it very hard. People deal with 
 published: 2026-11-04
 status: published
 versions:
+  - label: v2
+    date: 2026-11-08
+    file: /pdfs/en/chapter-11-v2.pdf
+    notes: "Revised: +0 / −9 words"
   - label: v1
     date: 2026-11-04
     file: /pdfs/en/chapter-11-v1.pdf
@@ -26,7 +30,7 @@ The next morning I messaged the friend who introduced us and told him what had h
 
 Not having actually finished my "mission," I went back out on the hunt. This time at the beach. I was a little scared. I thought to myself the best way to avoid bringing home someone questionable is to see them in their bikini. Surprisingly, this is also harder than you'd imagine, since your senses are impaired.
 
-That day I spent doing my favorite things, relaxing on the beach. But today I was exceptionally lonely and getting drunker than I usually would. I was buying beers from the barraca ten at a time. This was before I realized you could simply return the ones you didn't drink. Once I felt myself getting a bit too drunk to be in public, I looked for someone to give my beers to. Unfortunately, I had just ordered ten, and I really shouldn't have kept drinking, especially alone. (For the record, I gave most of them away.) I looked around and saw a beautiful woman alone. I had seen her before but couldn't be bothered to Google Translate-flirt with anyone that day.
+That day I spent doing my favorite things, relaxing on the beach. But today I was exceptionally lonely and getting drunker than I usually would. I was buying beers from the barraca ten at a time. This was before I realized you could simply return the ones you didn't drink. Once I felt myself getting a bit too drunk to be in public, I looked for someone to give my beers to. Unfortunately, I had just ordered ten, and I really shouldn't have kept drinking, especially alone. I looked around and saw a beautiful woman alone. I had seen her before but couldn't be bothered to Google Translate-flirt with anyone that day.
 
 I approached her with the giant bucket of Heineken. I asked if she spoke English, and to my surprise she responded in perfect English. I lit up. I had found my drinking partner. At this point my goal was only to give her the drinks and leave. I said, "Want ten beers!?" She said yes and laughed. I put the bucket down, then went to collect my things to leave.
 

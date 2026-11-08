@@ -1,27 +1,33 @@
 ---
 number: 9
-title: Shirt As An Umbrella
-excerpt: If you've made it this far, I'm truly grateful you're enjoying the read. I'm starting to realize that if this becomes a hit, any future dates will have an…
+title: Bros Before Hoes
+excerpt: Remember when I told you I'm not much of a nighttime partier? I've known that about myself for a long time, and it still didn't stop me from trying. I think as…
 published: 2026-11-04
 status: published
 versions:
+  - label: v2
+    date: 2026-11-08
+    file: /pdfs/en/chapter-09-v2.pdf
+    notes: "Revised: +749 / −502 words"
   - label: v1
     date: 2026-11-04
     file: /pdfs/en/chapter-09-v1.pdf
 ---
 
-If you've made it this far, I'm truly grateful you're enjoying the read. I'm starting to realize that if this becomes a hit, any future dates will have an actual book on my dating history. I've had exes read my journal in the past. That was with my terrible handwriting. I joked to myself that if someone is willing to read that, they must really care about me.
+Remember when I told you I'm not much of a nighttime partier? I've known that about myself for a long time, and it still didn't stop me from trying. I think as men we're conditioned to believe the best place to meet women is a night out drinking with the boys. That might work for some people. It never worked for me. Most of my attempts ended with my friends and me trading wild stories about what happened the night before, almost always without any women.
 
-This chapter is for my future wife. If I decide to get married. Or my next serious relationship. I'm hoping that nine chapters in, you've gotten a pretty holistic view of who I am/was at the time of writing this. One of my inspirations for this book is Modern Romance by Aziz Ansari. I've always enjoyed his comedy, so when a friend recommended I read his book, I jumped at the opportunity to hear him narrate it. Any excuse to be lazy and avoid actual reading.
+Two besties were with me on most of these nights, \[M\] and \[H\]. \[M\] is my Ecuadorian friend. \[H\] and I share a birthday, a year apart, and I'm the oldest. I consider both of them my brothers. I've lived with both, and they're my ride-or-die homies. I'll tell one story about \[M\] and leave \[H\]'s to \[H\], because they're better told by him. They both deserve a place in this book.
 
-What I enjoyed about his book is that it described how men in my generation feel when it comes to dating. I highly recommend getting a copy. It also made me sad, because most of the content made me feel sad about the current state of things. I'd love for phone calls to become a thing again, just to humanize the person you're speaking with.
+\[M\] is one of my oldest friends. We went to college together, but we didn't get really close until we moved in together after uni. We've had countless adventures, but the ones that make me smile most are from our first trip to Ecuador.
 
-I've noticed a lot of the problems I've had growing a relationship slowly could have been solved with a phone call. It's much easier to establish a pattern of only using written words to communicate. While I think this is great, it sets a bad pattern. The other person also has the same autonomy to be unreachable. But when you're getting to know someone, it should be all-encompassing if possible: in person, FaceTime, phone calls, voice notes. The more data that isn't written, the more useful. This is doubly true for me.
+As I mentioned earlier, that was one of the first group trips with the Carrollton Crew. Besides the countless wild nights out, what made it memorable was getting to see the country my best friend is from. We met his family. His cousin \[F\] was basically our tour guide the whole trip, taking us places most tourists never go. He even acted as my personal flirting translator when \[M\] got tired of his translating duties.
 
-One of my best friends once quoted that the best relationships are when both people are interdependent. I hope I'm remembering that right. Each has their own life outside of the other, but there's a healthy overlap of shared experiences.
+I want to take a moment to say how grateful I am to have \[M\] as a friend. He has always been loyal, even at my lowest moment. After my manic episode in Japan, our relationship changed. We aren't close right now, and we haven't spoken in almost a year. \[M\], I'm sending you this chapter hoping we can repair things. I honestly don't know everything you're upset about. When we fell out, I blocked you because I didn't want to hear it. I'm sorry for that, and for whatever part I played. I'd like to hear it now. The way I see it, brothers fight, and they always find their way back to each other. Okay, writing that line made me feel a little gay. (I say it that way because men always joke like that when we express love for another man.) It's definitely a defense mechanism, but I digress.
 
-What does the ideal partner look like for me? Very much a dating profile question. Let's see if all my years of filling these out were helpful. It's a seemingly difficult question, but for me I think it's simple. I only need healthy communication and empathy for each other. I think everything else can be improved. Here's what I refuse to treat as deal-breakers.
+Anyyyy who, one night in Ecuador we went out drinking in Montañita, a small beach town. If you haven't been, I highly recommend it. We were all out trying to meet women. Like I said, that usually meant hanging out with each other and striking out with anyone we had the courage to approach. Ecuador is also where I fell in love with South American women. I forget the details, but I had \[M\] chat up a girl I thought was interested. I hadn't exchanged a single word with her, and she was veeeery interested. I thought, wow, that was too easy. We kept dancing together. Later we saw a woman I'd talked to earlier that day. I said hello and carried on with the girl I'd met that night. Some time passed, and my friends were talking with the other girl and her friends. We were basically one big group by then. Forgive me for not remembering the exact point of escalation, but the two girls started fighting over me. I couldn't believe it. How many nights had we gone out with no prospects, and here were two beautiful women fighting over who got to take me home? I remember stepping out of the situation and telling my friends, "To the victor go the spoils." I took home the winner.
 
-I strongly reject any of the superficial standards I've heard guys my age say. She must be young, fit, no kids, with a good-paying job. Sure, all that would be good. But time changes all. One day these things might not be true. Are you going to pull a Leonardo DiCaprio and drop them before they turn a certain age?
+A quick aside to thank my friend \[H\]. One memory will always stick with me. After my Japan episode, \[H\] and I were supposed to be roommates in Medellín. I was afraid the stories our mutual friends told about how bad it had been would change his mind. \[H\]'s heart is huge. I often say he's nicer than me, and that's coming from someone who once got a sex worker a ride home after she verbally assaulted me.
 
-So, future wife, I actually don't like calling you that. Let's call you my muse. To my muse, this chapter is all about you. If you mention petty theft, or how your heart broke for me while you read certain parts, I already know you care more than most before even getting to truly know me. If you really want to steal my heart, you'll ask me about my date where I took off my shirt to use it as an umbrella. I really want to become the man who puts jackets over puddles.
+When we talked about the arrangement, I fully expected him to back out. He basically said he wasn't worried and that shit happens. His seeming indifference came as a shock. I'll always remember that conversation. I've never felt such certain acceptance and comfort.
+
+Okay, that's enough lovey-dovey feelings. I'll end the chapter on this note: if you ever get the chance to hang out with \[H\] and me on our birthdays, be sure to ask him about the girl who turned lesbian hours after meeting him.

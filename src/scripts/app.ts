@@ -2,11 +2,13 @@ import { initAnalytics, track, isStandalone, inAppBrowser } from './analytics';
 import { initSettings } from './settings';
 import { initProgressUI } from './progress';
 import { initFeedback } from './feedback';
+import { initSupport } from './support';
 
 initAnalytics();
 initSettings();
 initProgressUI();
 initFeedback();
+initSupport();
 
 // ---- Click tracking -------------------------------------------------------
 // Any element with data-track="event_name" sends that event when clicked.
@@ -24,19 +26,41 @@ document.addEventListener('click', (e) => {
 });
 
 // ---- Share buttons --------------------------------------------------------
+// Clipboard access is unreliable in in-app browsers, so fall back to the older copy command.
+async function copyText(text: string, near: Element): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const field = document.createElement('textarea');
+    field.value = text;
+    field.setAttribute('readonly', '');
+    field.style.position = 'fixed';
+    field.style.opacity = '0';
+    near.after(field); // beside the button, because the page behind an open dialog can't be selected
+    field.select();
+    const ok = document.execCommand('copy');
+    field.remove();
+    return ok;
+  }
+}
+
 document.querySelectorAll<HTMLButtonElement>('[data-share]').forEach((btn) => {
   btn.addEventListener('click', async () => {
     const data = { title: btn.dataset.shareTitle || document.title, url: btn.dataset.share || location.href };
+    // The native share sheet is missing or fails inside Instagram's browser, so copy the link there.
+    const useSheet = !!navigator.share && !inAppBrowser();
     try {
-      if (navigator.share) {
+      if (useSheet) {
         await navigator.share(data);
       } else {
-        await navigator.clipboard.writeText(data.url);
+        const copied = await copyText(data.url, btn);
         const old = btn.textContent;
-        btn.textContent = btn.dataset.copied || 'Link copied';
-        setTimeout(() => (btn.textContent = old), 2000);
+        btn.textContent = copied ? btn.dataset.copied || 'Link copied' : data.url; // show it to copy by hand
+        setTimeout(() => (btn.textContent = old), copied ? 2000 : 8000);
+        if (!copied) return;
       }
-      track('shared', { url: data.url, method: navigator.share ? 'native' : 'clipboard' });
+      track('shared', { url: data.url, method: useSheet ? 'native' : 'clipboard' });
     } catch {
       /* user cancelled */
     }

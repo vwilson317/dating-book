@@ -5,6 +5,10 @@ excerpt: Quando minha ex-esposa e eu nos separamos, eu levei muito a sério. As 
 published: 2026-11-04
 status: published
 versions:
+  - label: v2
+    date: 2026-11-08
+    file: /pdfs/pt/chapter-11-v2.pdf
+    notes: "Revisado: +0 / −7 palavras"
   - label: v1
     date: 2026-11-04
     file: /pdfs/pt/chapter-11-v1.pdf
@@ -28,7 +32,7 @@ Sem ter realmente concluído minha “missão”, voltei para a caça. Desta vez
 
 Aquele dia passei fazendo as minhas coisas favoritas, relaxando na praia. Mas hoje eu estava excepcionalmente solitário e bebendo mais do que de costume. Eu comprava cervejas na barraca de dez em dez. Isso foi antes de eu descobrir que dava para simplesmente devolver as que não bebi.
 
-Quando senti que estava bêbado demais para ficar em público, procurei alguém para dar as minhas cervejas. Infelizmente, eu tinha acabado de pedir dez, e realmente não devia ter continuado a beber, ainda mais sozinho. (Para constar, dei a maior parte delas.) Olhei em volta e vi uma mulher linda sozinha. Eu já a tinha visto antes, mas naquele dia não estava a fim de paquerar com Google Tradutor.
+Quando senti que estava bêbado demais para ficar em público, procurei alguém para dar as minhas cervejas. Infelizmente, eu tinha acabado de pedir dez, e realmente não devia ter continuado a beber, ainda mais sozinho. Olhei em volta e vi uma mulher linda sozinha. Eu já a tinha visto antes, mas naquele dia não estava a fim de paquerar com Google Tradutor.
 
 Aproximei-me dela com o balde gigante de Heineken. Perguntei se ela falava inglês e, para minha surpresa, ela respondeu em inglês perfeito. Eu me animei. Tinha encontrado minha parceira de bebida. Nessa hora, meu objetivo era só entregar as cervejas e ir embora. Eu disse: “Quer dez cervejas!?” Ela disse que sim e riu. Coloquei o balde no chão e fui buscar minhas coisas para ir embora.
 

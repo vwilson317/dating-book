@@ -1,6 +1,6 @@
 ---
-// /buy/ and /pt/buy/: pay for the book (Stripe Payment Link). The link to use in ads.
-// Everything is still free on the site; this is the "contribute" version.
+// /buy/ and /pt/buy/: contribute to promoting the book (Stripe Payment Link). The link to use in ads.
+// The book itself is always free; the URL stays /buy/ so existing links keep working.
 import Base from '../../layouts/Base.astro';
 import { SITE } from '../../site.config';
 import { getPublishedChapters, chapterAudio } from '../../lib/content';
@@ -107,22 +107,4 @@ const perks = b.perks.filter((perk) => !('needsAudio' in perk) || hasAudio);
       ))
     }
   </section>
-
-  <script>
-    // Tag each checkout with where the buyer came from (e.g. the Instagram ad campaign), so it shows
-    // up in Stripe as the payment's client_reference_id, and open checkout in the page's language.
-    const params = new URLSearchParams(location.search);
-    const source = [params.get('utm_source'), params.get('utm_campaign') || params.get('utm_content')]
-      .filter(Boolean)
-      .join('_');
-    const ref = `${document.documentElement.lang}_${source || 'direct'}`.replace(/[^\w-]/g, '-').slice(0, 200);
-    document.querySelectorAll<HTMLAnchorElement>('a[data-stripe]').forEach((a) => {
-      if (!a.dataset.stripe) return;
-      const url = new URL(a.dataset.stripe);
-      url.searchParams.set('client_reference_id', ref);
-      url.searchParams.set('locale', a.dataset.locale === 'pt-BR' ? 'pt-BR' : 'en');
-      a.href = url.toString();
-      a.dataset.propRef = ref;
-    });
-  </script>
 </Base>

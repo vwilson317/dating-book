@@ -89,6 +89,7 @@ export function initReading(article: HTMLElement, prose: HTMLElement, end: HTMLE
     if (!started) start();
     const secs = activeSeconds();
     saveProgress(base.lang, { ...position(), pct: 100, finished: true });
+    document.dispatchEvent(new CustomEvent('chapter:finished'));
     track('chapter_finished', {
       ...base,
       active_seconds: secs,
