@@ -61,7 +61,8 @@ if (inApp && !sessionStorage.getItem('dismissed:inapp-banner')) {
 }
 
 // ---- Language -----------------------------------------------------------
-// The home page picks the language from the visitor's location (inline script in Base.astro).
+// Home pages follow the language the reader last picked, else their location (inline script in
+// Base.astro). That's also what makes the installed app open in the language they switched to.
 // Elsewhere we never redirect (shared links must open what was shared), but we offer the
 // other language when the visitor's location or phone language points to it.
 // Tapping a language, or dismissing the offer, is remembered and wins from then on.
@@ -79,7 +80,7 @@ const auto = sessionStorage.getItem('lang-auto');
 if (auto) {
   sessionStorage.removeItem('lang-auto');
   try {
-    track('language_auto_selected', { ...JSON.parse(auto), reason: 'location' });
+    track('language_auto_selected', { reason: 'location', ...JSON.parse(auto) });
   } catch {
     /* ignore */
   }

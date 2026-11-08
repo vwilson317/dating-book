@@ -89,22 +89,30 @@ const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/man
       })();
     </script>
     {
-      lang === DEFAULT_LANG && path === '/' && (
-        <script is:inline define:vars={{ zones: Object.fromEntries(LANG_CODES.map((l) => [l, LANGS[l].timeZones])), homes: Object.fromEntries(LANG_CODES.map((l) => [l, localePath(l, '/')])) }}>
-          // First visit to the home page (the Instagram bio link): pick the language from the
-          // visitor's location, guessed from their device time zone. A choice they made wins,
-          // and links inside the site or to a specific chapter are never redirected.
+      path.replace(/\/?$/, '/') === localePath(lang, '/') && (
+        <script is:inline define:vars={{ pageLang: lang, isDefault: lang === DEFAULT_LANG, zones: Object.fromEntries(LANG_CODES.map((l) => [l, LANGS[l].timeZones])), homes: Object.fromEntries(LANG_CODES.map((l) => [l, localePath(l, '/')])) }}>
+          // Arriving at a home page from outside the site (the Instagram bio link, or opening the
+          // installed app, which always starts on the home page it was installed from):
+          //   1. the language the reader last picked with the EN/PT switch wins;
+          //   2. otherwise, on the English home page, guess from the device time zone.
+          // Links inside the site and links to a specific chapter are never redirected.
           try {
-            var pref = localStorage.getItem('lang-pref');
             var internal = document.referrer && new URL(document.referrer).origin === location.origin;
-            if (!pref && !internal) {
+            if (!internal) {
+              var pref = localStorage.getItem('lang-pref');
               var tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-              for (var l in zones) {
-                if (zones[l].indexOf(tz) !== -1 && homes[l] !== '/') {
-                  sessionStorage.setItem('lang-auto', JSON.stringify({ to: l, tz: tz }));
-                  location.replace(homes[l] + location.search + location.hash);
-                  break;
-                }
+              var to = null;
+              var reason = 'preference';
+              if (pref && homes[pref]) {
+                to = pref;
+              } else if (isDefault) {
+                reason = 'location';
+                for (var l in zones) if (zones[l].indexOf(tz) !== -1) to = l;
+              }
+              if (to && to !== pageLang) {
+                var standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+                sessionStorage.setItem('lang-auto', JSON.stringify({ to: to, from: pageLang, tz: tz, reason: reason, app: standalone }));
+                location.replace(homes[to] + location.search + location.hash);
               }
             }
           } catch (e) {}
