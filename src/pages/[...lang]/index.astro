@@ -1,91 +1,91 @@
 ---
+// The landing page, built for readers arriving from Instagram: contribute button first, then every
+// chapter readable in place. The chapter pages keep the full experience (audio, PDFs, reading position).
+import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import ChapterCard from '../../components/ChapterCard.astro';
 import QuizPromo from '../../components/QuizPromo.astro';
 import { SITE, instagramUrl } from '../../site.config';
-import { getVisibleChapters, getEditions, chapterUrl, chapterLabel, formatDate } from '../../lib/content';
-import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
+import { getVisibleChapters, chapterUrl, chapterLabel, chapterAudio, formatDate, readingMinutes, wordCount } from '../../lib/content';
+import { langPaths, LANGS, t, type Lang } from '../../i18n/ui';
 import { homeSchema } from '../../lib/seo';
+import { buy, fillPrice } from '../../i18n/buy';
 
 export const getStaticPaths = langPaths;
 
 const lang = Astro.props.lang as Lang;
 const s = t(lang);
-const chapters = await getVisibleChapters(lang);
-const published = chapters.filter((c) => c.data.status === 'published');
-const first = published[0];
-const latest = [...published].sort((a, b) => b.data.published.getTime() - a.data.published.getTime())[0];
-const editions = await getEditions(lang);
-const featured = editions.find((e) => e.data.featured) ?? editions[0];
+const stripe = SITE.support.stripe[lang];
+const chapters = await Promise.all(
+  (await getVisibleChapters(lang)).map(async (c) => ({
+    c,
+    Content: c.data.status === 'published' ? (await render(c)).Content : null,
+  })),
+);
 ---
 
 <Base lang={lang} jsonLd={homeSchema(lang, Astro.site)}>
-  <section class="hero">
-    <p class="eyebrow">{s.heroEyebrow}</p>
-    <h1 class="hero-title">
+  <header class="landing-head">
+    <h1 class="landing-title">
       {s.bookTitle}
       <span class="hero-sub">{s.bookSubtitle}</span>
     </h1>
-    <p class="hero-lede">{s.heroLede}</p>
-    <div class="hero-ctas">
-      {
-        first && (
-          <a
-            class="btn btn--primary"
-            href={chapterUrl(first)}
-            data-track="cta_clicked"
-            data-prop-cta="start_reading"
-            data-continue={s.continueChapter}
-          >
-            {s.startWith(chapterLabel(first))}
-          </a>
-        )
-      }
-      {
-        featured && (
-          <a
-            class="btn"
-            href={featured.data.file}
-            download
-            data-track="pdf_downloaded"
-            data-prop-kind="edition"
-            data-prop-version={featured.id}
-            data-prop-file={featured.data.file}
-          >
-            ↓ {featured.data.title}
-          </a>
-        )
-      }
-    </div>
-    <div class="stamp" aria-hidden="true">
-      <span>{s.stampTop}</span><strong>{s.stampMid}</strong><span>{new Date().getFullYear()}</span>
-    </div>
-  </section>
+    <p class="landing-lede">{s.landingLede}</p>
+  </header>
 
   {
-    latest && latest !== first && (
-      <section class="latest">
-        <p class="eyebrow">
-          {s.newestChapter} · {formatDate(latest.data.published, lang)}
-        </p>
-        <h2>
-          <a href={chapterUrl(latest)}>
-            {latest.data.label ? `${latest.data.label}: ` : `${latest.data.number}. `}{latest.data.title} →
-          </a>
-        </h2>
-        <p>{latest.data.excerpt}</p>
+    (stripe || import.meta.env.DEV) && (
+      <section class="landing-cta" data-support-cta>
+        <a
+          class="btn btn--primary"
+          href={stripe || '#stripe-link-not-set'}
+          data-stripe={stripe}
+          data-locale={LANGS[lang].locale}
+          data-track="buy_clicked"
+          data-prop-location="landing_top"
+        >
+          {fillPrice(buy[lang].support.cta, SITE.support.price[lang])}
+        </a>
+        <p>{s.landingCtaNote}</p>
       </section>
     )
   }
 
-  <section>
-    <div class="section-head">
-      <h2>{s.chaptersTitle}</h2>
-      <a href={localePath(lang, '/chapters/')}>{s.allChapters}</a>
-    </div>
-    <div class="card-grid">
-      {chapters.map((c) => <ChapterCard chapter={c} />)}
-    </div>
+  <section class="landing-chapters" aria-labelledby="chapters-title">
+    <h2 id="chapters-title">{s.chaptersTitle}</h2>
+    {
+      chapters.map(({ c, Content }) => {
+        const label = chapterLabel(c);
+        const head = (
+          <span class="acc-head">
+            <span class="eyebrow">{label}</span>
+            <span class="acc-title">{c.data.title}</span>
+            <span class="acc-meta">
+              {Content ? s.minRead(readingMinutes(c.body)) : s.comingOn(formatDate(c.data.published, lang))}
+              {Content && <span class="card-progress" data-progress={c.data.number} data-read-label={s.readBadge} data-pct-label={s.pctRead} hidden />}
+            </span>
+          </span>
+        );
+        return Content ? (
+          <details class="acc" data-acc data-chapter={c.data.number} data-title={c.data.title} data-label={label} data-url={chapterUrl(c)} data-words={wordCount(c.body)}>
+            <summary>
+              {head}
+              <span class="acc-chevron" aria-hidden="true" />
+            </summary>
+            <div class="acc-body">
+              <a class="btn btn--ghost acc-page" href={chapterUrl(c)} data-track="landing_chapter_page_clicked" data-prop-chapter={String(c.data.number)} data-prop-audio={String(!!chapterAudio(c))}>
+                {s.betterReading}
+              </a>
+              <div class="prose">
+                <Content />
+              </div>
+              <div data-acc-end />
+            </div>
+          </details>
+        ) : (
+          <div class="acc acc--soon">{head}</div>
+        );
+      })
+    }
   </section>
 
   <section class="quiz-promo-wrap">
@@ -99,4 +99,10 @@ const featured = editions.find((e) => e.data.featured) ?? editions[0];
       {s.follow(SITE.instagram)}
     </a>
   </section>
+
+  <script>
+    import { initLanding } from '../../scripts/landing';
+
+    initLanding();
+  </script>
 </Base>

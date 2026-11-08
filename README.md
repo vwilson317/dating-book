@@ -274,7 +274,7 @@ Add UTM tags so PostHog can show which posts drive traffic:
 - Bio: `https://YOURSITE/?utm_source=instagram&utm_medium=bio`
 - Story link sticker: `https://YOURSITE/chapters/the-slug/?utm_source=instagram&utm_medium=story&utm_campaign=ch4-launch`
 
-Instagram opens links in its own in-app browser. That browser can't install the app and handles downloads poorly, so visitors there get a simpler page: one "start reading" button and no download buttons on the home page or chapters. The "Open in browser" banner only appears on the Downloads page, where it matters.
+Instagram opens links in its own in-app browser. That browser can't install the app and handles downloads poorly, so the home page is built for it: a contribute button at the top, then every chapter readable in place in an accordion, with a button to each chapter page for audio and the full reading experience. Visitors in those apps also see no download buttons on chapter pages. The "Open in browser" banner only appears on the Downloads page, where it matters.
 
 ## Deploying to Netlify
 

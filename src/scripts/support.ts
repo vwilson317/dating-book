@@ -54,6 +54,10 @@ function tagCheckoutLinks() {
 export function initSupport() {
   tagCheckoutLinks();
 
+  if (read('supporter')) {
+    document.querySelectorAll<HTMLElement>('[data-support-cta]').forEach((el) => (el.hidden = true));
+  }
+
   const modal = document.getElementById('support-modal') as HTMLDialogElement | null;
   const fab = document.getElementById('support-fab');
   if (!modal || !fab || read('supporter')) return;
