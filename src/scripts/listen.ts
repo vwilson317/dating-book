@@ -28,7 +28,6 @@ interface Data {
   tracks: Track[];
 }
 
-const SPEEDS = [1, 1.25, 1.5, 1.75, 2, 0.8];
 const posKey = (lang: string, n: number) => `listen:${lang}:${n}`;
 const store = {
   get<T>(k: string, fallback: T): T {
@@ -57,7 +56,7 @@ export function initListen(root: HTMLElement, mini: HTMLElement) {
   const audio = root.querySelector('audio')!;
   const $ = <T extends Element = HTMLElement>(sel: string, el: Element = root) => el.querySelector<T>(sel)!;
   const seek = $<HTMLInputElement>('[data-seek]');
-  const speedBtn = $<HTMLButtonElement>('[data-speed]');
+  const speedBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-speed]')];
   const autoNext = $<HTMLInputElement>('[data-autonext]');
   const sub = $('[data-sub]');
   const now = $('[data-now]');
@@ -102,15 +101,19 @@ export function initListen(root: HTMLElement, mini: HTMLElement) {
   const setSpeed = (rate: number) => {
     audio.playbackRate = rate;
     audio.defaultPlaybackRate = rate;
-    speedBtn.textContent = `${rate}×`;
+    speedBtns.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.speed) === rate)));
   };
-  setSpeed(store.get('listen:speed', 1));
-  speedBtn.addEventListener('click', () => {
-    const rate = SPEEDS[(SPEEDS.indexOf(audio.playbackRate) + 1) % SPEEDS.length] ?? 1;
-    setSpeed(rate);
-    store.set('listen:speed', rate);
-    track('audio_speed_changed', { ...base(), speed: rate });
-  });
+  const savedSpeed = store.get('listen:speed', 1);
+  // A saved speed that's no longer offered would leave no button highlighted.
+  setSpeed(speedBtns.some((b) => Number(b.dataset.speed) === savedSpeed) ? savedSpeed : 1);
+  speedBtns.forEach((b) =>
+    b.addEventListener('click', () => {
+      const rate = Number(b.dataset.speed);
+      setSpeed(rate);
+      store.set('listen:speed', rate);
+      track('audio_speed_changed', { ...base(), speed: rate });
+    }),
+  );
   autoNext.checked = store.get('listen:autonext', true);
   autoNext.addEventListener('change', () => store.set('listen:autonext', autoNext.checked));
 

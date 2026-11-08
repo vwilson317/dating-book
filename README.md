@@ -132,13 +132,13 @@ Each payment shows the contributor's tier, acknowledgment name and contact detai
 
 | Event | When | Properties |
 |---|---|---|
-| `buy_clicked` | Taps a contribute button | `location` (hero/support_modal), `tier` (name/instagram/story), `price`, `prompt` (three/finished/manual, prompt only), `ref` |
+| `buy_clicked` | Taps a contribute button | `location` (hero/support_modal/landing_top), `tier` (name/instagram/story), `price`, `prompt` (three/finished/manual, prompt only), `ref` |
 | `purchase_completed` | Lands on the thank-you page from Stripe (counted once per checkout) | `session_id`, `tier` |
 | `buy_page_clicked`, `buy_read_free_clicked` | Footer "Contribute" link / "Read it free" | |
-| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `from` (automatic/fab/landing_top), `chapters_read` |
+| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `from` (automatic/fab), `chapters_read` |
 | `support_fab_hidden`, `support_fab_restored` | Reader hides or brings back the floating button | |
 
-The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same checkout and stay hidden on the live site until `PUBLIC_CHECKOUT_ENABLED=true`. The contribute button at the top of the home page opens it too. The prompt opens once after 3 finished chapters and once after every published chapter. Its text is under `support` in `src/i18n/buy.ts`.
+The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same checkout and stay hidden on the live site until `PUBLIC_CHECKOUT_ENABLED=true`. The amount buttons at the top of the home page skip the prompt and go straight to checkout. The prompt opens once after 3 finished chapters and once after every published chapter. Its text is under `support` in `src/i18n/buy.ts`.
 
 Funnel in PostHog: `$pageview` on `/buy/` → `buy_clicked` → `purchase_completed`, broken down by `$initial_utm_campaign`.
 

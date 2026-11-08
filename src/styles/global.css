@@ -1154,9 +1154,35 @@ body {
   display: inline-flex;
   align-items: center;
 }
+.listen-speeds {
+  margin-top: 0.75rem;
+}
+.listen-speeds-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font: 600 0.75rem var(--sans);
+  color: var(--muted);
+}
+.listen-speeds-options {
+  display: flex;
+  gap: 0.2rem;
+}
 .listen-speed {
-  min-width: 3.5rem;
-  justify-content: center;
+  flex: 1 1 auto;
+  min-height: 2.25rem;
+  padding: 0.3rem 2px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: 600 clamp(0.66rem, 3.4vw, 0.8rem) var(--sans);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.listen-speed[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
 }
 .listen-dl {
   margin-left: auto;
@@ -2089,6 +2115,33 @@ html:has(.support-modal[open]) {
 .landing-cta .btn {
   width: 100%;
   box-sizing: border-box;
+}
+.landing-cta-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-family: var(--sans);
+  font-weight: 700;
+  text-align: center;
+}
+.landing-cta-amounts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.landing-cta-amounts .btn {
+  height: 100%;
+  padding-inline: 0.4rem;
+}
+.landing-cta-amount {
+  display: block;
+  white-space: nowrap;
+}
+.landing-cta-perk {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
 }
 .landing-cta p {
   margin: 0.6rem 0 0;

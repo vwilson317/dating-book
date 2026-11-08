@@ -80,7 +80,8 @@ export const buy = {
         lede: 'No paywall and no signup. Just a gringo asking nicely.',
       },
       promise: "I will never charge for the book itself. If you contribute, the money goes to promoting it, so it reaches more people who deserve to laugh at my bad decisions.",
-      cta: "Contribute from {price}",
+      cta: "Contribute",
+      amountNotes: { name: 'Name in book', instagram: '+ Instagram story', story: '+ Shot at next edition' },
       tiers: {
         name: { title: "Your name in the book", body: "Your name in the acknowledgments." },
         instagram: { title: 'Name + story on Instagram', body: 'Your name in the acknowledgments, plus your story shared on my Instagram.' },
@@ -165,7 +166,8 @@ export const buy = {
         lede: 'Sem paywall e sem cadastro. Só um gringo pedindo com educação.',
       },
       promise: 'Eu nunca vou cobrar pelo livro em si. Se você contribuir, o dinheiro vai para a divulgação, para ele chegar a mais gente que merece rir das minhas más decisões.',
-      cta: "Contribuir a partir de {price}",
+      cta: "Contribuir",
+      amountNotes: { name: 'Nome no livro', instagram: '+ História no Insta', story: '+ Chance na próxima edição' },
       tiers: {
         name: { title: "Seu nome no livro", body: "Seu nome nos agradecimentos." },
         instagram: { title: 'Nome + história no Instagram', body: 'Seu nome nos agradecimentos, mais a sua história compartilhada no meu Instagram.' },

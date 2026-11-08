@@ -21,6 +21,7 @@ const tracks = playlist.flatMap((c) => {
 });
 const meta = { lang, current: chapter.data.number, artist: SITE.author, album: s.bookTitle, artwork: '/icons/icon-512.png' };
 const fileName = audio?.file.split('?')[0].split('/').pop();
+const SPEEDS = [0.75, 0.9, 1, 1.25, 1.5, 1.75, 2];
 
 const playIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"/></svg>';
 const pauseIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
@@ -52,9 +53,17 @@ const pauseIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5"
         <span data-left>-{formatClock(audio.duration)}</span>
       </div>
 
+      <div class="listen-speeds" role="group" aria-labelledby="listen-speed-label">
+        <span class="listen-speeds-label" id="listen-speed-label">{s.speed}</span>
+        <div class="listen-speeds-options">
+          {SPEEDS.map((rate) => (
+            <button type="button" class="listen-speed" data-speed={rate} aria-pressed={rate === 1 ? 'true' : 'false'}>{rate}×</button>
+          ))}
+        </div>
+      </div>
+
       <div class="listen-tools">
         <button type="button" class="listen-tool" data-skip="-15" aria-label={s.back15}>↺ 15</button>
-        <button type="button" class="listen-tool listen-speed" data-speed aria-label={s.speed}>1×</button>
         <button type="button" class="listen-tool" data-skip="30" aria-label={s.fwd30}>30 ↻</button>
         <a
           class="listen-tool listen-dl"

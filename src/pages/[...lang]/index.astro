@@ -8,7 +8,7 @@ import { SITE, instagramUrl, supportTiers } from '../../site.config';
 import { getVisibleChapters, chapterUrl, chapterLabel, chapterAudio, formatDate, readingMinutes, wordCount } from '../../lib/content';
 import { langPaths, t, type Lang } from '../../i18n/ui';
 import { homeSchema } from '../../lib/seo';
-import { buy, fillPrice } from '../../i18n/buy';
+import { buy } from '../../i18n/buy';
 
 export const getStaticPaths = langPaths;
 
@@ -36,9 +36,27 @@ const chapters = await Promise.all(
   {
     tiers.length > 0 && (
       <section class="landing-cta" data-support-cta>
-        <button type="button" class="btn btn--primary" data-support-open="landing_top">
-          {fillPrice(buy[lang].support.cta, tiers[0].price[lang])}
-        </button>
+        <span class="landing-cta-label" id="landing-cta-label">{buy[lang].support.cta}</span>
+        <div class="landing-cta-amounts" role="group" aria-labelledby="landing-cta-label">
+          {tiers.map((tier) => (
+            <form action="/api/checkout" method="post" data-checkout>
+              <input type="hidden" name="tier" value={tier.id} />
+              <input type="hidden" name="lang" value={lang} />
+              <input type="hidden" name="ref" value="" />
+              <button
+                type="submit"
+                class="btn btn--primary"
+                data-track="buy_clicked"
+                data-prop-location="landing_top"
+                data-prop-tier={tier.id}
+                data-prop-price={tier.price[lang]}
+              >
+                <span class="landing-cta-amount">{tier.price[lang]}</span>
+                <span class="landing-cta-perk">{buy[lang].support.amountNotes[tier.id as keyof typeof buy.en.support.amountNotes]}</span>
+              </button>
+            </form>
+          ))}
+        </div>
         <p>{s.landingCtaNote}</p>
       </section>
     )
