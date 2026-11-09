@@ -2,6 +2,8 @@
 
 These items came from the Stitch mockups and aren't real yet. They carry a pink **PLACEHOLDER** label and appear only in dev and on Netlify previews. Production builds leave them out (`showPlaceholders` in `src/site.config.ts`).
 
+The Contribute page items are also switched off for now. Set `contributePlaceholders` to `true` in `src/site.config.ts` to show them again.
+
 Before making one real: replace the content, then remove its `<Placeholder>` wrapper.
 
 | Where | Placeholder | What it needs | File |

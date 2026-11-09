@@ -1,7 +1,7 @@
 ---
 // The contribution tiers. Each one posts to /api/checkout (netlify/functions/checkout.ts), which
 // sends the reader to Stripe. A form rather than a link, so nothing can open a checkout by prefetching.
-import { supportTiers } from '../site.config';
+import { contributePlaceholders, supportTiers } from '../site.config';
 import type { Lang } from '../i18n/ui';
 import { buy } from '../i18n/buy';
 import Placeholder from './Placeholder.astro';
@@ -47,13 +47,15 @@ const mockPerks: Record<string, string[]> = {
             </div>
             <h3 class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">{text[tier.id as keyof typeof text].title}</h3>
             <p class="font-body-md text-body-md text-on-surface-variant mt-space-sm">{text[tier.id as keyof typeof text].body}</p>
-            <Placeholder class="mt-space-md">
-              <ul class="flex flex-col gap-space-sm m-0 p-0 list-none font-body-sm text-body-sm">
-                {mockPerks[tier.id]?.map((perk) => (
-                  <li class="flex items-start gap-space-sm"><Icon name="check_circle" class="text-[18px] text-primary mt-0.5" /><span>{perk}</span></li>
-                ))}
-              </ul>
-            </Placeholder>
+            {contributePlaceholders && (
+              <Placeholder class="mt-space-md">
+                <ul class="flex flex-col gap-space-sm m-0 p-0 list-none font-body-sm text-body-sm">
+                  {mockPerks[tier.id]?.map((perk) => (
+                    <li class="flex items-start gap-space-sm"><Icon name="check_circle" class="text-[18px] text-primary mt-0.5" /><span>{perk}</span></li>
+                  ))}
+                </ul>
+              </Placeholder>
+            )}
           </div>
           <div class="pt-space-lg lg:pt-space-xl mt-auto">
             <button

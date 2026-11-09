@@ -19,10 +19,11 @@ export function initLanding() {
   const header = document.getElementById('site-header');
 
   // Tapping a chapter closes the others, which shifts the page,
-  // so jump to the new chapter's heading, just below the sticky header.
+  // so jump to the new chapter's heading, just below the sticky bars.
   const show = (acc: HTMLDetailsElement) => {
     accs.forEach((a) => (a.open = a === acc));
-    const top = acc.getBoundingClientRect().top + window.scrollY - (header?.offsetHeight ?? 0);
+    const strip = document.getElementById('now-strip');
+    const top = acc.getBoundingClientRect().top + window.scrollY - (header?.offsetHeight ?? 0) - (strip?.offsetHeight ?? 0);
     window.scrollTo({ top, behavior: 'instant' });
   };
   // Links like /#chapter-5 open that chapter

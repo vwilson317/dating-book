@@ -41,7 +41,9 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
           <span>{s.navChapters}</span>
         </a>
         <span class="text-outline-variant select-none">/</span>
-        <span class="font-label-md text-label-md text-primary font-bold truncate">{label}</span>
+        <span class="hidden sm:inline font-label-md text-label-md text-on-surface-variant shrink-0">{label}</span>
+        <span class="hidden sm:inline text-outline-variant select-none">/</span>
+        <span class="font-label-md text-label-md text-primary font-bold truncate">{title}</span>
         {place && <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-terracotta-accent font-label-sm text-label-sm">{place}</span>}
       </div>
       <div class="flex items-center gap-space-xs sm:gap-space-sm shrink-0">

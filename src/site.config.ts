@@ -29,6 +29,9 @@ export const instagramUrl = `https://instagram.com/${SITE.instagram}`;
 
 export const checkoutEnabled = import.meta.env.PUBLIC_CHECKOUT_ENABLED === 'true';
 
+/** Temporarily off. Set to true to show the testimonials and extra tier perks on the Contribute page again. */
+export const contributePlaceholders = false;
+
 /**
  * Mockup content from the Stitch redesign that isn't real yet (see PLACEHOLDERS.md).
  * Shown in dev and on Netlify previews only, so it can never reach the production site.

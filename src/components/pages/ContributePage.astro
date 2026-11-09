@@ -1,6 +1,6 @@
 ---
 // The Contribute page at /buy/, from stitch/contribute_support and stitch/mobile_contribute_support.
-import { SITE, checkoutEnabled, instagramUrl, supportTiers } from '../../site.config';
+import { SITE, checkoutEnabled, contributePlaceholders, instagramUrl, supportTiers } from '../../site.config';
 import { LANGS, localePath, t, type Lang } from '../../i18n/ui';
 import { buy, fillPrice } from '../../i18n/buy';
 import Placeholder from '../Placeholder.astro';
@@ -109,24 +109,28 @@ const mockQuotes = [
     </div>
   </section>
 
-  <Placeholder>
-    <section class="w-full py-space-lg">
-      <div class={wrap}>
-        <h2 class="text-center font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary tracking-tight mb-space-xl">Why readers keep supporting</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
-          {mockQuotes.map(([initials, name]) => (
-            <figure class="p-space-lg rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between gap-space-md">
-              <blockquote class="font-body-md text-body-md text-charcoal-ink italic">Made-up testimonial from the Stitch mockup. Replace with a real reader's words.</blockquote>
-              <figcaption class="flex items-center gap-space-sm">
-                <span class="w-9 h-9 rounded-full bg-surface-variant flex items-center justify-center text-primary font-label-md text-label-md">{initials}</span>
-                <span class="font-label-md text-label-md text-charcoal-ink">{name}</span>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </div>
-    </section>
-  </Placeholder>
+  {
+    contributePlaceholders && (
+      <Placeholder>
+        <section class="w-full py-space-lg">
+          <div class={wrap}>
+            <h2 class="text-center font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary tracking-tight mb-space-xl">Why readers keep supporting</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+              {mockQuotes.map(([initials, name]) => (
+                <figure class="p-space-lg rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between gap-space-md">
+                  <blockquote class="font-body-md text-body-md text-charcoal-ink italic">Made-up testimonial from the Stitch mockup. Replace with a real reader's words.</blockquote>
+                  <figcaption class="flex items-center gap-space-sm">
+                    <span class="w-9 h-9 rounded-full bg-surface-variant flex items-center justify-center text-primary font-label-md text-label-md">{initials}</span>
+                    <span class="font-label-md text-label-md text-charcoal-ink">{name}</span>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+      </Placeholder>
+    )
+  }
 
   <section class="w-full py-space-xl">
     <div class="max-w-3xl mx-auto px-margin-mobile md:px-margin">
