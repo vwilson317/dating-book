@@ -1,13 +1,16 @@
 ---
-import '@fontsource-variable/fraunces/wght.css';
-import '@fontsource-variable/fraunces/wght-italic.css';
+import '@fontsource-variable/plus-jakarta-sans/wght.css';
 import '@fontsource-variable/literata/wght.css';
 import '@fontsource-variable/literata/wght-italic.css';
 import '../styles/global.css';
-import { SITE, instagramUrl, supportTiers } from '../site.config';
+import '../styles/botanical.css';
+import '../styles/stitch.css';
+import { SITE, instagramUrl, showPlaceholders, supportTiers } from '../site.config';
 import { LANGS, LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../i18n/ui';
 import { buy } from '../i18n/buy';
 import Support from '../components/Support.astro';
+import Icon from '../components/home/Icon.astro';
+import { chapterUrl, getPublishedChapters } from '../lib/content';
 
 interface Props {
   lang: Lang;
@@ -23,11 +26,13 @@ interface Props {
   jsonLd?: object;
   /** Keep this page out of search results */
   noindex?: boolean;
+  /** Page is built directly from a Stitch export: full width, Tailwind reset applies */
+  stitch?: boolean;
   published?: Date;
   modified?: Date;
 }
 
-const { lang, title, description, image, type = 'website', untranslated = [], jsonLd, published, modified } = Astro.props;
+const { lang, title, description, image, type = 'website', untranslated = [], jsonLd, published, modified, stitch = false } = Astro.props;
 // Deploy previews and branch deploys on Netlify shouldn't compete with the real site in search
 const isProduction = !process.env.CONTEXT || process.env.CONTEXT === 'production';
 const noindex = Astro.props.noindex || !isProduction;
@@ -46,10 +51,31 @@ const alternates: Record<Lang, string> = Object.fromEntries(
 ) as Record<Lang, string>;
 const otherLangs = LANG_CODES.filter((l) => l !== lang);
 
+const tiers = supportTiers(lang);
+const homeHref = localePath(lang, '/');
+const chaptersHref = localePath(lang, '/chapters/');
+const buyHref = localePath(lang, '/buy/');
+const downloadsHref = localePath(lang, '/downloads/');
 const nav = [
-  { href: localePath(lang, '/chapters/'), label: s.navChapters },
-  { href: localePath(lang, '/downloads/'), label: s.navDownloads },
+  { href: homeHref, label: s.navHome },
+  { href: chaptersHref, label: s.navChapters },
+  ...(showPlaceholders ? [{ href: localePath(lang, '/about/'), label: s.navAbout }] : []),
+  ...(tiers.length > 0 ? [{ href: buyHref, label: buy[lang].title }] : []),
+  { href: downloadsHref, label: s.navDownloads },
   { href: localePath(lang, '/contact/'), label: s.navContact },
+];
+const normalized = path.replace(/\/?$/, '/');
+const isCurrent = (href: string) => (href === homeHref ? normalized === homeHref : path.startsWith(href));
+// Mobile tab bar. "Read" starts at chapter one and is pointed at the reader's current chapter by progress.ts.
+const firstChapter = (await getPublishedChapters(lang))[0];
+const onChapter = normalized.startsWith(chaptersHref) && normalized !== chaptersHref;
+const tabs = [
+  { href: homeHref, label: s.navHome, current: normalized === homeHref, icon: 'auto_stories' as const },
+  { href: chaptersHref, label: s.navChapters, current: normalized === chaptersHref, icon: 'format_list_bulleted' as const },
+  ...(firstChapter ? [{ href: chapterUrl(firstChapter), label: s.tabRead, current: onChapter, reader: true, icon: 'menu_book' as const }] : []),
+  tiers.length > 0
+    ? { href: buyHref, label: buy[lang].title, current: isCurrent(buyHref), icon: 'volunteer_activism' as const }
+    : { href: downloadsHref, label: s.navDownloads, current: isCurrent(downloadsHref), icon: 'download' as const },
 ];
 const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
 const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/manifest.webmanifest`;
@@ -77,14 +103,15 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
 
     <!-- PWA -->
     <link rel="manifest" href={manifest} />
-    <meta name="theme-color" content="#faf5ec" media="(prefers-color-scheme: light)" data-scheme="light" />
-    <meta name="theme-color" content="#17130f" media="(prefers-color-scheme: dark)" data-scheme="dark" />
+    <meta name="theme-color" content="#fcf9f8" media="(prefers-color-scheme: light)" data-scheme="light" />
+    <meta name="theme-color" content="#fcf9f8" media="(prefers-color-scheme: dark)" data-scheme="dark" />
     <script is:inline>
       // Apply saved reading settings before the page paints (see src/scripts/prefs.ts)
       (function () {
         try {
           var p = JSON.parse(localStorage.getItem('reading-prefs') || '{}'), d = document.documentElement;
-          if (p.theme && p.theme !== 'auto') d.dataset.theme = p.theme;
+          var theme = p.theme || 'light'; // the Stitch design is light; dark and auto are opt-in from the Aa panel
+          if (theme !== 'auto') d.dataset.theme = theme;
           if (p.size != null && p.size !== 1) d.dataset.size = p.size;
           if (p.font === 'sans') d.dataset.font = 'sans';
           if (p.spacing === 'relaxed') d.dataset.spacing = 'relaxed';
@@ -177,85 +204,113 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
       ))
     }
 
-    <header class="site-header">
-      <a href={localePath(lang, '/')} class="brand" aria-label={`${s.bookTitle} ${s.home}`}>
-        <span class="brand-mark" aria-hidden="true">RMB</span>
-        <span class="brand-name">{s.bookTitle}</span>
-      </a>
-      <nav aria-label="Main" class="site-nav">
-        {
-          nav.map((n) => (
-            <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>
-              {n.label}
-            </a>
-          ))
-        }
-        <button type="button" class="install-btn" id="install-btn" hidden>{s.getApp}</button>
-      </nav>
-      <div class="header-tools">
-        <span class="lang-switch" role="group" aria-label={s.languageLabel}>
+    <header id="site-header" class="st sticky top-0 z-20 bg-background/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(26,26,26,0.04)] pt-[env(safe-area-inset-top)] text-on-surface">
+      <div class="h-16 lg:h-20 w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop flex items-center justify-between gap-space-md">
+        <a href={localePath(lang, '/')} class="group flex items-center gap-space-sm min-w-0" aria-label={`${s.bookTitle} ${s.home}`}>
+          <span class="lg:hidden w-11 h-11 rounded-lg bg-primary-container text-[#faf5ec] flex items-center justify-center shrink-0 font-headline-sm text-headline-sm font-bold" aria-hidden="true">R</span>
+          <span class="flex flex-col min-w-0">
+            <span class="font-headline-sm text-headline-sm text-primary group-hover:text-botanical-deep transition-colors tracking-tight truncate">{lang === DEFAULT_LANG && <span class="hidden lg:inline">RMB: </span>}{s.bookTitle}</span>
+            <span class="hidden xl:block font-label-sm text-label-sm text-on-surface-variant font-normal tracking-wide">{s.bookSubtitle}</span>
+          </span>
+        </a>
+        <nav aria-label="Main" class="hidden lg:flex items-center gap-space-md xl:gap-space-lg">
           {
-            LANG_CODES.map((l) =>
-              l === lang ? (
-                <span aria-current="true" title={LANGS[l].label}>
-                  <span class="flag" aria-hidden="true">{LANGS[l].flag}</span>
-                  {LANGS[l].short}
-                </span>
-              ) : (
-                <a href={alternates[l]} hreflang={l} lang={l} title={LANGS[l].label} aria-label={LANGS[l].label} data-lang-switch={l} data-track="language_switched" data-prop-to={l} data-prop-from={lang} data-prop-via="header">
-                  <span class="flag" aria-hidden="true">{LANGS[l].flag}</span>
-                  {LANGS[l].short}
-                </a>
-              ),
-            )
+            nav.map((n) => (
+              <a
+                href={n.href}
+                aria-current={isCurrent(n.href) ? 'page' : undefined}
+                class:list={['font-label-lg text-label-lg transition-colors whitespace-nowrap', isCurrent(n.href) ? 'text-on-surface font-semibold' : 'text-on-surface-variant hover:text-on-surface']}
+              >
+                {n.label}
+              </a>
+            ))
           }
-        </span>
-        <button
-          type="button"
-          class="settings-btn"
-          id="settings-btn"
-          aria-controls="reading-settings"
-          aria-expanded="false"
-          aria-label={s.readingSettings}
-          title={s.readingSettings}
-        >
-          <span aria-hidden="true">Aa</span>
-        </button>
+        </nav>
+        <div class="flex items-center gap-space-xs sm:gap-space-sm shrink-0">
+          <span class="h-9 px-2.5 rounded-full bg-surface-container-low flex items-center gap-1 font-label-sm text-label-sm" role="group" aria-label={s.languageLabel}>
+            {
+              LANG_CODES.map((l, i) => (
+                <>
+                  {i > 0 && <span class="text-outline-variant" aria-hidden="true">/</span>}
+                  {l === lang ? (
+                    <span class="text-primary" aria-current="true" title={LANGS[l].label}>{LANGS[l].short}</span>
+                  ) : (
+                    <a class="text-on-surface-variant hover:text-on-surface" href={alternates[l]} hreflang={l} lang={l} title={LANGS[l].label} aria-label={LANGS[l].label} data-lang-switch={l} data-track="language_switched" data-prop-to={l} data-prop-from={lang} data-prop-via="header">{LANGS[l].short}</a>
+                  )}
+                </>
+              ))
+            }
+          </span>
+          <button
+            type="button"
+            class="w-9 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-headline-sm text-headline-sm flex items-center justify-center transition-colors"
+            id="settings-btn"
+            aria-controls="reading-settings"
+            aria-expanded="false"
+            aria-label={s.readingSettings}
+            title={s.readingSettings}
+          >
+            <span aria-hidden="true">Aa</span>
+          </button>
+          <button type="button" class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm rounded-lg bg-primary hover:bg-botanical-deep text-on-primary font-label-md text-label-md whitespace-nowrap transition-all" id="install-btn" hidden>{s.getApp}</button>
+        </div>
       </div>
     </header>
 
-    <main id="main">
+    <main id="main" class:list={{ st: stitch }}>
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <p class="footer-title"><em>{bookFull}</em></p>
-      <p>
-        {s.by} {SITE.author} ·{' '}
-        <a href={instagramUrl} data-track="instagram_clicked" data-prop-location="footer" rel="me noopener">
-          @{SITE.instagram}
-        </a>
-      </p>
-      {
-        feedbackOn && (
-          <p>
-            <a href="#" class="footer-wa" data-wa-general={s.waGeneralMsg} data-source="footer" rel="noopener" target="_blank">
-              {s.footerFeedback}
-            </a>
-          </p>
-        )
-      }
-      {
-        supportTiers(lang).length > 0 && (
-          <p>
-            <a href={localePath(lang, '/buy/')} class="footer-buy" data-track="buy_page_clicked" data-prop-location="footer">
-              {buy[lang].footerLink}
-            </a>
-          </p>
-        )
-      }
-      <p class="muted">© {new Date().getFullYear()} {SITE.author}. {s.rights}</p>
+    <footer class="st w-full bg-surface-container-low py-space-xl shadow-[0_-1px_8px_rgba(26,26,26,0.03)] text-on-surface">
+      <div class="w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-space-xl pb-space-xl">
+          <div class="lg:col-span-5 flex flex-col gap-space-sm">
+            <div class="flex flex-col">
+              <span class="font-headline-md text-headline-md text-primary tracking-tight">{s.bookTitle}</span>
+              <span class="font-label-md text-label-md text-secondary mt-1 uppercase tracking-wider">{SITE.author}</span>
+            </div>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-md">{s.bookSubtitle}</p>
+          </div>
+          <div class="lg:col-span-3 flex flex-col gap-space-sm">
+            <h2 class="font-label-lg text-label-lg text-on-surface font-bold uppercase tracking-wider">{s.footerBook}</h2>
+            <div class="flex flex-col gap-space-xs">
+              <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href={localePath(lang, '/chapters/')}>{s.navChapters}</a>
+              {showPlaceholders && <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href={localePath(lang, '/about/')}>{s.navAbout}</a>}
+              <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href={localePath(lang, '/downloads/')}>{s.navDownloads}</a>
+            </div>
+          </div>
+          <div class="lg:col-span-4 flex flex-col gap-space-sm">
+            <h2 class="font-label-lg text-label-lg text-on-surface font-bold uppercase tracking-wider">{s.footerCommunity}</h2>
+            <div class="flex flex-col gap-space-xs">
+              <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href={instagramUrl} data-track="instagram_clicked" data-prop-location="footer" rel="me noopener">@{SITE.instagram}</a>
+              {feedbackOn && <a href="#" class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-wa-general={s.waGeneralMsg} data-source="footer" rel="noopener" target="_blank">{s.footerFeedback.replace(/^💬\s*/, '')}</a>}
+              {tiers.length > 0 && <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href={localePath(lang, '/buy/')} data-track="buy_page_clicked" data-prop-location="footer">{buy[lang].footerLink.replace(/^☕\s*/, '')}</a>}
+              <a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" href={localePath(lang, '/contact/')}>{s.navContact}</a>
+              <button type="button" class="self-start pt-space-xs font-label-sm text-label-sm text-primary hover:text-botanical-deep transition-colors" onclick="event.stopPropagation(); document.getElementById('settings-btn').click()">{s.displaySettings}</button>
+            </div>
+          </div>
+        </div>
+        <p class="pt-space-lg font-body-sm text-body-sm text-on-surface-variant text-center md:text-left">© {new Date().getFullYear()} {SITE.author}. {s.rights}</p>
+      </div>
     </footer>
+
+    <nav class="st lg:hidden fixed bottom-0 w-full z-36 pb-[env(safe-area-inset-bottom)] bg-sand-light/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" aria-label="Quick">
+      <div class="flex justify-around items-center h-16 px-space-xs">
+        {
+          tabs.map((tab) => (
+            <a
+              href={tab.href}
+              aria-current={tab.current ? 'page' : undefined}
+              class:list={['flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 transition-colors', tab.current ? 'text-primary font-semibold' : 'text-on-surface-variant hover:text-primary']}
+              {...(tab.reader ? { 'data-tab-reader': '' } : {})}
+            >
+              <Icon name={tab.icon} class="text-[22px]" />
+              <span class="font-label-sm text-label-sm">{tab.label}</span>
+            </a>
+          ))
+        }
+      </div>
+    </nav>
 
     <dialog id="reading-settings" class="settings-panel" aria-label={s.readingSettings}>
       <div class="settings-head">

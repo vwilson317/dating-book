@@ -4,37 +4,96 @@
 import { supportTiers } from '../site.config';
 import type { Lang } from '../i18n/ui';
 import { buy } from '../i18n/buy';
+import Placeholder from './Placeholder.astro';
+import Icon from './home/Icon.astro';
 
 interface Props {
   lang: Lang;
   location: string; // where it's shown, for analytics
+  /** "list" is the compact stack (hero, contribute prompt); "cards" is the /buy/ pricing row */
+  variant?: 'list' | 'cards';
 }
-const { lang, location } = Astro.props;
+const { lang, location, variant = 'list' } = Astro.props;
 const text = buy[lang].support.tiers;
+const page = buy[lang].page;
+// From the Stitch mockup. Not offered today: keep these out of production unless they become real.
+const mockPerks: Record<string, string[]> = {
+  name: ['Supporter badge on the reading web app', 'Exclusive subscriber audio outtakes link'],
+  instagram: ['Personal audio voice-note commentary'],
+  story: ['Story pitch reviewed for chapter anthology', 'Signed PDF commemorative copy'],
+};
 ---
 
-<div class="tiers">
-  {
-    supportTiers(lang).map((tier) => (
-      <form action="/api/checkout" method="post" data-checkout>
-        <input type="hidden" name="tier" value={tier.id} />
-        <input type="hidden" name="lang" value={lang} />
-        <input type="hidden" name="ref" value="" />
-        <button
-          class="tier"
-          type="submit"
-          data-track="buy_clicked"
-          data-prop-location={location}
-          data-prop-tier={tier.id}
-          data-prop-price={tier.price[lang]}
+{
+  variant === 'cards' ? (
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg items-stretch">
+      {supportTiers(lang).map((tier, i) => (
+        <form
+          action="/api/checkout"
+          method="post"
+          data-checkout
+          class:list={['flex flex-col justify-between rounded-xl p-space-lg lg:p-space-xl relative', i === 1 ? 'bg-sand-light shadow-lg md:-translate-y-2' : 'bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow']}
         >
-          <span class="tier-price">{tier.price[lang]}</span>
-          <span>
-            <span class="tier-title">{text[tier.id as keyof typeof text].title}</span>
-            <span class="tier-body">{text[tier.id as keyof typeof text].body}</span>
-          </span>
-        </button>
-      </form>
-    ))
-  }
-</div>
+          <input type="hidden" name="tier" value={tier.id} />
+          <input type="hidden" name="lang" value={lang} />
+          <input type="hidden" name="ref" value="" />
+          <div class="flex flex-col">
+            <div class="flex items-center justify-end pb-space-xs">
+              <Icon name={i === 1 ? 'campaign' : 'history_edu'} class={`text-[22px] ${i === 1 ? 'text-terracotta-accent' : 'text-primary'}`} />
+            </div>
+            <div class="flex items-baseline gap-1 my-space-sm">
+              <span class:list={['font-display-lg text-[44px] leading-[52px] lg:text-display-lg font-bold', i === 1 ? 'text-terracotta-accent' : 'text-primary']}>{tier.price[lang]}</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant">{page.oneTime}</span>
+            </div>
+            <h3 class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">{text[tier.id as keyof typeof text].title}</h3>
+            <p class="font-body-md text-body-md text-on-surface-variant mt-space-sm">{text[tier.id as keyof typeof text].body}</p>
+            <Placeholder class="mt-space-md">
+              <ul class="flex flex-col gap-space-sm m-0 p-0 list-none font-body-sm text-body-sm">
+                {mockPerks[tier.id]?.map((perk) => (
+                  <li class="flex items-start gap-space-sm"><Icon name="check_circle" class="text-[18px] text-primary mt-0.5" /><span>{perk}</span></li>
+                ))}
+              </ul>
+            </Placeholder>
+          </div>
+          <div class="pt-space-lg lg:pt-space-xl mt-auto">
+            <button
+              class:list={['w-full py-3 rounded-lg font-label-lg text-label-lg font-bold transition-all flex items-center justify-center gap-space-xs border-0 cursor-pointer', i === 1 ? 'bg-[#b84e29] hover:bg-[#a23e1a] text-[#faf5ec] shadow-md' : i === 2 ? 'bg-primary hover:bg-botanical-deep text-on-primary shadow-md' : 'bg-surface-container hover:bg-surface-variant text-primary']}
+              type="submit"
+              data-track="buy_clicked"
+              data-prop-location={location}
+              data-prop-tier={tier.id}
+              data-prop-price={tier.price[lang]}
+            >
+              {page.contribute(tier.price[lang]).replace(/\s*→$/, '')}
+              <Icon name="arrow_forward" class="text-[18px]" />
+            </button>
+          </div>
+        </form>
+      ))}
+    </div>
+  ) : (
+    <div class="tiers">
+      {supportTiers(lang).map((tier) => (
+        <form action="/api/checkout" method="post" data-checkout>
+          <input type="hidden" name="tier" value={tier.id} />
+          <input type="hidden" name="lang" value={lang} />
+          <input type="hidden" name="ref" value="" />
+          <button
+            class="tier"
+            type="submit"
+            data-track="buy_clicked"
+            data-prop-location={location}
+            data-prop-tier={tier.id}
+            data-prop-price={tier.price[lang]}
+          >
+            <span class="tier-price">{tier.price[lang]}</span>
+            <span>
+              <span class="tier-title">{text[tier.id as keyof typeof text].title}</span>
+              <span class="tier-body">{text[tier.id as keyof typeof text].body}</span>
+            </span>
+          </button>
+        </form>
+      ))}
+    </div>
+  )
+}

@@ -29,7 +29,7 @@ const enabled = !!SITE.whatsapp || import.meta.env.DEV;
       aria-labelledby="feedback-title"
     >
       {!SITE.whatsapp && <p class="dev-note">Dev only: set SITE.whatsapp in src/site.config.ts. This box is hidden on the live site until you do.</p>}
-      <h2 id="feedback-title">{s.feedbackTitle}</h2>
+      <h2 id="feedback-title" class="mb-2 font-serif">{s.feedbackTitle}</h2>
       <p class="muted">{s.feedbackBody}</p>
 
       <div class="reactions" role="group" aria-label={s.feedbackTitle}>

@@ -14,8 +14,9 @@
     "stripe:setup": "node --env-file=.env scripts/stripe-setup.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/literata": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@material-symbols/svg-400": "^0.48.3",
     "@netlify/blobs": "^11.1.8",
     "astro": "^7.4.5",
     "posthog-js": "^1.445.4",
@@ -23,9 +24,11 @@
     "stripe": "^23.1.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
     "diff": "^9.0.0",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.5.438",
+    "tailwindcss": "^4.3.5",
     "yaml": "^2.9.1"
   }
 }

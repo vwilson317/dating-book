@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400..700;1,7..72,400..700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-error-container":"#93000a","surface-container":"#f0eded","tertiary-container":"#595345","surface-variant":"#e5e2e1","on-secondary-fixed-variant":"#822703","background":"#fcf9f8","on-background":"#1c1b1b","tertiary-fixed":"#ebe1cf","secondary-fixed":"#ffdbd0","primary-fixed":"#aff0d2","surface-container-low":"#f6f3f2","surface":"#fcf9f8","secondary-container":"#fe8359","on-secondary":"#ffffff","on-surface":"#1c1b1b","on-error":"#ffffff","primary-container":"#1c5e47","secondary-fixed-dim":"#ffb59d","outline-variant":"#bfc9c2","primary-fixed-dim":"#93d4b7","surface-container-highest":"#e5e2e1","surface-tint":"#296952","error":"#ba1a1a","botanical-deep":"#124030","inverse-primary":"#93d4b7","primary":"#004631","sand-border":"#EAE0CE","surface-dim":"#dcd9d9","surface-container-high":"#eae7e7","inverse-on-surface":"#f3f0ef","on-primary-fixed-variant":"#08513b","on-secondary-fixed":"#390b00","on-tertiary":"#ffffff","on-tertiary-fixed-variant":"#4c4639","on-primary-container":"#94d5b8","error-container":"#ffdad6","sand-light":"#FAF5EC","on-primary-fixed":"#002115","outline":"#707973","surface-container-lowest":"#ffffff","secondary":"#a23e1a","on-tertiary-fixed":"#201b10","inverse-surface":"#313030","on-secondary-container":"#701f00","charcoal-ink":"#1A1A1A","on-tertiary-container":"#d0c7b5","tertiary":"#413c2f","on-surface-variant":"#404944","terracotta-accent":"#B84E29","tertiary-fixed-dim":"#cfc5b4","surface-bright":"#fcf9f8","on-primary":"#ffffff"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"margin":"2rem","space-xs":"0.25rem","space-lg":"1.5rem","space-md":"1rem","gutter":"1.5rem","space-xl":"2.5rem","margin-mobile":"1.25rem","margin-desktop":"3rem","gutter-mobile":"1rem","space-sm":"0.5rem"},"fontFamily":{"body-sm":["Plus Jakarta Sans"],"label-sm":["Plus Jakarta Sans"],"display-lg-mobile":["Literata"],"body-lg":["Plus Jakarta Sans"],"headline-lg":["Literata"],"headline-md":["Literata"],"display-lg":["Literata"],"body-md":["Plus Jakarta Sans"],"headline-sm":["Literata"],"label-md":["Plus Jakarta Sans"],"label-lg":["Plus Jakarta Sans"],"headline-lg-mobile":["Literata"]},"fontSize":{"body-sm":["14px",{"lineHeight":"20px","fontWeight":"400"}],"label-sm":["11px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"700"}],"display-lg-mobile":["36px",{"lineHeight":"42px","letterSpacing":"-0.02em","fontWeight":"600"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"headline-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.015em","fontWeight":"500"}],"headline-md":["26px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"500"}],"display-lg":["52px",{"lineHeight":"60px","letterSpacing":"-0.02em","fontWeight":"600"}],"body-md":["16px",{"lineHeight":"24px","fontWeight":"400"}],"headline-sm":["20px",{"lineHeight":"26px","fontWeight":"500"}],"label-md":["13px",{"lineHeight":"18px","letterSpacing":"0.02em","fontWeight":"600"}],"label-lg":["15px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}],"headline-lg-mobile":["28px",{"lineHeight":"34px","letterSpacing":"-0.01em","fontWeight":"500"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(26,26,26,0.04)]"><div class="h-20 w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg"><a class="group flex flex-col justify-center text-left focus:outline-none" data-path="book-home" href="#"><span class="font-headline-sm text-headline-sm text-primary group-hover:text-botanical-deep transition-colors tracking-tight">RMB: Read My Book</span><span class="font-label-sm text-label-sm text-on-surface-variant font-normal tracking-wide">Misadventures of a Gringo Dating Abroad</span></a></div><nav class="hidden xl:flex items-center gap-space-lg" data-active-classes="text-on-surface font-semibold"><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="book-home" href="#">Book / Home</a><a aria-current="page" class="transition-colors text-on-surface font-semibold" data-path="chapters" href="#">Chapters</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="about-the-author" href="#">About the Author</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="contribute" href="#">Contribute</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="downloads" href="#">Downloads</a><a class="font-label-lg text-label-lg text-on-surface-variant hover:text-on-surface transition-colors" data-path="contact" href="#">Contact</a></nav><div class="flex items-center gap-space-sm sm:gap-space-md"><button aria-label="Switch Language" class="px-space-sm py-1 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors" type="button">EN / PT</button><button aria-label="Reading Appearance" class="w-9 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-on-surface font-headline-sm text-headline-sm flex items-center justify-center transition-colors" type="button">Aa</button><a class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm rounded-lg bg-primary hover:bg-botanical-deep text-on-primary font-label-md text-label-md shadow-[0_2px_8px_-2px_rgba(28,94,71,0.2)] transition-all" data-path="contribute" href="#">Get the App</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-20 bg-background"><div class="flex flex-col w-full">
+<!-- Interactive Sticky Reading Context Bar -->
+<div class="sticky top-20 z-40 w-full bg-sand-light/95 backdrop-blur-md shadow-sm transition-all duration-300">
+<div class="w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop py-space-sm flex items-center justify-between gap-space-md">
+<!-- Breadcrumb & Position Indicator -->
+<div class="flex items-center gap-space-sm min-w-0">
+<a class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors shrink-0" data-path="chapters" href="#">
+<span class="material-symbols-outlined text-[18px]">arrow_back</span>
+<span>Chapters</span>
+</a>
+<span class="text-outline-variant select-none">/</span>
+<span class="font-label-md text-label-md text-primary font-bold truncate">Chapter 1</span>
+<span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-terracotta-accent font-label-sm text-label-sm">
+          Rio de Janeiro
+        </span>
+</div>
+<!-- Quick Action Controls -->
+<div class="flex items-center gap-space-xs sm:gap-space-sm shrink-0">
+<!-- Audio Quick Toggle Button -->
+<button aria-label="Jump to Audio Narration" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-container text-primary font-label-sm text-label-sm shadow-sm transition-all" id="quick-audio-btn" type="button">
+<span class="material-symbols-outlined text-[17px] text-terracotta-accent">volume_up</span>
+<span class="hidden md:inline">Listen (4:12)</span>
+</button>
+<!-- Reader Customizer Button -->
+<button aria-controls="reader-drawer" aria-expanded="false" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-botanical-deep text-on-primary font-label-sm text-label-sm shadow-sm transition-all" id="toggle-reader-settings" type="button">
+<span class="material-symbols-outlined text-[17px]">tune</span>
+<span>Reading Mode</span>
+</button>
+<!-- Next Chapter Shortcut -->
+<a class="p-1.5 rounded-lg bg-surface hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors flex items-center justify-center" data-path="chapters" href="#" title="Next: Chapter 2">
+<span class="material-symbols-outlined text-[20px]">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Live Reading Progress Bar -->
+<div class="w-full h-1 bg-sand-border/40">
+<div class="h-full bg-terracotta-accent w-0 transition-[width] duration-150 ease-out" id="scroll-progress-bar"></div>
+</div>
+</div>
+<!-- Interactive Reader Settings Drawer (Expandable) -->
+<aside class="hidden w-full bg-surface-container-lowest shadow-md transition-all duration-300" id="reader-drawer">
+<div class="w-full max-w-[960px] mx-auto px-margin-mobile md:px-margin py-space-md grid grid-cols-2 md:grid-cols-4 gap-space-md">
+<!-- Theme Switcher -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Canvas Theme</label>
+<div class="grid grid-cols-3 gap-1 bg-surface-container-low p-1 rounded-lg">
+<button class="theme-opt active px-2 py-1 rounded font-label-sm text-label-sm bg-surface-container-lowest text-primary shadow-xs font-bold text-center" data-theme-btn="light" type="button">Warm</button>
+<button class="theme-opt px-2 py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface text-center" data-theme-btn="sepia" type="button">Sepia</button>
+<button class="theme-opt px-2 py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface text-center" data-theme-btn="night" type="button">Dark</button>
+</div>
+</div>
+<!-- Font Size Toggle -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Font Size</label>
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg justify-between">
+<button class="w-8 h-7 rounded bg-surface-container-lowest text-on-surface font-label-sm flex items-center justify-center shadow-xs hover:bg-surface-variant" id="font-decrease" type="button">-</button>
+<span class="font-label-sm text-label-sm font-semibold text-primary" id="font-indicator">Normal</span>
+<button class="w-8 h-7 rounded bg-surface-container-lowest text-on-surface font-label-sm flex items-center justify-center shadow-xs hover:bg-surface-variant" id="font-increase" type="button">+</button>
+</div>
+</div>
+<!-- Font Family -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Typeface</label>
+<div class="grid grid-cols-2 gap-1 bg-surface-container-low p-1 rounded-lg">
+<button class="px-2 py-1 rounded font-label-sm text-label-sm bg-surface-container-lowest text-primary font-bold shadow-xs text-center font-headline-sm" id="font-serif-btn" type="button">Serif</button>
+<button class="px-2 py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface text-center font-body-sm" id="font-sans-btn" type="button">Sans</button>
+</div>
+</div>
+<!-- Line Spacing -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Rhythm</label>
+<div class="grid grid-cols-2 gap-1 bg-surface-container-low p-1 rounded-lg">
+<button class="px-2 py-1 rounded font-label-sm text-label-sm bg-surface-container-lowest text-primary font-bold shadow-xs text-center" id="spacing-normal-btn" type="button">Comfort</button>
+<button class="px-2 py-1 rounded font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface text-center" id="spacing-relaxed-btn" type="button">Relaxed</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Editorial Chapter Container -->
+<article class="w-full transition-colors duration-300" id="reader-canvas">
+<div class="w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop py-space-xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- Left Auxiliary Sticky Column: Location, Context, & Timeline Insights -->
+<aside class="lg:col-span-4 flex flex-col gap-space-lg lg:sticky lg:top-36 order-2 lg:order-1">
+<!-- Story Location Atmosphere Card -->
+<div class="rounded-xl overflow-hidden bg-surface-container-lowest shadow-md">
+<div class="relative h-48 w-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Warm atmospheric nighttime street photography of Santa Teresa and Lapa bar scene in Rio de Janeiro, Brazil with soft bokeh golden ambient cafe string lights, colonial arched facades, lush tropical foliage, and relaxed sociable patrons drinking beer at wooden tables." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXhUyEfgDSd2PWaO3oj0yLxIbX64q8GPZHfVU-wPBbXydyWYppcaMVyD8XDWE2DrLO0EXoGVYId2ZOqG8SEa2hMm33atdU4tuAW8ypM0AVpVH4CjdO_s2xN080oaz4q_z6Cwe3t_t6BWoPz2mSIld1-vdhQYR9H52nHUrxEWYITRBYu0cjVuOfadZu5eabAxpS_WV-IktdXu4rscgctkRKPKlOI3loYyFUiBxHA58"/>
+<div class="absolute inset-0 bg-gradient-to-t from-charcoal-ink/80 via-charcoal-ink/20 to-transparent"></div>
+<div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-on-secondary">
+<span class="font-label-sm text-label-sm uppercase tracking-wider bg-botanical-deep/80 px-2 py-1 rounded">Rio de Janeiro</span>
+<span class="font-label-sm text-label-sm text-sand-light/90 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 2023 · Weeknight
+                </span>
+</div>
+</div>
+<div class="p-space-md flex flex-col gap-space-xs">
+<h3 class="font-headline-sm text-headline-sm text-primary">Setting the Scene</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">A random weeknight bar across the street, zero Portuguese, and a risky move orchestrated with the help of a very friendly Brazilian man named T.</p>
+</div>
+</div>
+<!-- The Carioca Playbook: Cultural Field Note Callout -->
+<div class="rounded-xl p-space-md bg-sand-light shadow-sm flex flex-col gap-space-xs relative overflow-hidden">
+<div class="w-1.5 absolute left-0 top-0 bottom-0 bg-primary"></div>
+<div class="flex items-center gap-2 text-terracotta-accent">
+<span class="material-symbols-outlined text-[20px]">local_cafe</span>
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider">Carioca Cultural Rule #1</span>
+</div>
+<p class="font-headline-sm text-[16px] italic leading-snug text-primary">
+              "Kissing in public is fairly common in Brazil. It’s the equivalent of a handshake with more bodily fluids. These aren’t pecks; they’re full-on tongue battles."
+            </p>
+<span class="font-label-sm text-label-sm text-on-surface-variant pt-1">Vincent Wilson · Field Reflections</span>
+</div>
+<!-- Chapter Navigation Shortcut List -->
+<div class="rounded-xl p-space-md bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold text-on-surface uppercase tracking-wider">Up Next In The Book</span>
+<span class="font-label-sm text-label-sm text-terracotta-accent font-semibold">17 Chapters Total</span>
+</div>
+<div class="flex flex-col gap-2">
+<a class="p-2.5 rounded-lg bg-sand-light/70 hover:bg-sand-light transition-colors flex items-start justify-between group" data-path="chapters" href="#">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-terracotta-accent">Chapter 2</span>
+<span class="font-body-sm text-body-sm font-semibold text-primary group-hover:text-botanical-deep">Sure, Take All My Things, But Not the Camera</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors text-[20px]">arrow_forward</span>
+</a>
+<a class="p-2.5 rounded-lg hover:bg-surface-container-low transition-colors flex items-start justify-between group" data-path="chapters" href="#">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Chapter 3</span>
+<span class="font-body-sm text-body-sm text-on-surface group-hover:text-primary">How Long Have You Been Dating Your Boyfriend?</span>
+</div>
+<span class="material-symbols-outlined text-outline-variant text-[20px]">chevron_right</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Right / Center Main Column: Reader Content & Media Player -->
+<main class="lg:col-span-8 flex flex-col gap-space-xl order-1 lg:order-2">
+<!-- Chapter Headline Header -->
+<header class="flex flex-col gap-space-sm pb-space-md">
+<div class="flex flex-wrap items-center gap-space-sm">
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-bold uppercase tracking-wider">
+                Chapter 01
+              </span>
+<span class="inline-flex items-center gap-1 font-label-md text-label-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-terracotta-accent">schedule</span>
+                4 min read
+              </span>
+<span class="text-outline-variant">•</span>
+<span class="inline-flex items-center gap-1 font-label-md text-label-md text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-primary">headphones</span>
+                Audio Edition Available
+              </span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight leading-tight">
+              How I Met My Wife
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant italic">
+              From a cold start across the bar and an accidental drink for a stranger, to Google Translate romance on the sands of Rio.
+            </p>
+</header>
+<!-- Audio Narration Card Component -->
+<section class="rounded-2xl p-space-md sm:p-space-lg bg-surface-container-lowest shadow-md flex flex-col gap-space-md relative overflow-hidden" id="audio-player-widget">
+<div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-primary/5 pointer-events-none blur-xl"></div>
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[28px]">graphic_eq</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-terracotta-accent">Author Audio Edition</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+</div>
+<span class="font-headline-sm text-[18px] text-primary font-bold">Listen to Chapter 1</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Narrated with candid commentary by Vincent Wilson</span>
+</div>
+</div>
+<!-- Audio Playback Speed Control -->
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg self-end sm:self-auto">
+<button class="px-2.5 py-1 rounded bg-surface-container-lowest text-primary font-label-sm text-label-sm font-bold shadow-xs hover:bg-surface-variant transition-colors" id="speed-toggle" type="button">
+                  1.0x
+                </button>
+<button class="p-1 rounded text-on-surface-variant hover:text-primary transition-colors" title="Download Audio Excerpt" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+</button>
+</div>
+</div>
+<!-- Waveform & Progress -->
+<div class="flex flex-col gap-2 pt-1">
+<div class="flex items-center gap-space-md">
+<!-- Play / Pause Main Trigger -->
+<button class="w-12 h-12 rounded-full bg-primary hover:bg-botanical-deep text-on-primary flex items-center justify-center shadow-md hover:scale-105 active:scale-95 transition-all shrink-0" id="play-pause-btn" type="button">
+<span class="material-symbols-outlined text-[28px]" id="play-icon">play_arrow</span>
+</button>
+<!-- Interactive Timeline Track with Simulated Audio Waveform -->
+<div class="flex-1 flex flex-col gap-1.5 cursor-pointer group" id="waveform-track">
+<div class="h-8 flex items-center gap-[3px] w-full px-1">
+<!-- SVG Soundwave Graphic -->
+<svg class="w-full h-8 text-outline-variant/60 group-hover:text-outline-variant transition-colors" fill="currentColor" preserveaspectratio="none" viewbox="0 0 400 32">
+<rect height="12" rx="1.5" width="3" x="0" y="10"></rect>
+<rect height="20" rx="1.5" width="3" x="6" y="6"></rect>
+<rect height="8" rx="1.5" width="3" x="12" y="12"></rect>
+<rect height="24" rx="1.5" width="3" x="18" y="4"></rect>
+<rect height="28" rx="1.5" width="3" x="24" y="2"></rect>
+<rect height="16" rx="1.5" width="3" x="30" y="8"></rect>
+<rect height="4" rx="1.5" width="3" x="36" y="14"></rect>
+<rect height="20" rx="1.5" width="3" x="42" y="6"></rect>
+<rect height="30" rx="1.5" width="3" x="48" y="1"></rect>
+<rect height="18" rx="1.5" width="3" x="54" y="7"></rect>
+<rect height="10" rx="1.5" width="3" x="60" y="11"></rect>
+<rect height="26" rx="1.5" width="3" x="66" y="3"></rect>
+<rect height="22" rx="1.5" width="3" x="72" y="5"></rect>
+<rect height="6" rx="1.5" width="3" x="78" y="13"></rect>
+<rect height="14" rx="1.5" width="3" x="84" y="9"></rect>
+<rect height="28" rx="1.5" width="3" x="90" y="2"></rect>
+<rect height="24" rx="1.5" width="3" x="96" y="4"></rect>
+<rect height="12" rx="1.5" width="3" x="102" y="10"></rect>
+<rect height="16" rx="1.5" width="3" x="108" y="8"></rect>
+<rect height="32" rx="1.5" width="3" x="114" y="0"></rect>
+<rect height="20" rx="1.5" width="3" x="120" y="6"></rect>
+<rect height="8" rx="1.5" width="3" x="126" y="12"></rect>
+<rect height="24" rx="1.5" width="3" x="132" y="4"></rect>
+<rect height="16" rx="1.5" width="3" x="138" y="8"></rect>
+<rect height="4" rx="1.5" width="3" x="144" y="14"></rect>
+<rect height="22" rx="1.5" width="3" x="150" y="5"></rect>
+<rect height="28" rx="1.5" width="3" x="156" y="2"></rect>
+<rect height="14" rx="1.5" width="3" x="162" y="9"></rect>
+<rect height="18" rx="1.5" width="3" x="168" y="7"></rect>
+<rect height="26" rx="1.5" width="3" x="174" y="3"></rect>
+<rect height="10" rx="1.5" width="3" x="180" y="11"></rect>
+<rect height="30" rx="1.5" width="3" x="186" y="1"></rect>
+<rect height="22" rx="1.5" width="3" x="192" y="5"></rect>
+<rect height="6" rx="1.5" width="3" x="198" y="13"></rect>
+<rect height="16" rx="1.5" width="3" x="204" y="8"></rect>
+<rect height="28" rx="1.5" width="3" x="210" y="2"></rect>
+<rect height="20" rx="1.5" width="3" x="216" y="6"></rect>
+<rect height="12" rx="1.5" width="3" x="222" y="10"></rect>
+<rect height="24" rx="1.5" width="3" x="228" y="4"></rect>
+<rect height="32" rx="1.5" width="3" x="234" y="0"></rect>
+<rect height="16" rx="1.5" width="3" x="240" y="8"></rect>
+<rect height="8" rx="1.5" width="3" x="246" y="12"></rect>
+<rect height="20" rx="1.5" width="3" x="252" y="6"></rect>
+<rect height="28" rx="1.5" width="3" x="258" y="2"></rect>
+<rect height="14" rx="1.5" width="3" x="264" y="9"></rect>
+<rect height="24" rx="1.5" width="3" x="270" y="4"></rect>
+<rect height="18" rx="1.5" width="3" x="276" y="7"></rect>
+<rect height="6" rx="1.5" width="3" x="282" y="13"></rect>
+<rect height="22" rx="1.5" width="3" x="288" y="5"></rect>
+<rect height="30" rx="1.5" width="3" x="294" y="1"></rect>
+<rect height="12" rx="1.5" width="3" x="300" y="10"></rect>
+<rect height="16" rx="1.5" width="3" x="306" y="8"></rect>
+<rect height="26" rx="1.5" width="3" x="312" y="3"></rect>
+<rect height="10" rx="1.5" width="3" x="318" y="11"></rect>
+<rect height="22" rx="1.5" width="3" x="324" y="5"></rect>
+<rect height="28" rx="1.5" width="3" x="330" y="2"></rect>
+<rect height="14" rx="1.5" width="3" x="336" y="9"></rect>
+<rect height="32" rx="1.5" width="3" x="342" y="0"></rect>
+<rect height="20" rx="1.5" width="3" x="348" y="6"></rect>
+<rect height="8" rx="1.5" width="3" x="354" y="12"></rect>
+<rect height="24" rx="1.5" width="3" x="360" y="4"></rect>
+<rect height="16" rx="1.5" width="3" x="366" y="8"></rect>
+<rect height="4" rx="1.5" width="3" x="372" y="14"></rect>
+<rect height="26" rx="1.5" width="3" x="378" y="3"></rect>
+<rect height="18" rx="1.5" width="3" x="384" y="7"></rect>
+<rect height="10" rx="1.5" width="3" x="390" y="11"></rect>
+<rect height="22" rx="1.5" width="3" x="396" y="5"></rect>
+</svg>
+</div>
+<div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[32%] rounded-full" id="audio-progress-bar"></div>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant px-1">
+<span id="current-time">1:21</span>
+<span>4:12</span>
+</div>
+</div>
+</section>
+<!-- Chapter Narrative Verbatim Text Body -->
+<div class="reader-font-serif text-[19px] leading-[32px] text-charcoal-ink flex flex-col gap-space-lg select-text" id="story-body">
+<!-- Opening Drop Cap Paragraph -->
+<p class="first-letter:float-left first-letter:text-[72px] first-letter:leading-[60px] first-letter:font-headline-lg first-letter:text-primary first-letter:pr-3 first-letter:font-bold">
+              Since moving abroad, I’ve dated mostly in Colombia and Rio, almost always with no shared language. People often ask why I prefer dating in South America. I usually answer that my primary love language is physical touch, and in my experience the women I’ve met here are openly affectionate from the first date. The signs that she’s into you are also so clear that a socially awkward nerd can detect them. It’s a long glance or someone grabbing your face and kissing you.
+            </p>
+<p>
+              No story illustrates this better than my longest relationship abroad. Let me set the scene.
+            </p>
+<p>
+              A friend had invited me out for drinks on a random weeknight. I’m not much of a night person or a drinker, but I enjoyed spending time with him, so I agreed. I got hungry and bored at the original place, so I went across the street to have dinner alone at the bar. While I ate, I noticed a group forming. I imagined it was a birthday party. It kept growing, so I sat back and enjoyed one of my favorite hobbies: people watching.
+            </p>
+<!-- Illustrated Editorial Breakout Callout -->
+<div class="my-space-sm p-space-md sm:p-space-lg rounded-xl bg-sand-light shadow-sm flex flex-col md:flex-row items-center gap-space-md">
+<div class="w-full md:w-44 h-28 rounded-lg overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Warm illustrative photographic shot of caipirinha cocktails on a textured Brazilian wooden counter with green lime slices and cold condensation drops in an ambient Rio bar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAsRXHq7MIJmmBNF1MPFfhUqs8GkncIXoi74RE6hqygjbeNruWxkQTtHEMl9XKofpygVBe4a67kMjRFu9mEMnOtDfKYUaP_YIDtap9Wj30-hnnYKvdryRO_b2j148PXLU7Sx-0xZ7cLSH_AVF-C4u9vur6VhbED1Jx9-GSb0Baj3gmBIFHILFBm466Hn1CdgBMwU3MsGJJIBAWlXg8Irn7RSy77jbpoxKJ8rt_PbM"/>
+</div>
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-terracotta-accent">Visual Memory</span>
+<p class="font-headline-sm text-[17px] text-primary italic leading-snug">
+                  "Eventually a stunningly beautiful woman joined the group, and that’s when I really started paying attention. I even remember her outfit: a white top and very blue pants."
+                </p>
+</div>
+</div>
+<p>
+              Eventually a stunningly beautiful woman joined the group, and that’s when I really started paying attention. I even remember her outfit: a white top and very blue pants. I couldn’t take my eyes off her. I kept watching the social interactions and thinking about how I might approach her.
+            </p>
+<p>
+              Remember, I’m a socially awkward kind of guy. I was certainly not going to walk into a group of thirty people and tell the most beautiful woman what I thought of her. I sat at the bar with a drink for a while, working out a plan. After a minute, I figured it out.
+            </p>
+<p>
+              By carefully observing, I noticed one man in the group was very outgoing and friendly. He was always smiling, and everyone greeted him warmly. I watched countless people leave their conversations with him smiling and happy. At first I was a bit jealous. Wouldn’t I love to be that kind of person? I assumed it was his birthday, but the joy seemed like more than a simple birthday could explain.
+            </p>
+<p>
+              My idea was simple: buy this guy a drink. He was obviously the life of the party and gifted at bringing people together. (Whenever I try to plan an outing for something special, it’s usually just me and my best friend joking about why the rest of our friends are lame and won’t join.) Buying the girl a drink could come across as too forward, and I had no way of knowing her relationship status or whether she was with anyone in the group. Buying a man a drink seemed like a much safer option.
+            </p>
+<p>
+              Executing the plan was slightly more challenging. I don’t speak Portuguese, and I wanted the guy’s preferred drink sent to him, with the bartender telling him it was from me. I think that’s fairly common in America or USA, but not so much in Rio. I struggled to explain what I was doing to the bartender with Google Translate. Eventually I was 80% confident he understood, and I waited patiently as my plan started to unfold.
+            </p>
+<p>
+              It was a bold move. To this day, I’ve never randomly bought a drink for a stranger of the same sex. I watched the server deliver it, trying not to stare. The handoff took noticeably longer than I expected, which I assumed meant it was hard to explain. Eventually I saw a gesture in my direction, and I felt relief that my opening move had landed. Now it was time to wait and see what would come of it.
+            </p>
+<!-- Pull Quote Highlighting the Humorous Twist -->
+<blockquote class="my-space-md py-space-md px-space-lg rounded-xl bg-surface-container-low shadow-xs text-center flex flex-col items-center gap-2">
+<span class="font-display-lg text-[44px] leading-none text-terracotta-accent">“</span>
+<p class="font-headline-md text-headline-md text-primary max-w-xl italic">
+                That’s when I realized I had bought a drink for a gay man. The plan was working, just not on the intended target.
+              </p>
+<cite class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant font-normal">Vincent · The Gringo Playbook</cite>
+</blockquote>
+<p>
+              [T], being the incredible human he is, instantly separated from the group to come over and greet me. It was a huge relief that he spoke English. He was extremely charming, well-spoken, and friendly. That’s when I realized I had bought a drink for a gay man. The plan was working, just not on the intended target.
+            </p>
+<p>
+              T and I chatted for a bit, and he invited me to join their group, which I did. I was one step closer to meeting her. Now I just needed to integrate into the group and make my move. I talked with people who spoke English and passively observed the group dynamic. When I saw T speaking with her and another woman, I made a point of being introduced. It fell a bit flat. She greeted me warmly but quickly went back to her conversation with her friend. I figured she wasn’t interested and kept my distance.
+            </p>
+<p>
+              After a while, I noticed she went to the bathroom. We crossed paths, smiled, and made eye contact in the mirror while washing our hands. I took this to mean she was open to talking, so I simply asked if she spoke English. She said no. I whipped out my phone, and we began exchanging small talk by passing it back to front, sort of like live-tweeting a date. It made me more comfortable, given my years of online dating, but this was a much more enjoyable version of it.
+            </p>
+<p>
+              Some context I only learned later: kissing in public is fairly common in Brazil. If you have a good connection, public displays of affection are encouraged. I jokingly tell first-time visitors it’s the equivalent of a handshake with more bodily fluids. These aren’t pecks; they’re full-on tongue battles. And if you don’t kiss a woman quickly, people often assume you’re gay.
+            </p>
+<p>
+              The back-and-forth went on for a while. We joked that everyone thought I was gay because I’d bought T a drink, and I confessed it was a ploy to get an introduction to her. After about thirty minutes of flirting through Google Translate, she asked, seemingly out of nowhere, if I wanted to kiss her. I smiled, said yes of course, and we made out. I’d wanted to the whole time. I was just too into the conversation to think of it.
+            </p>
+<!-- Climax Sentence in Bold Aesthetic Box -->
+<div class="p-space-md rounded-xl bg-botanical-deep text-sand-light shadow-md flex items-center justify-between gap-space-md">
+<p class="font-headline-sm text-headline-sm text-sand-light font-semibold">
+                And yes, if you’re asking yourself, she did eventually become my wife.
+              </p>
+<span class="material-symbols-outlined text-sand-border text-[32px] shrink-0">favorite</span>
+</div>
+</div>
+<!-- Post-Chapter End Marker & Engagement -->
+<div class="pt-space-lg flex flex-col gap-space-lg">
+<!-- Thanks for reading signature banner -->
+<div class="flex items-center justify-center gap-space-md py-space-sm text-on-surface-variant font-label-md text-label-md">
+<span class="w-12 h-[1px] bg-sand-border"></span>
+<span class="flex items-center gap-1.5 text-primary font-bold">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+                Thanks for reading Chapter 1
+              </span>
+<span class="w-12 h-[1px] bg-sand-border"></span>
+</div>
+<!-- Quiz Interactive Callout Card (From Reference Content) -->
+<div class="rounded-2xl p-space-md sm:p-space-lg bg-surface-container text-on-surface shadow-md flex flex-col sm:flex-row items-center justify-between gap-space-md relative overflow-hidden">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">quiz</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-[18px] text-primary font-bold">Think you know the gringo?</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Take the 3-question quiz. High scores get to slide into Vincent's WhatsApp with full bragging rights.</p>
+</div>
+</div>
+<a class="px-space-md py-2.5 rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant font-label-md text-label-md shadow-sm transition-all whitespace-nowrap shrink-0" data-path="contact" href="#">
+                Start Quick Quiz →
+              </a>
+</div>
+<!-- Reader Feedback & Direct Chat Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- WhatsApp Feedback -->
+<a class="p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container shadow-sm flex items-center justify-between group transition-all" data-path="contact" href="#">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Send WhatsApp Feedback</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Direct reaction to Vincent on Chapter 1</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors text-[20px]">send</span>
+</a>
+<!-- Instagram Updates -->
+<a class="p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container shadow-sm flex items-center justify-between group transition-all" href="https://instagram.com/vincent_jevon" rel="noopener noreferrer" target="_blank">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface">Follow on Instagram</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Behind-the-scenes · @vincent_jevon</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors text-[20px]">open_in_new</span>
+</a>
+</div>
+<!-- Bottom Master Chapter Pagination Controls -->
+<nav aria-label="Chapter Pagination" class="pt-space-md flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-space-md">
+<a class="p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container text-on-surface flex items-center gap-space-sm shadow-sm transition-all group" data-path="chapters" href="#">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors text-[24px]">west</span>
+<div class="flex flex-col text-left">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Previous</span>
+<span class="font-label-lg text-label-lg font-bold text-primary">Introduction: Mostly Harmless</span>
+</div>
+</a>
+<a class="p-space-md rounded-xl bg-primary hover:bg-botanical-deep text-on-primary flex items-center justify-between sm:justify-end gap-space-sm shadow-md transition-all group" data-path="chapters" href="#">
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-label-sm text-sand-light/80 uppercase tracking-wider">Next Chapter</span>
+<span class="font-label-lg text-label-lg font-bold text-on-primary">Chapter 2: Sure, Take All My Things...</span>
+</div>
+<span class="material-symbols-outlined text-on-primary group-hover:translate-x-1 transition-transform text-[24px]">east</span>
+</a>
+</nav>
+</div>
+</main>
+</div>
+</div>
+</article>
+<!-- Reader Customizer & Audio Micro-Interactions Client Script -->
+<script>
+    (function() {
+      // 1. Live Scroll Reading Progress Bar
+      const progressBar = document.getElementById('scroll-progress-bar');
+      window.addEventListener('scroll', () => {
+        const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (totalHeight > 0) {
+          const progress = (window.scrollY / totalHeight) * 100;
+          if (progressBar) progressBar.style.width = Math.min(100, Math.max(0, progress)) + '%';
+        }
+      });
+
+      // 2. Reader Settings Drawer Toggle
+      const toggleBtn = document.getElementById('toggle-reader-settings');
+      const drawer = document.getElementById('reader-drawer');
+      if (toggleBtn && drawer) {
+        toggleBtn.addEventListener('click', () => {
+          const isHidden = drawer.classList.contains('hidden');
+          drawer.classList.toggle('hidden');
+          toggleBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+        });
+      }
+
+      // 3. Audio Narration Widget Play/Pause Simulation
+      const playBtn = document.getElementById('play-pause-btn');
+      const playIcon = document.getElementById('play-icon');
+      const quickAudioBtn = document.getElementById('quick-audio-btn');
+      const timeDisplay = document.getElementById('current-time');
+      const audioProgress = document.getElementById('audio-progress-bar');
+      let isPlaying = false;
+      let playTimer = null;
+      let currentSeconds = 81; // 1:21
+
+      function togglePlayState() {
+        isPlaying = !isPlaying;
+        if (playIcon) {
+          playIcon.textContent = isPlaying ? 'pause' : 'play_arrow';
+        }
+        if (isPlaying) {
+          playTimer = setInterval(() => {
+            currentSeconds++;
+            if (currentSeconds > 252) currentSeconds = 0;
+            const mins = Math.floor(currentSeconds / 60);
+            const secs = currentSeconds % 60;
+            if (timeDisplay) timeDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            if (audioProgress) audioProgress.style.width = `${(currentSeconds / 252) * 100}%`;
+          }, 1000);
+        } else {
+          clearInterval(playTimer);
+        }
+      }
+
+      if (playBtn) playBtn.addEventListener('click', togglePlayState);
+
+      if (quickAudioBtn) {
+        quickAudioBtn.addEventListener('click', () => {
+          const audioWidget = document.getElementById('audio-player-widget');
+          if (audioWidget) {
+            audioWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (!isPlaying) togglePlayState();
+          }
+        });
+      }
+
+      // Audio Speed Toggle
+      const speedBtn = document.getElementById('speed-toggle');
+      const speeds = ['1.0x', '1.25x', '1.5x', '0.8x'];
+      let speedIdx = 0;
+      if (speedBtn) {
+        speedBtn.addEventListener('click', () => {
+          speedIdx = (speedIdx + 1) % speeds.length;
+          speedBtn.textContent = speeds[speedIdx];
+        });
+      }
+
+      // 4. Reading Mode Typography Customization
+      const storyBody = document.getElementById('story-body');
+      const readerCanvas = document.getElementById('reader-canvas');
+      const fontDecrease = document.getElementById('font-decrease');
+      const fontIncrease = document.getElementById('font-increase');
+      const fontIndicator = document.getElementById('font-indicator');
+      const fontSerif = document.getElementById('font-serif-btn');
+      const fontSans = document.getElementById('font-sans-btn');
+      const spacingNormal = document.getElementById('spacing-normal-btn');
+      const spacingRelaxed = document.getElementById('spacing-relaxed-btn');
+
+      const fontSizes = [
+        { label: 'Small', textClass: 'text-[17px]', leading: 'leading-[28px]' },
+        { label: 'Normal', textClass: 'text-[19px]', leading: 'leading-[32px]' },
+        { label: 'Large', textClass: 'text-[22px]', leading: 'leading-[38px]' }
+      ];
+      let currentSizeIdx = 1;
+
+      function updateBodySize() {
+        if (!storyBody) return;
+        fontSizes.forEach(f => {
+          storyBody.classList.remove(f.textClass, f.leading);
+        });
+        const current = fontSizes[currentSizeIdx];
+        storyBody.classList.add(current.textClass, current.leading);
+        if (fontIndicator) fontIndicator.textContent = current.label;
+      }
+
+      if (fontDecrease) {
+        fontDecrease.addEventListener('click', () => {
+          if (currentSizeIdx > 0) {
+            currentSizeIdx--;
+            updateBodySize();
+          }
+        });
+      }
+
+      if (fontIncrease) {
+        fontIncrease.addEventListener('click', () => {
+          if (currentSizeIdx < fontSizes.length - 1) {
+            currentSizeIdx++;
+            updateBodySize();
+          }
+        });
+      }
+
+      // Typeface Switcher
+      if (fontSerif && fontSans && storyBody) {
+        fontSerif.addEventListener('click', () => {
+          storyBody.classList.remove('font-body-lg', 'font-body-md');
+          storyBody.classList.add('font-headline-sm');
+          fontSerif.classList.add('bg-surface-container-lowest', 'text-primary', 'font-bold');
+          fontSans.classList.remove('bg-surface-container-lowest', 'text-primary', 'font-bold');
+        });
+
+        fontSans.addEventListener('click', () => {
+          storyBody.classList.remove('font-headline-sm');
+          storyBody.classList.add('font-body-lg');
+          fontSans.classList.add('bg-surface-container-lowest', 'text-primary', 'font-bold');
+          fontSerif.classList.remove('bg-surface-container-lowest', 'text-primary', 'font-bold');
+        });
+      }
+
+      // Rhythm / Spacing Switcher
+      if (spacingNormal && spacingRelaxed && storyBody) {
+        spacingNormal.addEventListener('click', () => {
+          storyBody.classList.remove('gap-space-xl');
+          storyBody.classList.add('gap-space-lg');
+          spacingNormal.classList.add('bg-surface-container-lowest', 'text-primary', 'font-bold');
+          spacingRelaxed.classList.remove('bg-surface-container-lowest', 'text-primary', 'font-bold');
+        });
+
+        spacingRelaxed.addEventListener('click', () => {
+          storyBody.classList.remove('gap-space-lg');
+          storyBody.classList.add('gap-space-xl');
+          spacingRelaxed.classList.add('bg-surface-container-lowest', 'text-primary', 'font-bold');
+          spacingNormal.classList.remove('bg-surface-container-lowest', 'text-primary', 'font-bold');
+        });
+      }
+
+      // Theme Background Switcher
+      const themeBtns = document.querySelectorAll('[data-theme-btn]');
+      themeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          themeBtns.forEach(b => b.classList.remove('active', 'bg-surface-container-lowest', 'text-primary', 'font-bold'));
+          btn.classList.add('active', 'bg-surface-container-lowest', 'text-primary', 'font-bold');
+          const mode = btn.getAttribute('data-theme-btn');
+          if (readerCanvas) {
+            if (mode === 'sepia') {
+              readerCanvas.className = 'w-full bg-[#f4ecd8] text-[#3c352a] transition-colors duration-300';
+            } else if (mode === 'night') {
+              readerCanvas.className = 'w-full bg-[#1c1b1b] text-[#fcf9f8] transition-colors duration-300';
+            } else {
+              readerCanvas.className = 'w-full bg-background text-on-surface transition-colors duration-300';
+            }
+          }
+        });
+      });
+    })();
+  </script>
+</div></main><footer class="w-full bg-surface-container-low py-space-xl shadow-[0_-1px_8px_rgba(26,26,26,0.03)]"><div class="w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop"><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-space-xl pb-space-xl"><div class="lg:col-span-5 flex flex-col gap-space-sm"><div class="flex flex-col"><span class="font-headline-md text-headline-md text-primary tracking-tight">Carioca Gringo</span><span class="font-label-md text-label-md text-secondary mt-1 uppercase tracking-wider">Vincent Wilson</span></div><p class="font-body-md text-body-md text-on-surface-variant max-w-md">An unfiltered, humorous chronicle of dating misadventures, language slip-ups, and cultural revelations across Rio de Janeiro.</p><div class="flex items-center gap-space-md pt-space-xs"><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Instagram: @vincent_jevon</a><span class="text-outline-variant">•</span><a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">WhatsApp Feedback</a></div></div><div class="lg:col-span-3 flex flex-col gap-space-sm"><span class="font-label-lg text-label-lg text-on-surface font-bold uppercase tracking-wider">The Book</span><div class="flex flex-col gap-space-xs"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="chapters" href="#">Chapters Index</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="about-the-author" href="#">Meet the Author</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="downloads" href="#">EPUB &amp; PDF Downloads</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="book-home" href="#">Audio Excerpts</a></div></div><div class="lg:col-span-4 flex flex-col gap-space-sm"><span class="font-label-lg text-label-lg text-on-surface font-bold uppercase tracking-wider">Community &amp; Settings</span><div class="flex flex-col gap-space-xs"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="contribute" href="#">Support the Project &amp; Coffee</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="contact" href="#">Direct Contact &amp; Press</a><div class="pt-space-xs flex items-center gap-space-sm"><span class="font-body-sm text-body-sm text-on-surface-variant">Display Mode: Warm Paper</span><span class="text-outline-variant">·</span><button class="font-label-sm text-label-sm text-primary hover:text-botanical-deep font-semibold transition-colors" type="button">Reading Preferences</button></div></div></div></div><div class="pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-md text-center md:text-left"><p class="font-body-sm text-body-sm text-on-surface-variant">© 2026 Vincent Wilson · @vincent_jevon. All rights reserved.</p><div class="flex items-center gap-space-lg"><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="book-home" href="#">Privacy Notice</a><a class="font-label-sm text-label-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="contact" href="#">Reader Feedback</a></div></div></div></footer></body></html>

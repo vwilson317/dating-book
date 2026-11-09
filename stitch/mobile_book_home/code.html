@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf9f8;}body{overscroll-behavior:none;font-family:'Plus Jakarta Sans',sans-serif;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary-fixed-variant": "#822703", "surface-dim": "#dcd9d9", "sand-light": "#FAF5EC", "on-error": "#ffffff", "surface-bright": "#fcf9f8", "primary-container": "#1c5e47", "error-container": "#ffdad6", "inverse-primary": "#93d4b7", "surface-tint": "#296952", "primary": "#004631", "on-primary-fixed": "#002115", "inverse-on-surface": "#f3f0ef", "surface-container-low": "#f6f3f2", "surface-container-lowest": "#ffffff", "primary-fixed": "#aff0d2", "background": "#fcf9f8", "inverse-surface": "#313030", "surface-container": "#f0eded", "on-background": "#1c1b1b", "on-primary-fixed-variant": "#08513b", "surface-container-highest": "#e5e2e1", "error": "#ba1a1a", "on-secondary": "#ffffff", "charcoal-ink": "#1A1A1A", "on-tertiary-fixed": "#201b10", "on-primary-container": "#94d5b8", "tertiary": "#413c2f", "on-tertiary": "#ffffff", "tertiary-container": "#595345", "surface-variant": "#e5e2e1", "on-tertiary-fixed-variant": "#4c4639", "surface-container-high": "#eae7e7", "terracotta-accent": "#B84E29", "on-secondary-fixed": "#390b00", "botanical-deep": "#124030", "secondary-container": "#fe8359", "on-error-container": "#93000a", "outline": "#707973", "outline-variant": "#bfc9c2", "secondary-fixed": "#ffdbd0", "tertiary-fixed-dim": "#cfc5b4", "primary-fixed-dim": "#93d4b7", "tertiary-fixed": "#ebe1cf", "sand-border": "#EAE0CE", "on-secondary-container": "#701f00", "on-tertiary-container": "#d0c7b5", "on-surface-variant": "#404944", "on-surface": "#1c1b1b", "surface": "#fcf9f8", "secondary": "#a23e1a", "secondary-fixed-dim": "#ffb59d", "on-primary": "#ffffff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter": "1.5rem", "margin-mobile": "1.25rem", "space-sm": "0.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-lg": "1.5rem", "margin": "2rem", "space-md": "1rem", "margin-desktop": "3rem", "space-xs": "0.25rem" }, "fontFamily": { "body-sm": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-lg": ["Literata"], "label-md": ["Plus Jakarta Sans"], "headline-sm": ["Literata"], "display-lg-mobile": ["Literata"], "body-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Literata"], "body-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Literata"], "display-lg": ["Literata"] }, "fontSize": { "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.015em", "fontWeight": "500" }], "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-sm": ["20px", { "lineHeight": "26px", "fontWeight": "500" }], "display-lg-mobile": ["36px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "700" }], "headline-md": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "display-lg": ["52px", { "lineHeight": "60px", "letterSpacing": "-0.02em", "fontWeight": "600" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-sand-light/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-margin-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><div class="w-11 h-11 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center shrink-0"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-sand-light">R</span></div><div class="flex flex-col min-w-0"><div class="flex items-center gap-1.5"><span class="font-label-lg text-label-lg text-primary tracking-wide leading-none truncate">RMB</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-secondary/10 text-secondary leading-none uppercase">Gringo Abroad</span></div><span class="font-headline-sm text-headline-sm text-on-surface truncate leading-tight">Home</span></div></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Toggle Language" class="h-11 px-2.5 rounded-full bg-surface-container-high text-primary flex items-center justify-center gap-1 hover:bg-surface-variant transition-colors"><span class="font-label-sm text-label-sm text-primary font-bold">EN</span><span class="text-outline font-label-sm text-label-sm">/</span><span class="font-label-sm text-label-sm text-on-surface-variant">PT</span></button><button aria-label="Typography &amp; Appearance" class="w-11 h-11 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[22px]">format_size</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Toast Notification -->
+<div class="mx-margin-mobile mt-space-md bg-sand-light rounded-xl p-space-md shadow-sm flex items-center justify-between gap-space-sm transition-all duration-300" id="read-bookmark-banner">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">bookmark_heart</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Uncensored Memoir</span>
+<span class="font-body-sm text-body-sm text-charcoal-ink font-medium truncate">No signup • Pure unfiltered Rio stories</span>
+</div>
+</div>
+<button aria-label="Dismiss banner" class="text-on-surface-variant hover:text-charcoal-ink p-1 shrink-0" onclick="document.getElementById('read-bookmark-banner').classList.add('hidden')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<!-- Hero Editorial Card -->
+<section class="px-margin-mobile pt-space-lg pb-space-md flex flex-col">
+<div class="flex flex-wrap items-center gap-1.5 mb-space-sm">
+<span class="px-2.5 py-1 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm uppercase tracking-wider">Memoir</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm">Rio de Janeiro</span>
+<span class="px-2.5 py-1 rounded-full bg-secondary/10 text-secondary font-label-sm text-label-sm font-semibold">100% Free</span>
+<span class="px-2.5 py-1 rounded-full bg-sand-light text-tertiary font-label-sm text-label-sm">No Signup</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary tracking-tight leading-tight mb-space-xs">
+      Read My Book: <span class="italic font-headline-sm text-headline-sm text-secondary block mt-0.5">Misadventures of a Gringo Dating Abroad</span>
+</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mb-space-md">
+      A brutally honest, laugh-out-loud chronicle of navigating Brazilian romance, culture shock, and awkward language mishaps with zero Portuguese.
+    </p>
+<!-- Stats Matrix -->
+<div class="grid grid-cols-3 gap-2 bg-surface-container-low rounded-xl p-space-md mb-space-lg">
+<div class="flex flex-col items-center text-center">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">17</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant leading-tight mt-0.5">Uncensored Stories</span>
+</div>
+<div class="flex flex-col items-center text-center border-x-0 bg-transparent">
+<span class="font-headline-sm text-headline-sm text-secondary font-bold">FREE</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant leading-tight mt-0.5">Forever &amp; Always</span>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="flex items-center gap-0.5 text-secondary">
+<span class="font-headline-sm text-headline-sm font-bold">4.8</span>
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant leading-tight mt-0.5">Reader Rating</span>
+</div>
+</div>
+<!-- Dual Primary Action CTAs -->
+<div class="flex flex-col gap-2.5">
+<a class="w-full h-13 py-3.5 px-space-md rounded-lg bg-primary text-on-primary flex items-center justify-center gap-2 hover:bg-botanical-deep active:scale-[0.99] transition shadow-sm font-label-lg text-label-lg text-center" href="#ch-00">
+<span class="material-symbols-outlined text-[20px]">auto_stories</span>
+<span>Start Reading (Intro)</span>
+</a>
+<a class="w-full h-12 py-3 px-space-md rounded-lg bg-surface-container-high text-primary flex items-center justify-center gap-2 hover:bg-surface-variant active:scale-[0.99] transition font-label-md text-label-md text-center" href="#all-chapters">
+<span class="material-symbols-outlined text-[18px]">format_list_numbered</span>
+<span>Browse All 17 Chapters</span>
+</a>
+</div>
+</section>
+<!-- Author Spotlight: Vincent Wilson Candid Feature -->
+<section class="px-margin-mobile py-space-md">
+<div class="bg-sand-light rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="relative shrink-0">
+<img class="w-16 h-16 rounded-full object-cover shadow-inner" data-alt="Candid authentic portrait photograph of Vincent Wilson, a friendly 38-year-old software engineer and American digital nomad with a warm smile and scruffy beard, seated at a relaxed beachfront kiosk in Copacabana Rio de Janeiro under natural golden hour light, holding a chilled coconut." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFhRIjT1scMnIaICrMLLW2pnR4AB4xoP7acn4WTuGEkAZvl2VwyQcUrfB8iR4pZLZ5fynJ6w7pPckINgaYbomMvNrqBTUb8n46Xy0B6plYJt75BUAq7RNNzTYJnV9XklU1FFzfDfxs0o6kDmobavVFebr71SMtcACJfStm7iR86x16sefogjq852goTnwXdURfCtzYF3BQAs4ppgf-tFMpZGRJFwmU9bYaMGvMHQ0"/>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary text-sand-light flex items-center justify-center text-[12px] shadow-sm">
+<span class="material-symbols-outlined text-[14px]">terminal</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">Vincent Wilson</span>
+<span class="material-symbols-outlined text-secondary text-[16px]" title="Author Verified">verified</span>
+</div>
+<span class="font-label-md text-label-md text-botanical-deep">Software Engineer &amp; Nomad in Rio</span>
+<span class="font-label-sm text-label-sm text-outline">Resident of Rio for 3+ years • Former Atlantan</span>
+</div>
+</div>
+<!-- Candid Quote Pill -->
+<div class="bg-surface-container-lowest rounded-lg p-space-md shadow-sm flex items-start gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[24px] shrink-0 leading-none">format_quote</span>
+<p class="font-headline-sm text-body-md italic text-charcoal-ink leading-relaxed">
+          “My Portuguese vocabulary is still <span class="font-semibold text-primary not-italic">‘obrigado’</span>, <span class="font-semibold text-primary not-italic">‘cerveja’</span>, and a smile that says: <span class="text-secondary font-medium">Hello, I’m mostly harmless.</span>”
+        </p>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant pt-1">
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+<span>Ipanema &amp; Santa Teresa, RJ</span>
+</div>
+<a class="flex items-center gap-1 text-secondary font-label-sm text-label-sm font-semibold hover:underline" href="https://instagram.com/vincent_jevon" rel="noopener noreferrer" target="_blank">
+<span>@vincent_jevon</span>
+<span class="material-symbols-outlined text-[14px]">arrow_outward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Featured First Taste: Chapter 00 Preview Card -->
+<section class="px-margin-mobile py-space-md flex flex-col" id="ch-00">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Start Here</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 4 min read
+      </span>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-md flex flex-col">
+<div class="flex items-start justify-between gap-space-sm mb-space-xs">
+<div>
+<span class="font-label-sm text-label-sm text-primary font-bold tracking-wider uppercase">Chapter 00</span>
+<h2 class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">Introduction: Mostly Harmless</h2>
+</div>
+<span class="w-8 h-8 rounded-full bg-sand-light text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">play_circle</span>
+</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 mb-space-md leading-relaxed">
+        No one said dating would be easy. That couldn’t be more true when you’re dating abroad and don’t speak the language. This book is first and foremost an account of my personal lived experiences dating and traveling as a now 38-year-old man from the USA...
+      </p>
+<!-- Reading Progress Micro Bar -->
+<div class="w-full bg-surface-container-high rounded-full h-1.5 mb-space-md overflow-hidden">
+<div class="bg-primary h-1.5 rounded-full w-1/4"></div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-outline">Unopened draft preview</span>
+<a class="px-4 py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-botanical-deep transition flex items-center gap-1" href="#reader-modal" onclick="document.getElementById('quick-reader-drawer').classList.remove('hidden')">
+<span>Read Preview</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Interactive Teaser Quiz Banner: 'Date the Gringo' -->
+<section class="px-margin-mobile py-space-md">
+<div class="bg-secondary text-on-secondary rounded-xl p-space-md shadow-md relative overflow-hidden flex flex-col">
+<!-- Decorative ambient flourish -->
+<div class="absolute -right-6 -bottom-6 w-28 h-28 rounded-full bg-on-secondary/10 pointer-events-none"></div>
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary-fixed">favorite</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary-fixed font-bold">Interactive Game</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-semibold mb-1 text-on-secondary">
+        So you want to date the gringo?
+      </h3>
+<p class="font-body-sm text-body-sm text-secondary-fixed-dim mb-space-md leading-relaxed">
+        Take the playful 3-question quiz testing your knowledge of Brazilian dating etiquette and my questionable life choices. High scorers get direct WhatsApp access.
+      </p>
+<button class="w-full py-3 px-space-md rounded-lg bg-surface-container-lowest text-secondary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-sm hover:bg-sand-light active:scale-[0.99] transition" onclick="openQuizModal()">
+<span>Take the 3-Question Quiz</span>
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+</button>
+</div>
+</section>
+<!-- Curated Chapters Carousel / Stack -->
+<section class="px-margin-mobile pt-space-md pb-space-sm flex flex-col" id="all-chapters">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">Fan-Favorite Chapters</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">17 Total Available</span>
+</div>
+<!-- Chapter Card 1 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md mb-space-sm shadow-sm flex flex-col hover:bg-sand-light/50 transition">
+<div class="flex items-start justify-between gap-space-sm mb-1">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm flex items-center justify-center font-bold">01</span>
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold">Romance / Breakthrough</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">4 min read</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-charcoal-ink font-medium mb-1">How I Met My Wife</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-space-sm">
+        Buying a drink for the outgoing guy across the bar in Rio, accidental public make-outs, and translating flirtation line-by-line in the bathroom queue.
+      </p>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-primary font-medium">Rio de Janeiro, Brasil</span>
+<button class="text-primary hover:text-botanical-deep flex items-center gap-0.5 font-label-sm text-label-sm font-bold" onclick="alert('Opening Chapter 01: How I Met My Wife')">
+<span>Read Story</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Chapter Card 2 -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md mb-space-sm shadow-sm flex flex-col hover:bg-sand-light/50 transition">
+<div class="flex items-start justify-between gap-space-sm mb-1">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-secondary/10 text-secondary font-label-sm text-label-sm flex items-center justify-center font-bold">02</span>
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold">Travel Horror Story</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">4 min read</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-charcoal-ink font-medium mb-1">Sure, Take All My Things, But Not the Camera</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-space-sm">
+        Medellín horror stories, spiked hotel room drinks, sleeping for 30 hours, and realizing my expensive DSLR wasn't cool enough to steal.
+      </p>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-primary font-medium">Medellín, Colombia</span>
+<button class="text-primary hover:text-botanical-deep flex items-center gap-0.5 font-label-sm text-label-sm font-bold" onclick="alert('Opening Chapter 02: Sure, Take All My Things...')">
+<span>Read Story</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Chapter Card 3: Comedic highlight -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md mb-space-md shadow-sm flex flex-col hover:bg-sand-light/50 transition">
+<div class="flex items-start justify-between gap-space-sm mb-1">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm flex items-center justify-center font-bold">07</span>
+<span class="font-label-sm text-label-sm text-tertiary uppercase font-semibold">Edinburgh Fringe</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">4 min read</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-charcoal-ink font-medium mb-1">Never Date A Comedian</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2 mb-space-sm">
+        Getting pulled on stage at a comedy festival, petty theft hobbies, and the tandem bicycle getaway question that brought the house down.
+      </p>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-primary font-medium">Edinburgh, Scotland</span>
+<button class="text-primary hover:text-botanical-deep flex items-center gap-0.5 font-label-sm text-label-sm font-bold" onclick="alert('Opening Chapter 07: Never Date A Comedian')">
+<span>Read Story</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Full Directory Expand Bar -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-headline-sm text-body-lg text-charcoal-ink font-semibold">14 More Chapters</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">From 'Japan' to 'Shirt As An Umbrella'</span>
+</div>
+<button class="h-10 px-3.5 rounded-lg bg-surface-container-high text-primary font-label-md text-label-md flex items-center gap-1 hover:bg-surface-variant transition" id="toggle-chapters-btn" onclick="toggleChapterList()">
+<span>Show Index</span>
+<span class="material-symbols-outlined text-[18px]" id="toggle-chapters-icon">expand_more</span>
+</button>
+</div>
+<!-- Hidden Extended Chapter List -->
+<div class="hidden flex-col gap-2 mt-2 pt-2" id="extended-chapters">
+<div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-charcoal-ink font-medium">Ch 03: How Long Have You Been Dating Your Boyfriend?</span>
+<span class="font-label-sm text-label-sm text-outline">6 min</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-charcoal-ink font-medium">Ch 04: Are You Toxic? (Carioca Beach Club)</span>
+<span class="font-label-sm text-label-sm text-outline">4 min</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-charcoal-ink font-medium">Ch 05: Neighbors Know My Name (Shoulder Kiss)</span>
+<span class="font-label-sm text-label-sm text-outline">4 min</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-charcoal-ink font-medium">Ch 06: Japan (The Manic Episode Reality)</span>
+<span class="font-label-sm text-label-sm text-outline">3 min</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-charcoal-ink font-medium">Ch 11: Dez Cerveja (Palm Reading on Ipanema)</span>
+<span class="font-label-sm text-label-sm text-outline">4 min</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-charcoal-ink font-medium">Ch 15: Eu Tô Famoso (Pedra do Sal Decoy)</span>
+<span class="font-label-sm text-label-sm text-outline">4 min</span>
+</div>
+<div class="bg-surface-container-lowest p-3 rounded-lg flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-charcoal-ink font-medium">Ch 17: Shirt As An Umbrella (To My Muse)</span>
+<span class="font-label-sm text-label-sm text-outline">2 min</span>
+</div>
+</div>
+</section>
+<!-- Reader Support / Micro Contribution Pledge -->
+<section class="px-margin-mobile py-space-md">
+<div class="bg-sand-light rounded-xl p-space-md shadow-sm flex flex-col">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="w-8 h-8 rounded-full bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">volunteer_activism</span>
+</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">Fuel the Misadventures</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">100% of funds go toward promo</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-space-md leading-relaxed">
+        The book is free and will always be free. If you had a laugh at my questionable decisions, toss a coin to help share these stories with more lost souls.
+      </p>
+<!-- Tier Selection Micro-grid -->
+<div class="grid grid-cols-3 gap-2 mb-space-md">
+<button class="flex flex-col items-center justify-center p-2 rounded-lg bg-surface-container-lowest hover:bg-white active:scale-95 transition text-center shadow-xs">
+<span class="font-label-lg text-label-lg text-primary font-bold">$3.99</span>
+<span class="font-label-sm text-label-sm text-charcoal-ink font-medium leading-tight mt-0.5">Name in Book</span>
+</button>
+<button class="flex flex-col items-center justify-center p-2 rounded-lg bg-surface-container-lowest hover:bg-white active:scale-95 transition text-center shadow-xs">
+<span class="font-label-lg text-label-lg text-secondary font-bold">$5.99</span>
+<span class="font-label-sm text-label-sm text-charcoal-ink font-medium leading-tight mt-0.5">+ IG Story</span>
+</button>
+<button class="flex flex-col items-center justify-center p-2 rounded-lg bg-surface-container-lowest hover:bg-white active:scale-95 transition text-center shadow-xs">
+<span class="font-label-lg text-label-lg text-primary-container font-bold">$20+</span>
+<span class="font-label-sm text-label-sm text-charcoal-ink font-medium leading-tight mt-0.5">Next Edition</span>
+</button>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-label-sm text-label-sm">Prefer free support?</span>
+<button class="flex items-center gap-1 text-primary font-label-sm text-label-sm font-bold hover:underline" onclick="shareBook()">
+<span class="material-symbols-outlined text-[16px]">share</span>
+<span>Share with a friend</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Community & Real-time Connect Channels -->
+<section class="px-margin-mobile pt-space-sm pb-space-lg flex flex-col gap-2.5">
+<div class="flex items-center justify-between px-1">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Join the Gringo Diaspora</span>
+<span class="font-label-sm text-label-sm text-primary font-medium">New drops weekly</span>
+</div>
+<!-- WhatsApp Chat Direct -->
+<a class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between hover:bg-sand-light transition" href="https://wa.me/?text=Hey%20Vincent!%20Just%20started%20reading%20Read%20My%20Book..." rel="noopener noreferrer" target="_blank">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-[#25D366]/15 text-[#128C7E] flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">chat</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-charcoal-ink font-semibold">Send Direct Feedback</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Chat with Vincent on WhatsApp</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px]">chevron_right</span>
+</a>
+<!-- Instagram Community Link -->
+<a class="w-full bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex items-center justify-between hover:bg-sand-light transition" href="https://instagram.com/vincent_jevon" rel="noopener noreferrer" target="_blank">
+<div class="flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[22px]">photo_camera</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-charcoal-ink font-semibold">Follow On Instagram</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Behind the scenes &amp; Rio updates</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[20px]">chevron_right</span>
+</a>
+<!-- Footer Colophon -->
+<div class="pt-space-md text-center flex flex-col items-center gap-1 text-outline">
+<span class="font-headline-sm text-headline-sm text-primary font-bold">RMB</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs">
+        Written by Vincent Wilson from an apartment in Rio de Janeiro with weak Wi-Fi and lots of love.
+      </p>
+<span class="font-label-sm text-label-sm text-outline mt-1">© 2026 Vincent Wilson • All misadventures lived honestly.</span>
+</div>
+</section>
+<!-- Interactive 3-Question Quiz Bottom Sheet Modal -->
+<div class="fixed inset-0 z-50 bg-charcoal-ink/60 backdrop-blur-sm hidden flex items-end justify-center" id="quiz-modal">
+<div class="w-full max-w-md bg-surface-container-lowest rounded-t-2xl p-space-lg max-h-[751px] overflow-y-auto flex flex-col shadow-2xl transition-transform">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[22px]">quiz</span>
+<span class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">Date the Gringo Quiz</span>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center" onclick="closeQuizModal()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-md" id="quiz-step-container">
+<!-- Question 1 -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-bold tracking-wider">Question 1 of 3</span>
+<p class="font-body-md text-body-md text-charcoal-ink font-medium">
+            Vincent's entire Portuguese vocabulary consists of three things. Which of these is NOT one of them?
+          </p>
+<div class="flex flex-col gap-2 mt-1">
+<button class="quiz-btn w-full p-3 rounded-lg bg-surface-container-low text-left font-body-sm text-body-sm hover:bg-surface-container transition" onclick="selectAnswer(this, false)">
+              A) Obrigado
+            </button>
+<button class="quiz-btn w-full p-3 rounded-lg bg-surface-container-low text-left font-body-sm text-body-sm hover:bg-surface-container transition" onclick="selectAnswer(this, false)">
+              B) Cerveja
+            </button>
+<button class="quiz-btn w-full p-3 rounded-lg bg-surface-container-low text-left font-body-sm text-body-sm hover:bg-surface-container transition" onclick="selectAnswer(this, true)">
+              C) Tudo bom, saudades
+            </button>
+</div>
+</div>
+<div class="hidden p-3 rounded-lg bg-sand-light text-primary font-body-sm text-body-sm font-medium" id="quiz-feedback"></div>
+<button class="w-full py-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:bg-botanical-deep transition" id="quiz-submit-btn" onclick="finishQuiz()">
+          Next Question
+        </button>
+</div>
+</div>
+</div>
+<!-- Interactive Quick Preview Drawer -->
+<div class="fixed inset-0 z-50 bg-charcoal-ink/60 backdrop-blur-sm hidden flex items-end justify-center" id="quick-reader-drawer">
+<div class="w-full max-w-md bg-sand-light rounded-t-2xl p-space-lg max-h-[751px] overflow-y-auto flex flex-col shadow-2xl">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-bold">Chapter 00 • Full Excerpt</span>
+<span class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">Mostly Harmless</span>
+</div>
+<button class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center" onclick="document.getElementById('quick-reader-drawer').classList.add('hidden')">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+<div class="flex flex-col gap-space-md text-charcoal-ink font-body-md text-body-md leading-relaxed">
+<p>
+          No one said dating would be easy. That couldn’t be more true when you’re dating abroad and don’t speak the language.
+        </p>
+<p>
+          This book is first and foremost an account of my personal lived experiences dating and traveling as a now 38-year-old man from the USA. I’ve lived in Rio for almost three years and I don’t speak Portuguese, and before that I spent several years as a digital nomad.
+        </p>
+<p class="italic text-primary bg-surface-container-lowest p-3 rounded-lg shadow-inner">
+          “My vocabulary is still ‘obrigado,’ ‘cerveja,’ and a smile that says, ‘Hello, I’m mostly harmless.’”
+        </p>
+<p>
+          The first story that comes to mind is my first “date” in Medellín. It ended with her berating me in English, in public, for an hour... Looking back, I should have climbed out the bathroom window instead.
+        </p>
+</div>
+<div class="mt-space-lg pt-space-sm flex flex-col gap-2">
+<button class="w-full py-3 rounded-lg bg-primary text-on-primary font-label-md text-label-md" onclick="document.getElementById('quick-reader-drawer').classList.add('hidden')">
+          Done Reading
+        </button>
+</div>
+</div>
+</div>
+<script>
+    function toggleChapterList() {
+      const container = document.getElementById('extended-chapters');
+      const icon = document.getElementById('toggle-chapters-icon');
+      const btn = document.getElementById('toggle-chapters-btn');
+      
+      if (container.classList.contains('hidden')) {
+        container.classList.remove('hidden');
+        container.classList.add('flex');
+        icon.innerText = 'expand_less';
+        btn.querySelector('span:first-child').innerText = 'Hide Index';
+      } else {
+        container.classList.add('hidden');
+        container.classList.remove('flex');
+        icon.innerText = 'expand_more';
+        btn.querySelector('span:first-child').innerText = 'Show Index';
+      }
+    }
+
+    function openQuizModal() {
+      document.getElementById('quiz-modal').classList.remove('hidden');
+    }
+
+    function closeQuizModal() {
+      document.getElementById('quiz-modal').classList.add('hidden');
+    }
+
+    function selectAnswer(button, isCorrect) {
+      const allBtns = document.querySelectorAll('.quiz-btn');
+      allBtns.forEach(btn => {
+        btn.classList.remove('bg-primary-container', 'text-on-primary', 'bg-error-container', 'text-error');
+        btn.classList.add('bg-surface-container-low');
+      });
+
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.remove('hidden');
+
+      if (isCorrect) {
+        button.classList.remove('bg-surface-container-low');
+        button.classList.add('bg-primary-container', 'text-on-primary');
+        feedback.innerText = "Parabéns! Correct. Vincent definitely doesn't know 'saudades'. Only beer and smiles!";
+      } else {
+        button.classList.remove('bg-surface-container-low');
+        button.classList.add('bg-error-container', 'text-error');
+        feedback.innerText = "Nope! That is actually one of the 3 things he DOES say. Try option C!";
+      }
+    }
+
+    function finishQuiz() {
+      const container = document.getElementById('quiz-step-container');
+      container.innerHTML = `
+        <div class="flex flex-col items-center text-center p-space-md">
+          <span class="material-symbols-outlined text-[48px] text-secondary mb-2">military_tech</span>
+          <span class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">Quiz Completed!</span>
+          <p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-space-md">
+            You know the gringo playbook well enough to survive Rio. Ready to chat or read Chapter 01?
+          </p>
+          <a href="https://wa.me/?text=Hey%20Vincent!%20I%20just%20aced%20your%20gringo%20quiz!" class="w-full py-3 rounded-lg bg-[#25D366] text-white font-label-md text-label-md flex items-center justify-center gap-1.5 shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">chat</span>
+            <span>Slide into Vincent's WhatsApp</span>
+          </a>
+        </div>
+      `;
+    }
+
+    function shareBook() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Read My Book: Misadventures of a Gringo Dating Abroad',
+          text: 'Check out Vincent Wilson’s free memoir about dating in Rio!',
+          url: window.location.href,
+        }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+        alert('Link copied to clipboard!');
+      }
+    }
+  </script>
+</div></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-sand-light/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="flex justify-around items-center h-16 px-space-xs"><a aria-current="page" class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 transition-colors text-primary font-semibold" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">auto_stories</span><span class="font-label-sm text-label-sm">Home</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 text-on-surface-variant hover:text-primary transition-colors" data-path="chapters" href="#"><span class="material-symbols-outlined text-[22px]">format_list_bulleted</span><span class="font-label-sm text-label-sm">Chapters</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 text-on-surface-variant hover:text-primary transition-colors" data-path="reader" href="#"><span class="material-symbols-outlined text-[22px]">menu_book</span><span class="font-label-sm text-label-sm">Reader</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 text-on-surface-variant hover:text-primary transition-colors" data-path="contribute" href="#"><span class="material-symbols-outlined text-[22px]">volunteer_activism</span><span class="font-label-sm text-label-sm">Contribute</span></a></div></nav></body></html>

@@ -1,0 +1,51 @@
+---
+// The Material Symbols used by the Stitch pages, inlined so readers don't download an icon font.
+// To add one: import it from @material-symbols/svg-400/outlined and add it to `icons`.
+import menu_book from '@material-symbols/svg-400/outlined/menu_book.svg?raw';
+import format_list_bulleted from '@material-symbols/svg-400/outlined/format_list_bulleted.svg?raw';
+import local_cafe from '@material-symbols/svg-400/outlined/local_cafe.svg?raw';
+import format_quote from '@material-symbols/svg-400/outlined/format_quote.svg?raw';
+import headphones from '@material-symbols/svg-400/outlined/headphones.svg?raw';
+import check_circle from '@material-symbols/svg-400/outlined/check_circle.svg?raw';
+import arrow_forward from '@material-symbols/svg-400/outlined/arrow_forward.svg?raw';
+import arrow_downward from '@material-symbols/svg-400/outlined/arrow_downward.svg?raw';
+import photo_camera from '@material-symbols/svg-400/outlined/photo_camera.svg?raw';
+import open_in_new from '@material-symbols/svg-400/outlined/open_in_new.svg?raw';
+import chat from '@material-symbols/svg-400/outlined/chat.svg?raw';
+import auto_stories from '@material-symbols/svg-400/outlined/auto_stories.svg?raw';
+import schedule from '@material-symbols/svg-400/outlined/schedule.svg?raw';
+import volunteer_activism from '@material-symbols/svg-400/outlined/volunteer_activism.svg?raw';
+import share from '@material-symbols/svg-400/outlined/share.svg?raw';
+import expand_more from '@material-symbols/svg-400/outlined/keyboard_arrow_down.svg?raw';
+import download from '@material-symbols/svg-400/outlined/download.svg?raw';
+import arrow_back from '@material-symbols/svg-400/outlined/arrow_back.svg?raw';
+import volume_up from '@material-symbols/svg-400/outlined/volume_up.svg?raw';
+import tune from '@material-symbols/svg-400/outlined/tune.svg?raw';
+import chevron_right from '@material-symbols/svg-400/outlined/chevron_right.svg?raw';
+import graphic_eq from '@material-symbols/svg-400/outlined/graphic_eq.svg?raw';
+import search from '@material-symbols/svg-400/outlined/search.svg?raw';
+import swap_vert from '@material-symbols/svg-400/outlined/swap_vert.svg?raw';
+import timelapse from '@material-symbols/svg-400/outlined/timelapse.svg?raw';
+import lock_open from '@material-symbols/svg-400/outlined/lock_open.svg?raw';
+import translate from '@material-symbols/svg-400/outlined/translate.svg?raw';
+import favorite from '@material-symbols/svg-400/outlined/favorite.svg?raw';
+import send from '@material-symbols/svg-400/outlined/send.svg?raw';
+import play_circle from '@material-symbols/svg-400/outlined/play_circle.svg?raw';
+import history_edu from '@material-symbols/svg-400/outlined/history_edu.svg?raw';
+import campaign from '@material-symbols/svg-400/outlined/campaign.svg?raw';
+
+const icons = {
+  menu_book, format_list_bulleted, local_cafe, format_quote, headphones, check_circle, arrow_forward,
+  arrow_downward, photo_camera, open_in_new, chat, auto_stories, schedule, volunteer_activism, share,
+  expand_more, download, arrow_back, volume_up, tune, chevron_right, graphic_eq, search, swap_vert, timelapse, lock_open, translate, favorite, send, play_circle, history_edu, campaign,
+};
+
+interface Props {
+  name: keyof typeof icons;
+  class?: string;
+}
+const { name, class: className = '' } = Astro.props;
+const svg = icons[name].replace(/<svg[^>]*?viewBox="([^"]+)"[^>]*>/, `<svg class="st-icon ${className}" viewBox="$1" aria-hidden="true">`);
+---
+
+<Fragment set:html={svg} />

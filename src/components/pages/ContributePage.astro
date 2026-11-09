@@ -1,0 +1,173 @@
+---
+// The Contribute page at /buy/, from stitch/contribute_support and stitch/mobile_contribute_support.
+import { SITE, checkoutEnabled, instagramUrl, supportTiers } from '../../site.config';
+import { LANGS, localePath, t, type Lang } from '../../i18n/ui';
+import { buy, fillPrice } from '../../i18n/buy';
+import Placeholder from '../Placeholder.astro';
+import Tiers from '../Tiers.astro';
+import Icon from '../home/Icon.astro';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const s = t(lang);
+const b = buy[lang];
+const page = b.page;
+const eyebrow = fillPrice(b.eyebrow, SITE.support.tiers[0].price[lang]);
+const shareUrl = new URL(localePath(lang, '/'), Astro.site).toString();
+const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
+const wrap = 'max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop';
+const altCard = 'p-space-md md:p-space-lg rounded-lg bg-surface-container-lowest shadow-sm flex flex-col justify-between';
+const altLink = 'mt-space-md inline-flex items-center gap-space-xs font-label-md text-label-md font-bold transition-colors text-primary hover:text-botanical-deep';
+const mockQuotes = [
+  ['MR', 'Mateo R.'],
+  ['TF', 'Thais F.'],
+  ['BL', 'Brendan L.'],
+];
+---
+
+<div class="flex flex-col w-full bg-background font-body-md text-on-surface antialiased">
+  <section class="relative w-full overflow-hidden bg-surface py-space-lg md:py-margin-desktop">
+    <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl pointer-events-none"></div>
+    <div class={wrap}>
+      <div class="flex flex-col lg:flex-row items-start justify-between gap-space-lg lg:gap-space-xl">
+        <div class="max-w-2xl flex flex-col gap-space-md">
+          <div class="inline-flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-high w-fit">
+            <span class="w-2 h-2 rounded-full bg-terracotta-accent"></span>
+            <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">{eyebrow}</span>
+          </div>
+          <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-primary tracking-tight md:font-medium">{b.support.manual.heading}</h1>
+          <p class="font-headline-sm text-headline-sm text-terracotta-accent italic font-normal">{b.support.manual.lede}</p>
+          <div class="mt-space-sm p-space-md md:p-space-lg rounded-xl bg-sand-light shadow-sm flex flex-col gap-space-xs relative overflow-hidden">
+            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary"></div>
+            <p class="font-body-md text-body-md md:font-body-lg md:text-body-lg text-charcoal-ink leading-relaxed pl-1">{b.support.promise}</p>
+            <span class="font-label-md text-label-md text-on-surface-variant pl-1">— {SITE.author}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {
+    supportTiers(lang).length > 0 && (
+      <section class="w-full bg-surface-container-low py-space-xl">
+        <div class={wrap}>
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm md:gap-space-md mb-space-lg md:mb-space-xl">
+            <h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary tracking-tight">{page.tiersTitle}</h2>
+            <p class="font-body-md text-body-md text-on-surface-variant max-w-md">{page.tiersBody}</p>
+          </div>
+          <p class="mb-space-md font-body-sm text-body-sm text-terracotta-accent" data-checkout-notice="canceled" hidden>{b.checkout.canceled}</p>
+          <p class="mb-space-md font-body-sm text-body-sm text-terracotta-accent" data-checkout-notice="error" hidden>{b.checkout.error}</p>
+          <Tiers lang={lang} location="hero" variant="cards" />
+          <p class="mt-space-lg text-center font-body-sm text-body-sm text-on-surface-variant">🔒 {b.secure}</p>
+        </div>
+      </section>
+    )
+  }
+  {!checkoutEnabled && import.meta.env.DEV && <p class="text-center py-2 font-body-sm text-body-sm text-terracotta-accent">{b.notSet}</p>}
+
+  <section class="w-full bg-surface py-space-xl">
+    <div class={wrap}>
+      <div class="rounded-xl bg-surface-container-low p-space-md md:p-space-xl shadow-sm">
+        <div class="max-w-2xl mb-space-lg">
+          <span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">{page.altEyebrow}</span>
+          <h2 class="font-headline-sm text-headline-sm md:font-headline-md md:text-headline-md text-primary mt-1">{b.support.altTitle}</h2>
+          <p class="font-body-md text-body-md text-on-surface-variant mt-space-xs">{page.altBody}</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+          <div class={altCard}>
+            <div class="flex flex-col gap-space-xs">
+              <span class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-space-xs"><Icon name="share" class="text-[20px]" /></span>
+              <h3 class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">{page.shareTitle}</h3>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">{page.shareBody}</p>
+            </div>
+            <button type="button" class={altLink} data-share={shareUrl} data-share-title={`${s.bookTitle}: ${s.bookSubtitle}`} data-copied={s.linkCopied} data-share-location="buy_page">{b.support.shareCta}</button>
+          </div>
+          <div class={altCard}>
+            <div class="flex flex-col gap-space-xs">
+              <span class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary mb-space-xs"><Icon name="chat" class="text-[20px]" /></span>
+              <h3 class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">{page.commentTitle}</h3>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">{page.commentBody}</p>
+            </div>
+            <a class={altLink} href={instagramUrl} data-track="instagram_clicked" data-prop-location="buy_page" rel="me noopener">{s.follow(SITE.instagram)}<Icon name="open_in_new" class="text-[16px]" /></a>
+          </div>
+          {
+            feedbackOn && (
+              <div class={altCard}>
+                <div class="flex flex-col gap-space-xs">
+                  <span class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-space-xs"><Icon name="send" class="text-[20px]" /></span>
+                  <h3 class="font-headline-sm text-headline-sm text-charcoal-ink font-semibold">{page.waTitle}</h3>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">{page.waBody}</p>
+                </div>
+                <a class={altLink} href="#" data-wa-general={s.waGeneralMsg} data-source="buy_page" rel="noopener" target="_blank">{page.waCta}</a>
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Placeholder>
+    <section class="w-full py-space-lg">
+      <div class={wrap}>
+        <h2 class="text-center font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary tracking-tight mb-space-xl">Why readers keep supporting</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-space-lg">
+          {mockQuotes.map(([initials, name]) => (
+            <figure class="p-space-lg rounded-xl bg-surface-container-low shadow-sm flex flex-col justify-between gap-space-md">
+              <blockquote class="font-body-md text-body-md text-charcoal-ink italic">Made-up testimonial from the Stitch mockup. Replace with a real reader's words.</blockquote>
+              <figcaption class="flex items-center gap-space-sm">
+                <span class="w-9 h-9 rounded-full bg-surface-variant flex items-center justify-center text-primary font-label-md text-label-md">{initials}</span>
+                <span class="font-label-md text-label-md text-charcoal-ink">{name}</span>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
+    </section>
+  </Placeholder>
+
+  <section class="w-full py-space-xl">
+    <div class="max-w-3xl mx-auto px-margin-mobile md:px-margin">
+      <div class="text-center mb-space-lg">
+        <span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">{page.faqEyebrow}</span>
+        <h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary tracking-tight mt-1">{b.faqTitle}</h2>
+      </div>
+      <div class="flex flex-col gap-space-sm">
+        {
+          b.faq.map((f) => (
+            <details class="group rounded-lg bg-surface-container-low overflow-hidden">
+              <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer p-space-md flex items-center justify-between gap-space-sm font-headline-sm text-headline-sm text-on-surface">
+                {f.q}
+                <Icon name="expand_more" class="text-[20px] text-on-surface-variant transition-transform group-open:rotate-180" />
+              </summary>
+              <p class="px-space-md pb-space-md font-body-md text-body-md text-on-surface-variant">{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full pb-space-xl">
+    <div class={wrap}>
+      <div class="rounded-xl bg-[#124030] text-[#faf5ec] p-space-lg md:p-space-xl shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-space-md">
+        <div class="flex flex-col gap-space-xs">
+          <h2 class="font-headline-md text-headline-md">{b.freeTitle}</h2>
+          <p class="font-body-md text-body-md opacity-85 max-w-xl">{b.freeBody}</p>
+        </div>
+        <a class="inline-flex items-center justify-center px-space-lg py-3 rounded-lg bg-white text-[#124030] font-label-lg text-label-lg whitespace-nowrap shadow-sm" href={localePath(lang, '/chapters/')} data-track="buy_read_free_clicked">{b.freeCta}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full pb-space-xl">
+    <div class={wrap}>
+      <div class="rounded-xl bg-surface-container-lowest p-space-lg shadow-md flex items-baseline justify-between gap-space-md">
+        <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">{page.totalContributions}</span>
+        <span class="font-headline-md text-headline-md text-primary font-bold">{SITE.support.totalContributions.toLocaleString(LANGS[lang].locale)}</span>
+      </div>
+    </div>
+  </section>
+</div>

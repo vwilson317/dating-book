@@ -3,16 +3,15 @@
 // Also where Stripe sends readers who cancel (?checkout=canceled).
 // The book itself is always free; the URL stays /buy/ so existing links keep working.
 import Base from '../../layouts/Base.astro';
-import Tiers from '../../components/Tiers.astro';
-import { SITE, checkoutEnabled, supportTiers } from '../../site.config';
-import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
+import ContributePage from '../../components/pages/ContributePage.astro';
+import { SITE } from '../../site.config';
+import { langPaths, localePath, type Lang } from '../../i18n/ui';
 import { pageSchema } from '../../lib/seo';
 import { buy, fillPrice } from '../../i18n/buy';
 
 export const getStaticPaths = langPaths;
 
 const lang = Astro.props.lang as Lang;
-const s = t(lang);
 const b = buy[lang];
 const p = (tpl: string) => fillPrice(tpl, SITE.support.tiers[0].price[lang]);
 ---
@@ -22,45 +21,9 @@ const p = (tpl: string) => fillPrice(tpl, SITE.support.tiers[0].price[lang]);
   title={b.title}
   description={p(b.description)}
   jsonLd={pageSchema(lang, Astro.site, b.title, localePath(lang, '/buy/'), 'WebPage')}
+  stitch
 >
-  <section class="buy-hero">
-    <div>
-      <p class="eyebrow">{p(b.eyebrow)}</p>
-      <h1>{b.heading}</h1>
-      <p class="buy-lede">{b.lede}</p>
-      <div class="buy-cta">
-        <p class="small buy-warn" data-checkout-notice="canceled" hidden>{b.checkout.canceled}</p>
-        <p class="small buy-warn" data-checkout-notice="error" hidden>{b.checkout.error}</p>
-        {supportTiers(lang).length > 0 && <Tiers lang={lang} location="hero" />}
-        {!checkoutEnabled && import.meta.env.DEV && <p class="small buy-warn">{b.notSet}</p>}
-        <p class="muted small">🔒 {b.secure}</p>
-      </div>
-    </div>
-    <div class="buy-cover" aria-hidden="true">
-      <p class="buy-cover-title">{s.bookTitle}</p>
-      <p class="buy-cover-sub">{s.bookSubtitle}</p>
-      <p class="buy-cover-author">{SITE.author}</p>
-      <span class="buy-cover-stamp">{s.stampMid}</span>
-    </div>
-  </section>
-
-  <section class="contact-card buy-free">
-    <h2>{b.freeTitle}</h2>
-    <p class="muted">{b.freeBody}</p>
-    <a class="btn" href={localePath(lang, '/chapters/')} data-track="buy_read_free_clicked">{b.freeCta}</a>
-  </section>
-
-  <section class="buy-faq">
-    <h2>{b.faqTitle}</h2>
-    {
-      b.faq.map((f) => (
-        <details>
-          <summary>{f.q}</summary>
-          <p class="muted">{f.a}</p>
-        </details>
-      ))
-    }
-  </section>
+  <ContributePage lang={lang} />
 
   <script>
     const status = new URLSearchParams(location.search).get('checkout');

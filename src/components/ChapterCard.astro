@@ -1,7 +1,9 @@
 ---
+// A row in the chapter directory (stitch/chapters_directory). ChaptersPage filters on the data-* attributes.
 import type { Chapter } from '../lib/content';
-import { chapterUrl, chapterLang, chapterLabel, chapterAudio, formatDate, readingMinutes } from '../lib/content';
+import { chapterUrl, chapterLang, chapterLabel, chapterAudio, formatClock, formatDate, readingMinutes } from '../lib/content';
 import { t } from '../i18n/ui';
+import Icon from './home/Icon.astro';
 
 interface Props { chapter: Chapter }
 const { chapter } = Astro.props;
@@ -10,34 +12,48 @@ const s = t(lang);
 const { number, title, excerpt, location, published, status } = chapter.data;
 const soon = status === 'coming-soon';
 const audio = soon ? undefined : chapterAudio(chapter);
+const place = location?.split(',')[0].trim();
 ---
 
-<article class:list={['card', { 'card--soon': soon }]}>
-  <p class="eyebrow">
-    {chapterLabel(chapter)}{location && <span> · {location}</span>}
-  </p>
-  <h3 class="card-title">
-    {soon ? title : <a href={chapterUrl(chapter)} class="stretched">{title}</a>}
+<article
+  class:list={['relative bg-surface-container-lowest rounded-xl p-space-md sm:p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col gap-space-xs', { 'opacity-60': soon }]}
+  data-chapter-card
+  data-number={number}
+  data-place={place ?? ''}
+  data-audio={audio ? '1' : ''}
+  data-search={`${title} ${excerpt} ${location ?? ''}`.toLowerCase()}
+>
+  <div class="flex flex-wrap items-center gap-2">
+    <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm uppercase tracking-wider">{chapterLabel(chapter)}</span>
+    {place && <span class="px-2 py-0.5 rounded-full bg-terracotta-accent/10 text-terracotta-accent font-label-sm text-label-sm uppercase">{place}</span>}
+    {!soon && <span class="ml-auto font-body-sm text-body-sm text-on-surface-variant">{s.minRead(readingMinutes(chapter.body))}</span>}
+  </div>
+  <h3 class="font-headline-md text-headline-md text-on-surface">
+    {soon ? title : <a href={chapterUrl(chapter)} class="after:absolute after:inset-0 hover:text-primary transition-colors">{title}</a>}
   </h3>
-  <p class="card-excerpt">{excerpt}</p>
-  <p class="card-meta">
+  <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">{excerpt}</p>
+  <div class="flex items-center justify-between gap-2 pt-space-xs font-label-md text-label-md">
     {
       soon ? (
-        <span class="pill">{s.comingOn(formatDate(published, lang))}</span>
+        <span class="text-secondary">{s.comingOn(formatDate(published, lang))}</span>
       ) : (
         <>
-          <span>{formatDate(published, lang)}</span>
-          <span aria-hidden="true">·</span>
-          <span>{s.minRead(readingMinutes(chapter.body))}</span>
-          {audio && (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>{s.listenBadge(Math.round(audio.duration / 60))}</span>
-            </>
-          )}
-          <span class="card-progress" data-progress={number} data-read-label={s.readBadge} data-pct-label={s.pctRead} hidden />
+          <span class="flex items-center gap-3 text-primary">
+            <span class="inline-flex items-center gap-1">{s.readChapterShort} <Icon name="arrow_forward" class="text-[16px]" /></span>
+            <span class="card-progress" data-progress={number} data-read-label={s.readBadge} data-pct-label={s.pctRead} hidden />
+          </span>
+          {
+            audio ? (
+              <a class="relative z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors font-label-sm text-label-sm" href={`${chapterUrl(chapter)}#listen`}>
+                <Icon name="play_circle" class="text-[16px]" />
+                {formatClock(audio.duration)}
+              </a>
+            ) : (
+              <span class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface-variant font-label-sm text-label-sm">{s.textOnly}</span>
+            )
+          }
         </>
       )
     }
-  </p>
+  </div>
 </article>

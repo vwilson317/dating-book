@@ -1,24 +1,29 @@
 :root {
   --bg: #faf5ec;
-  --surface: #fffdf8;
-  --ink: #221c16;
-  --muted: #6f6357;
-  --line: #e7dccb;
-  --accent: #c2532f;
-  --accent-ink: #fff;
-  --accent-soft: #f6e1d6;
+  --surface: #ffffff;
+  --ink: #1a1a1a;
+  --muted: #55605a;
+  --line: #eae0ce;
+  --accent: #b84e29;
+  --accent-ink: #faf5ec;
+  --accent-soft: #f6e3d9;
+  --primary: #1c5e47;
+  --primary-deep: #124030;
+  --on-primary: #faf5ec;
   /* Contribute buttons only, so they stand out from every other button. Same in all themes. */
-  --contribute: #0f7f6e;
-  --contribute-ink: #fff;
-  --teal: #1f6f6b;
+  --contribute: #b84e29;
+  --contribute-ink: #faf5ec;
+  --teal: #1c5e47;
 
-  --serif-display: 'Fraunces Variable', Georgia, serif;
+  --serif-display: 'Literata Variable', Georgia, serif;
   --serif-body: 'Literata Variable', Georgia, serif;
-  --sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  --measure: 36rem;
-  --wide: 64rem;
-  --radius: 14px;
+  --shadow-1: 0 2px 8px -2px rgb(26 26 26 / 0.05);
+  --shadow-2: 0 8px 24px -4px rgb(28 94 71 / 0.08);
+  --measure: 38rem;
+  --wide: 80rem;
+  --radius: 16px;
   --scale: 1; /* reading text size, set by the Aa panel */
   color-scheme: light;
 }
@@ -26,28 +31,34 @@
 /* Themes. "Auto" (no data-theme) follows the phone's setting. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --bg: #17130f;
-    --surface: #211b16;
-    --ink: #f1e9dd;
-    --muted: #a99b8b;
-    --line: #3a3027;
-    --accent: #e57a52;
-    --accent-ink: #1b120c;
+    --bg: #121a17;
+    --surface: #1b2622;
+    --ink: #f0ebe1;
+    --muted: #a8b1aa;
+    --line: #2f3b36;
+    --accent: #e8835f;
+    --accent-ink: #1a120d;
     --accent-soft: #3a2419;
-    --teal: #6cc2bb;
+    --primary: #93d4b7;
+    --primary-deep: #aff0d2;
+    --on-primary: #06281d;
+    --teal: #93d4b7;
     color-scheme: dark;
   }
 }
 :root[data-theme='dark'] {
-  --bg: #17130f;
-  --surface: #211b16;
-  --ink: #f1e9dd;
-  --muted: #a99b8b;
-  --line: #3a3027;
-  --accent: #e57a52;
-  --accent-ink: #1b120c;
+  --bg: #121a17;
+  --surface: #1b2622;
+  --ink: #f0ebe1;
+  --muted: #a8b1aa;
+  --line: #2f3b36;
+  --accent: #e8835f;
+  --accent-ink: #1a120d;
   --accent-soft: #3a2419;
-  --teal: #6cc2bb;
+  --primary: #93d4b7;
+  --primary-deep: #aff0d2;
+  --on-primary: #06281d;
+  --teal: #93d4b7;
   color-scheme: dark;
 }
 :root[data-theme='sepia'] {
@@ -59,7 +70,10 @@
   --accent: #a8452a;
   --accent-ink: #fff;
   --accent-soft: #ecd9c0;
-  --teal: #2d6a62;
+  --primary: #1c5e47;
+  --primary-deep: #124030;
+  --on-primary: #faf3e3;
+  --teal: #1c5e47;
 }
 
 /* Text size steps */

@@ -12,11 +12,11 @@ export interface Prefs {
 }
 
 const KEY = 'reading-prefs';
-export const DEFAULTS: Prefs = { theme: 'auto', size: 1, font: 'serif', spacing: 'normal', awake: false };
+export const DEFAULTS: Prefs = { theme: 'light', size: 1, font: 'serif', spacing: 'normal', awake: false };
 export const MAX_SIZE = 4;
 
 // Browser toolbar color per theme (matches --bg in global.css)
-const BAR = { light: '#faf5ec', sepia: '#f4ecd8', dark: '#17130f' } as const;
+const BAR = { light: '#fcf9f8', sepia: '#f4ecd8', dark: '#121a17' } as const;
 
 export function loadPrefs(): Prefs {
   try {
@@ -56,7 +56,7 @@ export const prefsForAnalytics = (p: Prefs) => ({
   font: p.font,
   spacing: p.spacing,
   keep_awake: p.awake,
-  customized: p.theme !== 'auto' || p.size !== 1 || p.font !== 'serif' || p.spacing !== 'normal' || p.awake,
+  customized: p.theme !== DEFAULTS.theme || p.size !== 1 || p.font !== 'serif' || p.spacing !== 'normal' || p.awake,
 });
 
 /** Settings on the phone itself (not chosen on the site) */

@@ -6,6 +6,7 @@ import type { Chapter } from '../lib/content';
 import { chapterAudio, chapterLang, chapterLabel, chapterUrl, formatClock } from '../lib/content';
 import { SITE } from '../site.config';
 import { t } from '../i18n/ui';
+import Icon from './home/Icon.astro';
 
 interface Props { chapter: Chapter; playlist: Chapter[] }
 const { chapter, playlist } = Astro.props;
@@ -22,6 +23,8 @@ const tracks = playlist.flatMap((c) => {
 const meta = { lang, current: chapter.data.number, artist: SITE.author, album: s.bookTitle, artwork: '/icons/icon-512.png' };
 const fileName = audio?.file.split('?')[0].split('/').pop();
 const SPEEDS = [0.75, 0.9, 1, 1.25, 1.5, 1.75, 2];
+// Bar heights from Stitch's waveform. Decorative: it isn't this recording's real waveform.
+const WAVE = [12, 20, 8, 24, 28, 16, 4, 20, 30, 18, 10, 26, 22, 6, 14, 28, 24, 12, 16, 32, 20, 8, 24, 16, 4, 22, 28, 14, 18, 26, 10, 30, 22, 6, 16, 28, 20, 12, 24, 32, 16, 8, 20, 28, 14, 24, 18, 6, 22, 30, 12, 16, 26, 10, 22, 28, 14, 32, 20, 8, 24, 16, 4, 26, 18, 10, 22];
 
 const playIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5Z"/></svg>';
 const pauseIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
@@ -29,61 +32,75 @@ const pauseIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5"
 
 {
   audio && (
-    <section class="listen" id="listen" aria-label={s.listen(Math.round(audio.duration / 60))}>
+    <section class="listen m-0 rounded-2xl p-space-md sm:p-space-lg bg-surface-container-lowest border-0 shadow-md relative overflow-hidden scroll-mt-36" id="listen" aria-label={s.listen(Math.round(audio.duration / 60))}>
       <audio preload="none" src={audio.file} />
       <script type="application/json" id="listen-data" set:html={JSON.stringify({ meta, tracks })} />
 
-      <div class="listen-head">
-        <button type="button" class="listen-play" data-play aria-label={s.play} data-label-play={s.play} data-label-pause={s.pause}>
-          <span class="i-play" set:html={playIcon} />
-          <span class="i-pause" set:html={pauseIcon} />
-        </button>
-        <div class="listen-info">
-          <p class="listen-title" data-listen-title>{s.listen(Math.round(audio.duration / 60))}</p>
-          <p class="listen-sub" data-sub data-resume={s.resumeFrom} data-default={s.listenSub}>{s.listenSub}</p>
-          <p class="listen-now" data-now hidden>
-            <span>{s.nowPlaying}:</span> <a data-now-link href="#">{s.openChapter}</a>
-          </p>
+      <div class="flex items-start justify-between gap-space-sm mb-space-md">
+        <div class="flex items-center gap-space-sm min-w-0">
+          <span class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-primary text-on-primary flex items-center justify-center shrink-0 shadow-sm"><Icon name="graphic_eq" class="text-[22px] sm:text-[28px]" /></span>
+          <div class="flex flex-col min-w-0">
+            <span class="flex items-center gap-2">
+              <span class="font-label-sm text-label-sm uppercase tracking-wider text-terracotta-accent">{s.audioEyebrow}</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            </span>
+            <span class="font-headline-sm text-[18px] leading-tight text-primary font-bold" data-listen-title>{s.listen(Math.round(audio.duration / 60))}</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant" data-sub data-resume={s.resumeFrom} data-default={s.listenSub}>{s.listenSub}</span>
+            <span class="font-body-sm text-body-sm text-on-surface-variant" data-now hidden>
+              <span>{s.nowPlaying}:</span> <a class="text-primary font-semibold underline" data-now-link href="#">{s.openChapter}</a>
+            </span>
+          </div>
         </div>
-      </div>
-
-      <input class="listen-seek" data-seek type="range" min="0" max={audio.duration} step="1" value="0" aria-label={s.seek} />
-      <div class="listen-times">
-        <span data-cur>0:00</span>
-        <span data-left>-{formatClock(audio.duration)}</span>
-      </div>
-
-      <div class="listen-speeds" role="group" aria-labelledby="listen-speed-label">
-        <span class="listen-speeds-label" id="listen-speed-label">{s.speed}</span>
-        <div class="listen-speeds-options">
+        <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg shrink-0">
+          <button type="button" class="px-2.5 py-1 rounded bg-surface-container-lowest text-primary font-label-sm text-label-sm shadow-sm hover:bg-surface-variant transition-colors tabular-nums" data-speed-cycle aria-label={s.speed}>1×</button>
+          <a class="p-1 rounded text-on-surface-variant hover:text-primary transition-colors flex" href={audio.file} download={fileName} aria-label={s.downloadMp3} title={s.downloadMp3} data-track="audio_downloaded" data-prop-chapter={String(chapter.data.number)}><Icon name="download" class="text-[18px]" /></a>
+        </div>
+        <div hidden>
           {SPEEDS.map((rate) => (
-            <button type="button" class="listen-speed" data-speed={rate} aria-pressed={rate === 1 ? 'true' : 'false'}>{rate}×</button>
+            <button type="button" tabindex="-1" data-speed={rate} aria-pressed={rate === 1 ? 'true' : 'false'}>{rate}×</button>
           ))}
         </div>
       </div>
 
-      <div class="listen-tools">
-        <button type="button" class="listen-tool" data-skip="-15" aria-label={s.back15}>↺ 15</button>
-        <button type="button" class="listen-tool" data-skip="30" aria-label={s.fwd30}>30 ↻</button>
-        <a
-          class="listen-tool listen-dl"
-          href={audio.file}
-          download={fileName}
-          data-track="audio_downloaded"
-          data-prop-chapter={String(chapter.data.number)}
-        >
-          {s.downloadMp3}
-        </a>
+      <div class="flex flex-col gap-2">
+        <div class="flex items-center gap-space-md">
+          <button type="button" class="listen-play hidden sm:grid w-12 h-12 bg-primary hover:bg-botanical-deep text-on-primary shadow-md hover:scale-105 active:scale-95 transition-all" data-play aria-label={s.play} data-label-play={s.play} data-label-pause={s.pause}>
+            <span class="i-play" set:html={playIcon} />
+            <span class="i-pause" set:html={pauseIcon} />
+          </button>
+          <div class="relative flex-1 min-w-0 flex flex-col gap-1.5 group rounded has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-primary">
+            <svg class="w-full h-8 text-outline-variant/60 group-hover:text-outline-variant transition-colors" fill="currentColor" preserveAspectRatio="none" viewBox="0 0 400 32" aria-hidden="true">
+              {WAVE.map((h, i) => <rect x={i * 6} y={(32 - h) / 2} width="3" height={h} rx="1.5" />)}
+            </svg>
+            <div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden" aria-hidden="true">
+              <div class="h-full bg-primary rounded-full" style="width: var(--listen-pct, 0%)"></div>
+            </div>
+            <input class="absolute inset-0 m-0 w-full h-full opacity-0 cursor-pointer" data-seek type="range" min="0" max={audio.duration} step="1" value="0" aria-label={s.seek} />
+          </div>
+        </div>
+        <div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant px-1 tabular-nums">
+          <span data-cur>0:00</span>
+          <span data-left>-{formatClock(audio.duration)}</span>
+        </div>
       </div>
-      <label class="listen-auto">
-        <input type="checkbox" data-autonext checked />
-        <span>{s.autoNext}</span>
-      </label>
+
+      <div class="flex flex-wrap items-center justify-between sm:justify-start gap-x-space-md gap-y-space-sm pt-space-sm">
+        <button type="button" class="text-on-surface-variant hover:text-primary font-label-sm text-label-sm tabular-nums" data-skip="-15" aria-label={s.back15}>↺ 15s</button>
+        <button type="button" class="listen-play sm:hidden w-auto h-10 px-5 rounded-full bg-primary hover:bg-botanical-deep text-on-primary font-label-md text-label-md shadow-sm active:scale-95 transition-all" data-play aria-label={s.play} data-label-play={s.play} data-label-pause={s.pause}>
+          <span class="i-play inline-flex items-center gap-1.5"><Fragment set:html={playIcon} />{s.play}</span>
+          <span class="i-pause items-center gap-1.5"><Fragment set:html={pauseIcon} />{s.pause}</span>
+        </button>
+        <button type="button" class="text-on-surface-variant hover:text-primary font-label-sm text-label-sm tabular-nums" data-skip="30" aria-label={s.fwd30}>30s ↻</button>
+        <label class="w-full sm:w-auto sm:ml-auto flex items-center gap-2 font-body-sm text-body-sm text-on-surface-variant cursor-pointer">
+          <input class="accent-primary w-4 h-4 m-0" type="checkbox" data-autonext checked />
+          <span>{s.autoNext}</span>
+        </label>
+      </div>
     </section>
 
-    <div class="listen-mini" id="listen-mini" hidden>
+    <div class="listen-mini rounded-xl bg-[#124030] text-[#faf5ec]" id="listen-mini" hidden>
       <div class="listen-mini-bar" data-mini-bar />
-      <button type="button" class="listen-play listen-play--small" data-play aria-label={s.play}>
+      <button type="button" class="listen-play listen-play--small bg-[#faf5ec] text-[#124030]" data-play aria-label={s.play}>
         <span class="i-play" set:html={playIcon} />
         <span class="i-pause" set:html={pauseIcon} />
       </button>
@@ -100,5 +117,24 @@ const pauseIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5"
   import { initListen } from '../scripts/listen';
 
   const root = document.getElementById('listen');
-  if (root) initListen(root, document.getElementById('listen-mini')!);
+  if (root) {
+    initListen(root, document.getElementById('listen-mini')!);
+
+    // Stitch's progress bar follows the (invisible) seek slider, which listen.ts keeps updated
+    const seek = root.querySelector<HTMLInputElement>('[data-seek]')!;
+    const syncBar = () => root.style.setProperty('--listen-pct', seek.style.getPropertyValue('--pct') || '0%');
+    new MutationObserver(syncBar).observe(seek, { attributes: true, attributeFilter: ['style'] });
+    syncBar();
+
+    // One button steps through the speeds; listen.ts still handles the hidden speed buttons
+    const cycle = root.querySelector<HTMLButtonElement>('[data-speed-cycle]')!;
+    const speeds = [...root.querySelectorAll<HTMLButtonElement>('[data-speed]')];
+    const pressed = () => Math.max(0, speeds.findIndex((b) => b.getAttribute('aria-pressed') === 'true'));
+    const showSpeed = () => (cycle.textContent = `${speeds[pressed()].dataset.speed}×`);
+    cycle.addEventListener('click', () => {
+      speeds[(pressed() + 1) % speeds.length].click();
+      showSpeed();
+    });
+    showSpeed();
+  }
 </script>

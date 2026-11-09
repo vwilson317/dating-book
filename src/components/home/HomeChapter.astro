@@ -1,0 +1,108 @@
+---
+// One chapter on the home page, readable in place. "reader" is Stitch's large reading card; "card" is
+// its directory tile, which spreads across the whole grid when opened. scripts/landing.ts drives both
+// through the data attributes and the acc-* classes, so keep those.
+import type { Chapter } from '../../lib/content';
+import { chapterAudio, chapterLabel, chapterLang, chapterUrl, formatDate, readingMinutes, wordCount } from '../../lib/content';
+import { t } from '../../i18n/ui';
+import Icon from './Icon.astro';
+
+interface Props {
+  chapter: Chapter;
+  Content: any;
+  open?: boolean;
+  variant: 'reader' | 'card';
+  accent?: string;
+}
+const { chapter: c, Content, open = false, variant, accent = 'text-primary' } = Astro.props;
+const lang = chapterLang(c);
+const s = t(lang);
+const label = chapterLabel(c);
+const minutes = readingMinutes(c.body);
+const audio = chapterAudio(c);
+const compact = variant === 'card' && c.data.number >= 7;
+---
+
+{
+  !Content ? (
+    <div class="p-6 rounded-2xl bg-surface-container-lowest shadow-sm opacity-60 flex flex-col gap-2">
+      <span class="font-label-sm text-label-sm uppercase text-primary">{label}</span>
+      <span class="font-headline-sm text-headline-sm font-serif font-semibold text-on-surface">{c.data.title}</span>
+      <span class="font-body-sm text-body-sm text-on-surface-variant">{s.comingOn(formatDate(c.data.published, lang))}</span>
+    </div>
+  ) : (
+    <details
+      class:list={[
+        'group scroll-mt-24 bg-surface-container-lowest overflow-hidden rounded-2xl transition-shadow',
+        variant === 'reader' ? 'shadow-xl' : 'shadow-sm hover:shadow-md open:col-span-full open:shadow-xl',
+      ]}
+      id={`chapter-${c.data.number}`}
+      open={open}
+      data-acc
+      data-chapter={c.data.number}
+      data-title={c.data.title}
+      data-label={label}
+      data-url={chapterUrl(c)}
+      data-words={wordCount(c.body)}
+      data-version={c.data.versions[0]?.label ?? 'v1'}
+    >
+      {
+        variant === 'reader' ? (
+          <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer w-full bg-surface-container-low px-space-md py-space-sm flex flex-wrap items-center justify-between gap-space-sm">
+            <span class="flex flex-wrap items-center gap-space-sm min-w-0">
+              <span class="px-2.5 py-1 rounded bg-primary/10 text-primary font-label-sm text-label-sm uppercase tracking-wider">{label}</span>
+              <span class="acc-title font-label-md text-label-md text-on-surface">{c.data.title}</span>
+              <span class="font-body-sm text-body-sm text-on-surface-variant">{s.minRead(minutes)}</span>
+              <span class="card-progress" data-progress={c.data.number} data-read-label={s.readBadge} data-pct-label={s.pctRead} hidden />
+            </span>
+            <Icon name="expand_more" class="text-[20px] text-on-surface-variant group-open:hidden" />
+            <span class="w-full group-open:hidden font-body-sm text-body-sm text-on-surface-variant line-clamp-2">{c.data.excerpt}</span>
+          </summary>
+        ) : (
+          <summary class:list={['list-none [&::-webkit-details-marker]:hidden cursor-pointer flex flex-col justify-between', compact ? 'p-4 gap-1 h-full group-open:h-auto group-open:p-6' : 'p-6 gap-4 h-full group-open:h-auto']}>
+            <span class="flex flex-col gap-2">
+              <span class="flex items-center justify-between gap-2">
+                <span class:list={['font-label-sm text-label-sm uppercase', accent]}>{label}</span>
+                <span class="font-body-sm text-body-sm text-on-surface-variant">{s.minRead(minutes)}</span>
+              </span>
+              <span class:list={['acc-title font-serif text-on-surface', compact ? 'font-body-sm text-body-sm font-medium group-open:text-headline-sm' : 'text-headline-sm font-semibold']}>{c.data.title}</span>
+              {!compact && <span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-3 group-open:hidden">{c.data.excerpt}</span>}
+            </span>
+            <span class="flex items-center justify-between gap-2 group-open:hidden">
+              <span class="flex items-center gap-2 text-xs text-primary font-semibold">
+                {audio && <Icon name="headphones" class="text-[16px]" />}
+                <span class="card-progress" data-progress={c.data.number} data-read-label={s.readBadge} data-pct-label={s.pctRead} hidden />
+              </span>
+              {!compact && <span class="text-primary font-label-sm text-label-sm">{s.readChapter}</span>}
+            </span>
+          </summary>
+        )
+      }
+      <div class="acc-body p-6 md:p-12 lg:p-16">
+        <div class="max-w-[38rem] mx-auto">
+          <div class="pb-space-md mb-space-lg flex flex-col gap-2">
+            <span class="font-label-sm text-label-sm text-secondary uppercase tracking-widest">{label}</span>
+            <h3 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary font-serif font-bold tracking-tight">{c.data.title}</h3>
+            <a
+              class="acc-page w-auto m-0 inline-flex items-center gap-1 text-left text-primary hover:text-botanical-deep font-label-sm text-label-sm pt-1"
+              href={chapterUrl(c)}
+              data-track="landing_chapter_page_clicked"
+              data-prop-chapter={String(c.data.number)}
+              data-prop-audio={String(!!audio)}
+            >
+              {audio && <Icon name="headphones" class="text-[16px]" />}
+              <span>{s.betterReading}</span>
+            </a>
+          </div>
+          <div class="prose"><Content /></div>
+          <div data-acc-end />
+          <p class="acc-done mt-12 p-4 rounded-xl bg-surface-container-low text-primary font-label-md text-label-md flex items-center justify-center gap-2" data-acc-done hidden>
+            <span class="acc-done-check"><Icon name="check_circle" class="text-[20px]" /></span>
+            <span>{s.keepGoing}</span>
+            <span class="acc-done-arrow"><Icon name="arrow_downward" class="text-[16px]" /></span>
+          </p>
+        </div>
+      </div>
+    </details>
+  )
+}

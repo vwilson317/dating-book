@@ -16,7 +16,7 @@ function whenSeen(el: Element, fn: () => void) {
 export function initLanding() {
   const lang = document.documentElement.lang;
   const accs = [...document.querySelectorAll<HTMLDetailsElement>('[data-acc]')];
-  const header = document.querySelector<HTMLElement>('.site-header');
+  const header = document.getElementById('site-header');
 
   // Tapping a chapter closes the others, which shifts the page,
   // so jump to the new chapter's heading, just below the sticky header.

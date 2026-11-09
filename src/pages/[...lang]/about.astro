@@ -1,0 +1,30 @@
+---
+// /about/ and /pt/about/. The bio and photo don't exist yet, so this page is built only where
+// placeholders are allowed (dev and Netlify previews). See PLACEHOLDERS.md.
+import Base from '../../layouts/Base.astro';
+import Placeholder from '../../components/Placeholder.astro';
+import { SITE, instagramUrl, showPlaceholders } from '../../site.config';
+import { langPaths, localePath, t, type Lang } from '../../i18n/ui';
+
+export const getStaticPaths = () => (showPlaceholders ? langPaths() : []);
+
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+---
+
+<Base lang={lang} title={s.aboutAuthor} noindex>
+  <section class="about">
+    <div class="about-photo"><Placeholder image="Author photo" /></div>
+    <div>
+      <p class="eyebrow">{s.aboutAuthor}</p>
+      <h1>{SITE.author}</h1>
+      <Placeholder>
+        <p class="page-lede">Your bio goes here, in English and Portuguese: who you are, where you live, and why you wrote the book.</p>
+      </Placeholder>
+      <div class="hero-ctas">
+        <a class="btn btn--primary" href={localePath(lang, '/chapters/')}>{s.startReading}</a>
+        <a class="btn" href={instagramUrl} data-track="instagram_clicked" data-prop-location="about" rel="me noopener">{s.follow(SITE.instagram)}</a>
+      </div>
+    </div>
+  </section>
+</Base>

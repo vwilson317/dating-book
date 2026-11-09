@@ -1,0 +1,21 @@
+---
+// Stitch mockup content that isn't real yet. Labeled on the page, listed in PLACEHOLDERS.md,
+// and never rendered in production builds (see showPlaceholders in site.config.ts).
+import { showPlaceholders } from '../site.config';
+
+interface Props {
+  /** Draws an empty image slot with this caption instead of showing children */
+  image?: string;
+  class?: string;
+}
+const { image, class: className } = Astro.props;
+---
+
+{
+  showPlaceholders && (
+    <div class:list={['ph', className]}>
+      <span class="ph-tag">Placeholder</span>
+      {image ? <div class="ph-img">{image}</div> : <slot />}
+    </div>
+  )
+}

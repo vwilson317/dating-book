@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;0,7..72,600;1,7..72,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fcf9f8;}body{overscroll-behavior:none;font-family:'Plus Jakarta Sans',sans-serif;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary-fixed-variant": "#822703", "surface-dim": "#dcd9d9", "sand-light": "#FAF5EC", "on-error": "#ffffff", "surface-bright": "#fcf9f8", "primary-container": "#1c5e47", "error-container": "#ffdad6", "inverse-primary": "#93d4b7", "surface-tint": "#296952", "primary": "#004631", "on-primary-fixed": "#002115", "inverse-on-surface": "#f3f0ef", "surface-container-low": "#f6f3f2", "surface-container-lowest": "#ffffff", "primary-fixed": "#aff0d2", "background": "#fcf9f8", "inverse-surface": "#313030", "surface-container": "#f0eded", "on-background": "#1c1b1b", "on-primary-fixed-variant": "#08513b", "surface-container-highest": "#e5e2e1", "error": "#ba1a1a", "on-secondary": "#ffffff", "charcoal-ink": "#1A1A1A", "on-tertiary-fixed": "#201b10", "on-primary-container": "#94d5b8", "tertiary": "#413c2f", "on-tertiary": "#ffffff", "tertiary-container": "#595345", "surface-variant": "#e5e2e1", "on-tertiary-fixed-variant": "#4c4639", "surface-container-high": "#eae7e7", "terracotta-accent": "#B84E29", "on-secondary-fixed": "#390b00", "botanical-deep": "#124030", "secondary-container": "#fe8359", "on-error-container": "#93000a", "outline": "#707973", "outline-variant": "#bfc9c2", "secondary-fixed": "#ffdbd0", "tertiary-fixed-dim": "#cfc5b4", "primary-fixed-dim": "#93d4b7", "tertiary-fixed": "#ebe1cf", "sand-border": "#EAE0CE", "on-secondary-container": "#701f00", "on-tertiary-container": "#d0c7b5", "on-surface-variant": "#404944", "on-surface": "#1c1b1b", "surface": "#fcf9f8", "secondary": "#a23e1a", "secondary-fixed-dim": "#ffb59d", "on-primary": "#ffffff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "gutter": "1.5rem", "margin-mobile": "1.25rem", "space-sm": "0.5rem", "space-xl": "2.5rem", "gutter-mobile": "1rem", "space-lg": "1.5rem", "margin": "2rem", "space-md": "1rem", "margin-desktop": "3rem", "space-xs": "0.25rem" }, "fontFamily": { "body-sm": ["Plus Jakarta Sans"], "label-lg": ["Plus Jakarta Sans"], "headline-lg": ["Literata"], "label-md": ["Plus Jakarta Sans"], "headline-sm": ["Literata"], "display-lg-mobile": ["Literata"], "body-md": ["Plus Jakarta Sans"], "headline-lg-mobile": ["Literata"], "body-lg": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-md": ["Literata"], "display-lg": ["Literata"] }, "fontSize": { "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "label-lg": ["15px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "headline-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.015em", "fontWeight": "500" }], "label-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-sm": ["20px", { "lineHeight": "26px", "fontWeight": "500" }], "display-lg-mobile": ["36px", { "lineHeight": "42px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "16px", "letterSpacing": "0.04em", "fontWeight": "700" }], "headline-md": ["26px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "500" }], "display-lg": ["52px", { "lineHeight": "60px", "letterSpacing": "-0.02em", "fontWeight": "600" }] } } } }</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface flex flex-col min-h-screen"><header class="fixed top-0 w-full z-50 bg-sand-light/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-margin-mobile flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><div class="w-11 h-11 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center shrink-0"><span class="font-headline-sm text-headline-sm font-bold tracking-tight text-sand-light">R</span></div><div class="flex flex-col min-w-0"><div class="flex items-center gap-1.5"><span class="font-label-lg text-label-lg text-primary tracking-wide leading-none truncate">RMB</span><span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded-full bg-secondary/10 text-secondary leading-none uppercase">Gringo Abroad</span></div><span class="font-headline-sm text-headline-sm text-on-surface truncate leading-tight">Chapters</span></div></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Toggle Language" class="h-11 px-2.5 rounded-full bg-surface-container-high text-primary flex items-center justify-center gap-1 hover:bg-surface-variant transition-colors"><span class="font-label-sm text-label-sm text-primary font-bold">EN</span><span class="text-outline font-label-sm text-label-sm">/</span><span class="font-label-sm text-label-sm text-on-surface-variant">PT</span></button><button aria-label="Typography &amp; Appearance" class="w-11 h-11 rounded-full text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors flex items-center justify-center"><span class="material-symbols-outlined text-[22px]">format_size</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Editorial Intro & Mobile Directory Header -->
+<section class="px-margin-mobile pt-space-md pb-space-lg flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm uppercase px-2.5 py-1 rounded-full bg-primary/10 text-primary tracking-wider font-semibold">
+        Complete Directory
+      </span>
+<span class="flex items-center gap-1 font-label-sm text-label-sm text-terracotta-accent font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+        17 Chapters Live
+      </span>
+</div>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-semibold tracking-tight">
+      Table of Contents &amp; Audio Guides
+    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+      17 unfiltered chronicles of romance, cultural misunderstandings, bipolar realities, and Rio beach culture. Read online for free or listen to audio narrations.
+    </p>
+<!-- Quick Stat Cards (Bento Tile Grid) -->
+<div class="grid grid-cols-2 gap-2.5 pt-space-xs">
+<div class="bg-surface-container-low rounded-xl p-3 flex items-center gap-3 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">timelapse</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight truncate">68 mins</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total Read</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-3 flex items-center gap-3 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-secondary/15 text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight truncate">5 Cities</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Rio, MDE, ATL+</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-3 flex items-center gap-3 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">lock_open</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight truncate">100% Free</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">No Paywall</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-3 flex items-center gap-3 shadow-sm">
+<div class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">translate</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight truncate">EN &amp; PT</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Dual Editions</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Sticky Controls: Search Bar & Horizontal Pill Filter Bar -->
+<div class="sticky top-16 z-40 bg-sand-light/95 backdrop-blur-md pb-space-sm pt-space-xs shadow-[0_4px_16px_rgba(0,0,0,0.03)] flex flex-col gap-2.5">
+<!-- Search Bar with Quick Sort Pill -->
+<div class="px-margin-mobile flex items-center gap-2">
+<div class="flex-1 relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-outline text-[20px] pointer-events-none">search</span>
+<input class="w-full bg-surface-container-lowest text-charcoal-ink font-body-sm text-body-sm pl-9 pr-8 py-2.5 rounded-lg shadow-sm focus:outline-none focus:bg-surface-container-lowest transition-all" id="chapterSearchInput" placeholder="Search stories, tropes, places..." type="text"/>
+<button aria-label="Clear Search" class="hidden absolute right-2.5 text-outline hover:text-on-surface" id="clearSearchBtn">
+<span class="material-symbols-outlined text-[18px]">cancel</span>
+</button>
+</div>
+<button aria-label="Toggle chronological sort order" class="h-10 px-3 bg-surface-container-high hover:bg-surface-variant rounded-lg text-primary flex items-center gap-1 shrink-0 transition-colors shadow-sm" id="sortToggleBtn">
+<span class="material-symbols-outlined text-[18px]" id="sortIcon">swap_vert</span>
+<span class="font-label-sm text-label-sm font-semibold" id="sortLabel">Order</span>
+</button>
+</div>
+<!-- Scrollable Horizontal Filter Chips -->
+<div class="flex items-center gap-2 overflow-x-auto px-margin-mobile scrollbar-none py-0.5" id="filterPillContainer">
+<button class="filter-pill active shrink-0 px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-primary text-on-primary transition-all shadow-sm" data-filter="all">
+        All (18)
+      </button>
+<button class="filter-pill shrink-0 px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-filter="rio">
+        Rio de Janeiro
+      </button>
+<button class="filter-pill shrink-0 px-3 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-terracotta-accent flex items-center gap-1 hover:bg-surface-container-high transition-all" data-filter="audio">
+<span class="material-symbols-outlined text-[16px]">headphones</span>
+        Audio Track
+      </button>
+<button class="filter-pill shrink-0 px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-filter="medellin">
+        Medellín
+      </button>
+<button class="filter-pill shrink-0 px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-filter="cancun">
+        Cancún
+      </button>
+<button class="filter-pill shrink-0 px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-filter="atlanta">
+        Atlanta
+      </button>
+<button class="filter-pill shrink-0 px-3.5 py-1.5 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-filter="japan">
+        Japan
+      </button>
+</div>
+</div>
+<!-- Chapter Card Listing (Vertical Stack) -->
+<section class="px-margin-mobile py-space-md flex flex-col gap-space-md" id="chaptersList">
+<!-- Prologue Card -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="medellin rio" data-has-audio="true" data-order="0">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary/10 text-primary font-bold uppercase tracking-wider">
+            Prologue
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Medellín &amp; Rio
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          Mostly Harmless
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          "Hello, I'm mostly harmless." Surviving an accidental paid-escort date in Medellín, Invisalign comebacks, and the awkward psychology of gringo dating.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<button aria-label="Play Audio 4:20" class="audio-btn px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-terracotta-accent flex items-center gap-1.5 transition-colors" data-audio-time="4:20">
+<span class="material-symbols-outlined text-[17px]">play_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">4:20 Audio</span>
+</button>
+</div>
+</article>
+<!-- Chapter 01 Card -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="rio" data-has-audio="true" data-order="1">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-container text-on-primary-container font-bold uppercase tracking-wider">
+            Ch. 01
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Rio de Janeiro
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          How I Met My Wife
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          A socially awkward gamble: buying a drink for the life-of-the-party wingman, 30 minutes of Google Translate flirting, and the Rio cultural tradition of the public kiss.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<button aria-label="Play Audio 4:15" class="audio-btn px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-terracotta-accent flex items-center gap-1.5 transition-colors" data-audio-time="4:15">
+<span class="material-symbols-outlined text-[17px]">play_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">4:15 Audio</span>
+</button>
+</div>
+</article>
+<!-- Visual Storytelling Vignette: Rio Beach Life -->
+<div class="rounded-xl overflow-hidden bg-sand-light shadow-sm flex flex-col">
+<div class="w-full h-36 bg-cover bg-center" data-alt="Candid sun-drenched documentary photograph of Ipanema beach barracas with green canvas umbrellas, turquoise waves crashing, surfers walking barefoot on warm golden sand, and Morro Dois Irmãos mountains bathed in late afternoon tropical haze, warm film tones with rich botanical shadows" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBj8u2x9mUtbJoh-aqnhBEe0aYi1ZED3Ki6crfQmd4bTry5BnmZxdcNfOBW3E9S6DQ6g_7vtIusW41tiiT7xP4v3iyuNWnZIzjfO_czPvH_nd055qmFemh2Lc09hGxBHP_OlwOTOxId-aOvIpc6Dtxs1QE78aRpjjRt8Gc-ekPgaNrbqkqToyzqownIUpLmMVbq0Jn6Ec063Kw5uSZzlLMGpdbbqdxkonq0ldkkmJI')"></div>
+<div class="p-3.5 bg-surface-container flex items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-secondary text-[22px]">beach_access</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-on-surface leading-tight">Carioca Coastal Club</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Posto 9 • Barraca culture &amp; gringo meetups</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-1 rounded bg-secondary/10 text-secondary uppercase font-semibold">Settings</span>
+</div>
+</div>
+<!-- Chapter 02 Card -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="medellin" data-has-audio="true" data-order="2">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-secondary/10 text-secondary font-bold uppercase tracking-wider">
+            Ch. 02
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Medellín
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          Sure, Take All My Things, But Not the Camera
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          KO'd for 30 hours on Thanksgiving Day in Colombia. Spiked drinks, drained savings accounts, and the bizarre mercy of a thief who spared an expensive DSLR.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<button aria-label="Play Audio 4:48" class="audio-btn px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-terracotta-accent flex items-center gap-1.5 transition-colors" data-audio-time="4:48">
+<span class="material-symbols-outlined text-[17px]">play_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">4:48 Audio</span>
+</button>
+</div>
+</article>
+<!-- Chapter 03 Card -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="atlanta" data-has-audio="true" data-order="3">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-bold uppercase tracking-wider">
+            Ch. 03
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Atlanta
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">6 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          How Long Have You Been Dating Your Boyfriend?
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          Southern gentleman meets sushi date confusion. Being mistaken for a couple with my male roommate, and an ironic fortune cookie to seal the evening.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<button aria-label="Play Audio 6:12" class="audio-btn px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-terracotta-accent flex items-center gap-1.5 transition-colors" data-audio-time="6:12">
+<span class="material-symbols-outlined text-[17px]">play_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">6:12 Audio</span>
+</button>
+</div>
+</article>
+<!-- Chapter 04 Card (Text-only) -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="rio" data-has-audio="false" data-order="4">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary/10 text-primary font-bold uppercase tracking-wider">
+            Ch. 04
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Rio de Janeiro
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          Are You Toxic?
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          Teaching Carioca beachgoers how to throw an American football, accidental group chat revelations with 200 members, and the brown bikini paradox.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<span class="font-label-sm text-label-sm text-outline px-2.5 py-1 bg-surface-container rounded-lg">
+          Text Only
+        </span>
+</div>
+</article>
+<!-- Chapter 05 Card -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="rio" data-has-audio="true" data-order="5">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-container text-on-primary-container font-bold uppercase tracking-wider">
+            Ch. 05
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Rio de Janeiro
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          Neighbors Know My Name
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          Cross-faded afternoon beach hosting, mistaking an enthusiastic greeting for a shoulder makeout, and how a whole apartment block learned my nickname.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<button aria-label="Play Audio 4:30" class="audio-btn px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-terracotta-accent flex items-center gap-1.5 transition-colors" data-audio-time="4:30">
+<span class="material-symbols-outlined text-[17px]">play_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">4:30 Audio</span>
+</button>
+</div>
+</article>
+<!-- Chapter 06 Card -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="japan" data-has-audio="true" data-order="6">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-terracotta-accent/15 text-terracotta-accent font-bold uppercase tracking-wider">
+            Ch. 06
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Japan
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">3 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          Japan
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          Vulnerability, manic episodes, and raw fear on the streets of Tokyo. The hardest chapter Vincent Wilson ever had to put on paper.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<button aria-label="Play Audio 3:50" class="audio-btn px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-terracotta-accent flex items-center gap-1.5 transition-colors" data-audio-time="3:50">
+<span class="material-symbols-outlined text-[17px]">play_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">3:50 Audio</span>
+</button>
+</div>
+</article>
+<!-- Chapter 07 Card (Text-only) -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="edinburgh" data-has-audio="false" data-order="7">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant font-bold uppercase tracking-wider">
+            Ch. 07
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Edinburgh
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          Never Date A Comedian
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          Pulled on stage at the Fringe Festival, tandem bike getaway punchlines, and learning to weaponize quick wit against professional comedians.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<span class="font-label-sm text-label-sm text-outline px-2.5 py-1 bg-surface-container rounded-lg">
+          Text Only
+        </span>
+</div>
+</article>
+<!-- Chapter 08 Card -->
+<article class="chapter-item group relative bg-surface-container-lowest rounded-xl p-4 shadow-sm hover:shadow-md transition-all flex flex-col gap-3" data-cities="rio" data-has-audio="true" data-order="8">
+<div class="flex items-center justify-between gap-2">
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-container text-on-primary-container font-bold uppercase tracking-wider">
+            Ch. 08
+          </span>
+<span class="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[15px] text-terracotta-accent">location_on</span>
+            Rio de Janeiro
+          </span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">5 min read</span>
+</div>
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold group-hover:text-primary transition-colors leading-snug">
+          Sand Over It
+        </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">
+          The Dutch saying 'zand erover'. Grieving a broken marriage in Rio's Las Vegas climate, English teacher misunderstandings, and finding peace.
+        </p>
+</div>
+<div class="flex items-center justify-between pt-1 gap-2">
+<a class="inline-flex items-center gap-1.5 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Read Chapter
+          <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<button aria-label="Play Audio 5:24" class="audio-btn px-3 py-1.5 rounded-lg bg-surface-container-high hover:bg-surface-variant text-terracotta-accent flex items-center gap-1.5 transition-colors" data-audio-time="5:24">
+<span class="material-symbols-outlined text-[17px]">play_circle</span>
+<span class="font-label-sm text-label-sm font-semibold">5:24 Audio</span>
+</button>
+</div>
+</article>
+<!-- Chapters 09 to 17 Quick Read Roster (Bento Container) -->
+<div class="rounded-xl bg-surface-container p-4 flex flex-col gap-3 shadow-sm mt-1" id="rosterSection">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">library_books</span>
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+            Chapters 09 – 17
+          </h4>
+</div>
+<span class="font-label-sm text-label-sm bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">
+          9 Chronicles
+        </span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+        From Montañita beach brawls to sunrise orgasms and Pedra do Sal phone snatchers. Tap any chapter below for immediate access:
+      </p>
+<div class="flex flex-col gap-2 pt-1">
+<!-- Ch 09 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="ecuador" data-has-audio="true" data-order="9" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-primary px-1.5 py-0.5 rounded bg-surface-container">09</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Bros Before Hoes</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min</span>
+</div>
+</a>
+<!-- Ch 10 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="atlanta" data-has-audio="true" data-order="10" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-primary px-1.5 py-0.5 rounded bg-surface-container">10</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Love at First Sight</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">3 min</span>
+</div>
+</a>
+<!-- Ch 11 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="rio" data-has-audio="true" data-order="11" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-primary px-1.5 py-0.5 rounded bg-surface-container">11</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Dez Cerveja</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min</span>
+</div>
+</a>
+<!-- Ch 12 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="atlanta" data-has-audio="true" data-order="12" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-primary px-1.5 py-0.5 rounded bg-surface-container">12</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Hostage Situations</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min</span>
+</div>
+</a>
+<!-- Ch 13 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="cancun" data-has-audio="true" data-order="13" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-secondary px-1.5 py-0.5 rounded bg-surface-container">13</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Not Another Hostage Situation</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min</span>
+</div>
+</a>
+<!-- Ch 14 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="rio" data-has-audio="true" data-order="14" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-primary px-1.5 py-0.5 rounded bg-surface-container">14</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Sunrise Orgasm</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 min</span>
+</div>
+</a>
+<!-- Ch 15 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="rio" data-has-audio="true" data-order="15" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-primary px-1.5 py-0.5 rounded bg-surface-container">15</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Eu Tô Famoso</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min</span>
+</div>
+</a>
+<!-- Ch 16 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="rio" data-has-audio="true" data-order="16" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-primary px-1.5 py-0.5 rounded bg-surface-container">16</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Third First Date</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">4 min</span>
+</div>
+</a>
+<!-- Ch 17 -->
+<a class="chapter-item flex items-center justify-between p-2.5 rounded-lg bg-surface-container-lowest hover:bg-surface-container-high transition-colors" data-cities="rio" data-has-audio="true" data-order="17" href="#">
+<div class="flex items-center gap-2 min-w-0">
+<span class="font-label-sm text-label-sm font-bold text-secondary px-1.5 py-0.5 rounded bg-surface-container">17</span>
+<span class="font-label-md text-label-md text-on-surface font-medium truncate">Shirt As An Umbrella</span>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<span class="material-symbols-outlined text-terracotta-accent text-[16px]">headphones</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 min</span>
+</div>
+</a>
+</div>
+</div>
+</section>
+<!-- Interactive Audio Mini-Bar (Revealed when tapping audio buttons) -->
+<div class="fixed bottom-20 left-4 right-4 z-40 bg-charcoal-ink text-surface rounded-xl p-3 shadow-xl transform translate-y-32 transition-all duration-300 flex items-center justify-between gap-3" id="audioToast">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-9 h-9 rounded-lg bg-secondary text-on-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px] animate-pulse">music_note</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-semibold truncate text-surface-bright" id="audioToastTitle">Prologue: Mostly Harmless</span>
+<span class="font-label-sm text-label-sm text-surface-dim flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          Narrated by Vincent Wilson
+        </span>
+</div>
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<button aria-label="Play/Pause Audio" class="w-8 h-8 rounded-full bg-surface text-charcoal-ink flex items-center justify-center hover:scale-105 transition-transform" id="audioToastPlay">
+<span class="material-symbols-outlined text-[18px]">pause</span>
+</button>
+<button aria-label="Close Player" class="w-8 h-8 rounded-full text-surface-dim hover:text-surface flex items-center justify-center" id="audioToastClose">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+<!-- Location & Author Callout (Botanical Carioca Card) -->
+<section class="px-margin-mobile pt-space-xs pb-space-lg flex flex-col gap-space-sm">
+<div class="rounded-xl bg-sand-light p-4 shadow-sm flex flex-col gap-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">explore</span>
+<span class="font-label-sm text-label-sm uppercase font-bold text-primary tracking-wider">
+          Where it all happened
+        </span>
+</div>
+<div class="flex flex-col gap-1">
+<h4 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+          Ipanema &amp; Copacabana
+        </h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          "If a guy with no game, no Portuguese, and Google Translate survived every one of them, you'll survive your next first date."
+        </p>
+</div>
+<!-- Quick Author Direct Channels -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<a class="h-11 px-3 rounded-lg bg-surface-container-high hover:bg-surface-variant text-on-surface flex items-center justify-center gap-2 transition-colors" href="https://instagram.com/vincent_jevon" rel="noopener" target="_blank">
+<span class="material-symbols-outlined text-secondary text-[20px]">photo_camera</span>
+<span class="font-label-sm text-label-sm font-semibold truncate">@vincent_jevon</span>
+</a>
+<a class="h-11 px-3 rounded-lg bg-primary text-on-primary flex items-center justify-center gap-2 hover:bg-botanical-deep transition-colors shadow-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+<span class="font-label-sm text-label-sm font-semibold truncate">WhatsApp DM</span>
+</a>
+</div>
+</div>
+</section>
+</div>
+<script>
+  (function initDirectoryInteractions() {
+    const searchInput = document.getElementById('chapterSearchInput');
+    const clearBtn = document.getElementById('clearSearchBtn');
+    const filterPills = document.querySelectorAll('.filter-pill');
+    const chapterItems = document.querySelectorAll('.chapter-item');
+    const sortBtn = document.getElementById('sortToggleBtn');
+    const sortLabel = document.getElementById('sortLabel');
+    const audioToast = document.getElementById('audioToast');
+    const audioToastTitle = document.getElementById('audioToastTitle');
+    const audioToastClose = document.getElementById('audioToastClose');
+    const audioToastPlay = document.getElementById('audioToastPlay');
+    const audioButtons = document.querySelectorAll('.audio-btn');
+
+    let currentFilter = 'all';
+    let isAscending = true;
+
+    // Filter Chips
+    filterPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        filterPills.forEach(p => {
+          p.classList.remove('bg-primary', 'text-on-primary', 'active');
+          p.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        pill.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        pill.classList.add('bg-primary', 'text-on-primary', 'active');
+        currentFilter = pill.getAttribute('data-filter');
+        applyFilters();
+      });
+    });
+
+    // Real-time Search
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        if (searchInput.value.trim().length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+        applyFilters();
+      });
+    }
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearBtn.classList.add('hidden');
+        applyFilters();
+        searchInput.focus();
+      });
+    }
+
+    function applyFilters() {
+      const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+      
+      chapterItems.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        const cities = item.getAttribute('data-cities') || '';
+        const hasAudio = item.getAttribute('data-has-audio') === 'true';
+
+        let matchesSearch = !query || text.includes(query);
+        let matchesPill = true;
+
+        if (currentFilter === 'audio') {
+          matchesPill = hasAudio;
+        } else if (currentFilter !== 'all') {
+          matchesPill = cities.toLowerCase().includes(currentFilter.toLowerCase());
+        }
+
+        if (matchesSearch && matchesPill) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+
+    // Sort Toggle (Ascending vs Descending order)
+    if (sortBtn) {
+      sortBtn.addEventListener('click', () => {
+        isAscending = !isAscending;
+        sortLabel.textContent = isAscending ? 'Order' : 'Rev';
+        const list = document.getElementById('chaptersList');
+        const cards = Array.from(list.children).filter(el => el.classList.contains('chapter-item'));
+        
+        cards.sort((a, b) => {
+          const orderA = parseInt(a.getAttribute('data-order') || '0', 10);
+          const orderB = parseInt(b.getAttribute('data-order') || '0', 10);
+          return isAscending ? orderA - orderB : orderB - orderA;
+        });
+
+        cards.forEach(card => list.insertBefore(card, document.getElementById('rosterSection')));
+      });
+    }
+
+    // Audio Play Interaction Toast
+    audioButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const parentCard = btn.closest('.chapter-item');
+        const title = parentCard ? parentCard.querySelector('h3').textContent.trim() : 'Chapter Audio';
+        const time = btn.getAttribute('data-audio-time') || '4:20';
+        
+        if (audioToastTitle) {
+          audioToastTitle.textContent = `${title} (${time})`;
+        }
+        if (audioToast) {
+          audioToast.classList.remove('translate-y-32');
+          audioToast.classList.add('translate-y-0');
+        }
+      });
+    });
+
+    if (audioToastClose) {
+      audioToastClose.addEventListener('click', () => {
+        if (audioToast) {
+          audioToast.classList.add('translate-y-32');
+          audioToast.classList.remove('translate-y-0');
+        }
+      });
+    }
+
+    if (audioToastPlay) {
+      let isPlaying = true;
+      audioToastPlay.addEventListener('click', () => {
+        isPlaying = !isPlaying;
+        const icon = audioToastPlay.querySelector('.material-symbols-outlined');
+        if (icon) {
+          icon.textContent = isPlaying ? 'pause' : 'play_arrow';
+        }
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 w-full z-50 pb-safe bg-sand-light/95 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 text-on-surface-variant hover:text-primary transition-colors" data-path="home" href="#"><span class="material-symbols-outlined text-[22px]">auto_stories</span><span class="font-label-sm text-label-sm">Home</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 transition-colors text-primary font-semibold" data-path="chapters" href="#"><span class="material-symbols-outlined text-[22px]">format_list_bulleted</span><span class="font-label-sm text-label-sm">Chapters</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 text-on-surface-variant hover:text-primary transition-colors" data-path="reader" href="#"><span class="material-symbols-outlined text-[22px]">menu_book</span><span class="font-label-sm text-label-sm">Reader</span></a><a class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 text-on-surface-variant hover:text-primary transition-colors" data-path="contribute" href="#"><span class="material-symbols-outlined text-[22px]">volunteer_activism</span><span class="font-label-sm text-label-sm">Contribute</span></a></div></nav></body></html>

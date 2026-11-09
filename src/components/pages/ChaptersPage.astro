@@ -1,0 +1,188 @@
+---
+// The chapter directory, from stitch/chapters_directory and stitch/mobile_chapters_directory.
+import type { Chapter } from '../../lib/content';
+import { chapterAudio, chapterUrl, readingMinutes } from '../../lib/content';
+import { SITE, instagramUrl, supportTiers } from '../../site.config';
+import { LANG_CODES, LANGS, localePath, t, type Lang } from '../../i18n/ui';
+import { buy } from '../../i18n/buy';
+import ChapterCard from '../ChapterCard.astro';
+import Placeholder from '../Placeholder.astro';
+import Icon from '../home/Icon.astro';
+
+interface Props {
+  lang: Lang;
+  chapters: Chapter[];
+}
+const { lang, chapters } = Astro.props;
+const s = t(lang);
+const b = buy[lang];
+const tiers = supportTiers(lang);
+const published = chapters.filter((c) => c.data.status === 'published');
+const totalMinutes = published.reduce((sum, c) => sum + readingMinutes(c.body), 0);
+const places = [...new Set(chapters.map((c) => c.data.location?.split(',')[0].trim()).filter(Boolean))] as string[];
+const firstAudio = published.find((c) => chapterAudio(c));
+const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop';
+const stats = [
+  { label: s.statTotalRead, value: `${totalMinutes} min`, icon: 'timelapse' as const, tone: 'text-charcoal-ink' },
+  ...(places.length > 0 ? [{ label: s.statLocations, value: String(places.length), icon: 'translate' as const, tone: 'text-charcoal-ink' }] : []),
+  { label: s.statAccess, value: s.statFreeValue, icon: 'lock_open' as const, tone: 'text-primary' },
+  { label: s.statLanguages, value: LANG_CODES.map((l) => LANGS[l].short).join(' & '), icon: 'translate' as const, tone: 'text-terracotta-accent' },
+];
+const chip = 'shrink-0 px-space-md py-1.5 rounded-full font-label-md text-label-md transition-all bg-surface-container-low hover:bg-surface-container text-primary aria-pressed:bg-primary aria-pressed:text-on-primary';
+---
+
+<div class="flex flex-col w-full bg-background font-body-md text-on-surface antialiased">
+  <section class="w-full bg-sand-light py-space-lg lg:py-space-xl">
+    <div class={wrap}>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg lg:gap-space-xl items-start">
+        <div class="lg:col-span-8 flex flex-col gap-space-md">
+          <div class="flex flex-wrap items-center gap-space-sm">
+            <span class="px-space-sm py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm uppercase tracking-wider">{s.chaptersEyebrow}</span>
+            {
+              firstAudio && (
+                <span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-1">
+                  <Icon name="headphones" class="text-[16px] text-terracotta-accent" />
+                  {s.filterAudio}
+                </span>
+              )
+            }
+          </div>
+          <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-primary tracking-tight leading-[1.1]">{s.chaptersTitle}</h1>
+          <p class="font-body-md text-body-md md:font-body-lg md:text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">{s.chaptersLede(published.length)}</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-sm">
+            {
+              stats.map((stat) => (
+                <div class="bg-surface-container-lowest p-3 sm:p-space-sm rounded-lg shadow-sm flex items-center gap-3">
+                  <span class="sm:hidden w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0"><Icon name={stat.icon} class="text-[20px]" /></span>
+                  <span class="flex flex-col min-w-0">
+                    <span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">{stat.label}</span>
+                    <span class:list={['font-headline-sm text-headline-sm mt-0.5', stat.tone]}>{stat.value}</span>
+                  </span>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="hidden lg:flex lg:col-span-4 flex-col gap-space-md">
+          {
+            tiers.length > 0 && (
+              <div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm" data-support-cta>
+                <span class="font-label-md text-label-md text-on-surface flex items-center gap-1 pb-space-xs">
+                  <Icon name="local_cafe" class="text-[18px] text-terracotta-accent" />
+                  {b.support.cta}
+                </span>
+                <p class="font-body-sm text-body-sm text-on-surface-variant">{s.landingCtaNote}</p>
+                <div class="grid grid-cols-3 gap-2 mt-space-sm">
+                  {tiers.map((tier) => (
+                    <form action="/api/checkout" method="post" data-checkout class="contents">
+                      <input type="hidden" name="tier" value={tier.id} />
+                      <input type="hidden" name="lang" value={lang} />
+                      <input type="hidden" name="ref" value="" />
+                      <button type="submit" class="py-1.5 px-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-sm text-label-sm transition-colors text-center" data-track="buy_clicked" data-prop-location="chapters" data-prop-tier={tier.id} data-prop-price={tier.price[lang]}>
+                        {tier.price[lang]}
+                        <span class="block text-[10px] text-outline font-normal leading-tight">{b.support.amountNotes[tier.id as keyof typeof b.support.amountNotes]}</span>
+                      </button>
+                    </form>
+                  ))}
+                </div>
+              </div>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full bg-background/95 backdrop-blur-md sticky top-16 lg:top-20 z-10 shadow-[0_2px_8px_-2px_rgba(26,26,26,0.06)] py-space-sm">
+    <div class:list={[wrap, 'flex flex-col-reverse md:flex-row items-stretch md:items-center justify-between gap-space-sm']}>
+      <div class="flex items-center gap-1.5 overflow-x-auto [scrollbar-width:none]" role="group" aria-label={s.filterLabel}>
+        <button type="button" class={chip} data-filter="" aria-pressed="true">{s.filterAll} ({chapters.length})</button>
+        {places.map((p) => <button type="button" class={chip} data-filter={p} aria-pressed="false">{p}</button>)}
+        {firstAudio && <button type="button" class={chip} data-filter="__audio" aria-pressed="false">{s.filterAudio}</button>}
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="relative flex-1 md:w-64 flex items-center">
+          <Icon name="search" class="absolute left-3 text-outline text-[20px] pointer-events-none" />
+          <input class="w-full bg-surface-container-lowest text-on-surface font-body-sm text-body-sm pl-9 pr-3 py-2.5 rounded-lg shadow-sm border-0 focus:outline-2 focus:outline-primary" type="search" id="chapter-search" placeholder={s.searchChapters} aria-label={s.searchChapters} />
+        </div>
+        <button type="button" class="h-10 px-3 bg-surface-container-high hover:bg-surface-variant rounded-lg text-primary flex items-center gap-1 shrink-0 transition-colors font-label-sm text-label-sm" id="sort-toggle">
+          <Icon name="swap_vert" class="text-[18px]" />
+          {s.order}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full py-space-lg lg:py-space-xl">
+    <div class={wrap}>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg lg:gap-space-xl items-start">
+        <div class="lg:col-span-8 flex flex-col gap-space-md" id="chapter-list">
+          {chapters.map((c) => <ChapterCard chapter={c} />)}
+          <p class="text-center text-on-surface-variant" id="no-matches" hidden>{s.noMatches}</p>
+        </div>
+
+        <aside class="lg:col-span-4 flex flex-col gap-space-lg lg:sticky lg:top-36">
+          <Placeholder>
+            <div class="rounded-xl p-space-md bg-sand-light flex flex-col gap-space-xs">
+              <span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">Author note</span>
+              <p class="font-headline-sm text-headline-sm italic text-tertiary">Author note quote goes here. Stitch invented this one.</p>
+            </div>
+          </Placeholder>
+          <Placeholder image="Map of the book's locations" />
+          <div class="rounded-xl p-space-md bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+            <h2 class="font-headline-sm text-headline-sm text-primary flex items-center gap-2"><Icon name="photo_camera" class="text-[20px] text-terracotta-accent" />{s.followTitle}</h2>
+            <p class="font-body-sm text-body-sm text-on-surface-variant">{s.followBody}</p>
+            <a class="inline-flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary hover:bg-botanical-deep text-on-primary font-label-md text-label-md transition-colors" href={instagramUrl} data-track="instagram_clicked" data-prop-location="chapters" rel="me noopener">
+              {s.follow(SITE.instagram)}
+              <Icon name="open_in_new" class="text-[16px]" />
+            </a>
+          </div>
+          {
+            firstAudio && (
+              <div class="rounded-xl p-space-md bg-[#124030] text-[#faf5ec] shadow-md flex flex-col gap-space-sm">
+                <h2 class="font-headline-sm text-headline-sm flex items-center gap-2"><Icon name="headphones" class="text-[20px] text-[#93d4b7]" />{s.audioCardTitle}</h2>
+                <p class="font-body-sm text-body-sm opacity-85">{s.audioCardBody}</p>
+                <a class="inline-flex items-center justify-center py-2.5 rounded-lg bg-[#b84e29] hover:bg-[#a23e1a] text-[#faf5ec] font-label-md text-label-md transition-colors" href={`${chapterUrl(firstAudio)}#listen`}>{s.audioCardCta}</a>
+              </div>
+            )
+          }
+        </aside>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const list = document.getElementById('chapter-list')!;
+  const empty = document.getElementById('no-matches')!;
+  const cards = [...document.querySelectorAll<HTMLElement>('[data-chapter-card]')];
+  const chips = [...document.querySelectorAll<HTMLButtonElement>('[data-filter]')];
+  const search = document.getElementById('chapter-search') as HTMLInputElement;
+  let filter = '';
+  let reversed = false;
+
+  const apply = () => {
+    const q = search.value.trim().toLowerCase();
+    let shown = 0;
+    cards.forEach((card) => {
+      const place = !filter || (filter === '__audio' ? !!card.dataset.audio : card.dataset.place === filter);
+      card.hidden = !(place && card.dataset.search!.includes(q));
+      if (!card.hidden) shown++;
+    });
+    empty.hidden = shown > 0;
+  };
+
+  chips.forEach((chip) =>
+    chip.addEventListener('click', () => {
+      filter = chip.dataset.filter!;
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      apply();
+    }),
+  );
+  search.addEventListener('input', apply);
+  document.getElementById('sort-toggle')!.addEventListener('click', () => {
+    reversed = !reversed;
+    (reversed ? [...cards].reverse() : cards).forEach((card) => list.insertBefore(card, empty));
+  });
+</script>

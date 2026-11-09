@@ -58,6 +58,23 @@ export const buy = {
     shareBody: 'Tell a friend who needs a laugh, or one who is about to date abroad. Especially that one.',
     share: 'Share the book',
     footerLink: "☕ Contribute",
+    page: {
+      tiersTitle: 'Choose your contribution',
+      tiersBody: 'No subscriptions. One contribution, whichever fits your pocket.',
+      oneTime: 'one-time',
+      contribute: (price: string) => `Contribute ${price} →`,
+      altEyebrow: 'Costs nothing',
+      altBody: 'Spreading the word keeps the stories free for everyone.',
+      shareTitle: 'Share the book',
+      shareBody: 'Send a chapter to the friend who needs a laugh, or the one about to date abroad.',
+      commentTitle: 'Comment on Instagram',
+      commentBody: 'Drop your reactions on my posts. The algorithm treats it like gold.',
+      waTitle: 'Send feedback on WhatsApp',
+      waBody: 'Tell me which chapters made you laugh and which made you cringe.',
+      waCta: 'Message me →',
+      faqEyebrow: 'Good to know',
+      totalContributions: 'Total contributions',
+    },
 
     // Floating button and full-screen prompt
     support: {
@@ -145,6 +162,23 @@ export const buy = {
     shareBody: 'Conte para um amigo que precisa rir, ou para um que vai namorar no exterior. Principalmente esse.',
     share: 'Compartilhar o livro',
     footerLink: "☕ Contribuir",
+    page: {
+      tiersTitle: 'Escolha sua contribuição',
+      tiersBody: 'Sem assinatura. Uma contribuição só, a que couber no seu bolso.',
+      oneTime: 'pagamento único',
+      contribute: (price: string) => `Contribuir com ${price} →`,
+      altEyebrow: 'Não custa nada',
+      altBody: 'Espalhar a palavra mantém as histórias grátis para todo mundo.',
+      shareTitle: 'Compartilhe o livro',
+      shareBody: 'Mande um capítulo para o amigo que precisa rir, ou para aquele que vai namorar no exterior.',
+      commentTitle: 'Comente no Instagram',
+      commentBody: 'Deixe suas reações nos meus posts. O algoritmo agradece.',
+      waTitle: 'Mande feedback no WhatsApp',
+      waBody: 'Me conte quais capítulos te fizeram rir e quais te deram vergonha alheia.',
+      waCta: 'Me chame →',
+      faqEyebrow: 'Bom saber',
+      totalContributions: 'Total de contribuições',
+    },
 
     support: {
       fab: 'Contribuir',

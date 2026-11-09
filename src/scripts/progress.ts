@@ -60,6 +60,11 @@ export function initProgressUI() {
     el.classList.toggle('is-read', p.finished);
   });
 
+  // Mobile tab bar: "Read" goes to the chapter this reader is in the middle of
+  const readerTab = document.querySelector<HTMLAnchorElement>('[data-tab-reader]');
+  const reading = allProgress(lang).find((p) => !p.finished && p.pct >= 3);
+  if (readerTab && reading) readerTab.href = reading.url;
+
   const cta = document.querySelector<HTMLAnchorElement>('[data-continue]');
   const current = allProgress(lang).find((p) => !p.finished && p.pct >= 3);
   if (cta && current) {

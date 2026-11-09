@@ -3,19 +3,15 @@
 // chapter readable in place. The chapter pages keep the full experience (audio, PDFs, reading position).
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import QuizPromo from '../../components/QuizPromo.astro';
-import { SITE, instagramUrl, supportTiers } from '../../site.config';
-import { getVisibleChapters, chapterUrl, chapterLabel, chapterAudio, formatDate, readingMinutes, wordCount } from '../../lib/content';
-import { langPaths, t, type Lang } from '../../i18n/ui';
+import Home from '../../components/home/Home.astro';
+import { getVisibleChapters } from '../../lib/content';
+import { langPaths, type Lang } from '../../i18n/ui';
 import { homeSchema } from '../../lib/seo';
-import { buy } from '../../i18n/buy';
 
 export const getStaticPaths = langPaths;
 
 const FIRST_OPEN = 1; // starts expanded: Chapter 1 hooks readers faster than the Introduction
 const lang = Astro.props.lang as Lang;
-const s = t(lang);
-const tiers = supportTiers(lang);
 const chapters = await Promise.all(
   (await getVisibleChapters(lang)).map(async (c) => ({
     c,
@@ -24,96 +20,8 @@ const chapters = await Promise.all(
 );
 ---
 
-<Base lang={lang} jsonLd={homeSchema(lang, Astro.site)}>
-  <header class="landing-head">
-    <h1 class="landing-title">
-      {s.bookTitle}
-      <span class="hero-sub">{s.bookSubtitle}</span>
-    </h1>
-    <p class="landing-lede">{s.landingLede}</p>
-  </header>
-
-  {
-    tiers.length > 0 && (
-      <section class="landing-cta" data-support-cta>
-        <span class="landing-cta-label" id="landing-cta-label">{buy[lang].support.cta}</span>
-        <div class="landing-cta-amounts" role="group" aria-labelledby="landing-cta-label">
-          {tiers.map((tier) => (
-            <form action="/api/checkout" method="post" data-checkout>
-              <input type="hidden" name="tier" value={tier.id} />
-              <input type="hidden" name="lang" value={lang} />
-              <input type="hidden" name="ref" value="" />
-              <button
-                type="submit"
-                class="btn btn--primary"
-                data-track="buy_clicked"
-                data-prop-location="landing_top"
-                data-prop-tier={tier.id}
-                data-prop-price={tier.price[lang]}
-              >
-                <span class="landing-cta-amount">{tier.price[lang]}</span>
-                <span class="landing-cta-perk">{buy[lang].support.amountNotes[tier.id as keyof typeof buy.en.support.amountNotes]}</span>
-              </button>
-            </form>
-          ))}
-        </div>
-        <p>{s.landingCtaNote}</p>
-      </section>
-    )
-  }
-
-  <section class="landing-chapters" aria-labelledby="chapters-title">
-    <h2 id="chapters-title">{s.chaptersTitle}</h2>
-    {
-      chapters.map(({ c, Content }) => {
-        const label = chapterLabel(c);
-        const head = (
-          <span class="acc-head">
-            <span class="eyebrow">{label}</span>
-            <span class="acc-title">{c.data.title}</span>
-            <span class="acc-meta">
-              {Content ? s.minRead(readingMinutes(c.body)) : s.comingOn(formatDate(c.data.published, lang))}
-              {Content && <span class="card-progress" data-progress={c.data.number} data-read-label={s.readBadge} data-pct-label={s.pctRead} hidden />}
-            </span>
-          </span>
-        );
-        return Content ? (
-          <details class="acc" id={`chapter-${c.data.number}`} open={c.data.number === FIRST_OPEN} data-acc data-chapter={c.data.number} data-title={c.data.title} data-label={label} data-url={chapterUrl(c)} data-words={wordCount(c.body)} data-version={c.data.versions[0]?.label ?? 'v1'}>
-            <summary>
-              {head}
-              <span class="acc-chevron" aria-hidden="true" />
-            </summary>
-            <div class="acc-body">
-              <a class="btn btn--ghost acc-page" href={chapterUrl(c)} data-track="landing_chapter_page_clicked" data-prop-chapter={String(c.data.number)} data-prop-audio={String(!!chapterAudio(c))}>
-                {s.betterReading}
-              </a>
-              <div class="prose">
-                <Content />
-              </div>
-              <div data-acc-end />
-              <p class="acc-done" data-acc-done hidden>
-                <span class="acc-done-check" aria-hidden="true">✓</span> {s.keepGoing} <span class="acc-done-arrow" aria-hidden="true">↓</span>
-              </p>
-            </div>
-          </details>
-        ) : (
-          <div class="acc acc--soon">{head}</div>
-        );
-      })
-    }
-  </section>
-
-  <section class="quiz-promo-wrap">
-    <QuizPromo lang={lang} place="home" />
-  </section>
-
-  <section class="follow">
-    <h2>{s.followTitle}</h2>
-    <p>{s.followBody}</p>
-    <a class="btn" href={instagramUrl} data-track="instagram_clicked" data-prop-location="home" rel="me noopener">
-      {s.follow(SITE.instagram)}
-    </a>
-  </section>
+<Base lang={lang} jsonLd={homeSchema(lang, Astro.site)} stitch>
+  <Home lang={lang} chapters={chapters} firstOpen={FIRST_OPEN} />
 
   <script>
     import { initLanding } from '../../scripts/landing';

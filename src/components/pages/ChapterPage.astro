@@ -1,0 +1,186 @@
+---
+// One chapter, from stitch/chapter_1_reader_audio and stitch/mobile_chapter_1_reader.
+// scripts/reading.ts needs .chapter, .prose, #chapter-end and #progress-bar.
+import type { Chapter } from '../../lib/content';
+import { chapterAudio, chapterLabel, chapterLang, chapterUrl, formatClock, formatDate, readingMinutes, wordCount } from '../../lib/content';
+import { SITE, instagramUrl } from '../../site.config';
+import { localePath, t } from '../../i18n/ui';
+import AudioPlayer from '../AudioPlayer.astro';
+import Feedback from '../Feedback.astro';
+import PdfVersions from '../PdfVersions.astro';
+import Placeholder from '../Placeholder.astro';
+import Icon from '../home/Icon.astro';
+
+interface Props {
+  chapter: Chapter;
+  Content: any;
+  prev?: Chapter;
+  next?: Chapter;
+  playlist: Chapter[];
+  shareUrl: string;
+}
+const { chapter, Content, prev, next, playlist, shareUrl } = Astro.props;
+const lang = chapterLang(chapter);
+const s = t(lang);
+const { number, title, excerpt, location, published } = chapter.data;
+const label = chapterLabel(chapter);
+const place = location?.split(',')[0];
+const audio = chapterAudio(chapter);
+const index = playlist.findIndex((c) => c.data.number === number);
+const upNext = playlist.slice(index + 1, index + 3);
+const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
+const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop';
+---
+
+<div class="flex flex-col w-full bg-background font-body-md text-on-surface antialiased">
+  <div class="sticky top-16 lg:top-20 z-10 w-full bg-sand-light/95 backdrop-blur-md shadow-sm">
+    <div class:list={[wrap, 'py-2.5 flex items-center justify-between gap-space-md']}>
+      <div class="flex items-center gap-space-sm min-w-0">
+        <a class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors shrink-0" href={localePath(lang, '/chapters/')}>
+          <Icon name="arrow_back" class="text-[18px]" />
+          <span>{s.navChapters}</span>
+        </a>
+        <span class="text-outline-variant select-none">/</span>
+        <span class="font-label-md text-label-md text-primary font-bold truncate">{label}</span>
+        {place && <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-terracotta-accent font-label-sm text-label-sm">{place}</span>}
+      </div>
+      <div class="flex items-center gap-space-xs sm:gap-space-sm shrink-0">
+        {
+          audio && (
+            <a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-container text-primary font-label-sm text-label-sm shadow-sm transition-all" href="#listen" aria-label={s.listen(Math.round(audio.duration / 60))}>
+              <Icon name="volume_up" class="text-[17px] text-terracotta-accent" />
+              <span class="hidden md:inline">{formatClock(audio.duration)}</span>
+            </a>
+          )
+        }
+        <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-botanical-deep text-on-primary font-label-sm text-label-sm shadow-sm transition-all" onclick="event.stopPropagation(); document.getElementById('settings-btn').click()" aria-label={s.readingSettings}>
+          <Icon name="tune" class="text-[17px]" />
+          <span class="hidden sm:inline">{s.readingMode}</span>
+        </button>
+        {
+          next && (
+            <a class="p-1.5 rounded-lg bg-surface hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors hidden sm:flex items-center justify-center" href={chapterUrl(next)} title={next.data.title} aria-label={next.data.title}>
+              <Icon name="chevron_right" class="text-[20px]" />
+            </a>
+          )
+        }
+      </div>
+    </div>
+    <div class="w-full h-1 bg-sand-border/40" aria-hidden="true">
+      <div class="progress-bar bg-terracotta-accent" id="progress-bar"></div>
+    </div>
+  </div>
+
+  <div class:list={[wrap, 'py-space-lg lg:py-space-xl']}>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+      <aside class="lg:col-span-4 flex flex-col gap-space-lg lg:sticky lg:top-36 order-2 lg:order-1">
+        <Placeholder image="Chapter scene photo" />
+        <Placeholder>
+          <div class="rounded-xl p-space-md bg-sand-light flex flex-col gap-space-xs">
+            <span class="font-label-sm text-label-sm uppercase tracking-wider text-terracotta-accent">Cultural note</span>
+            <p class="font-headline-sm text-[16px] italic leading-snug text-primary">Cultural note goes here. Stitch invented these.</p>
+          </div>
+        </Placeholder>
+        {
+          upNext.length > 0 && (
+            <div class="rounded-xl p-space-md bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+              <div class="flex items-center justify-between gap-2">
+                <span class="font-label-sm text-label-sm text-on-surface uppercase tracking-wider">{s.upNext}</span>
+                <span class="font-label-sm text-label-sm text-terracotta-accent">{playlist.length} {s.navChapters.toLowerCase()}</span>
+              </div>
+              <div class="flex flex-col gap-2">
+                {upNext.map((c, i) => (
+                  <a class:list={['p-2.5 rounded-lg transition-colors flex items-start justify-between gap-2 group', i === 0 ? 'bg-sand-light/70 hover:bg-sand-light' : 'hover:bg-surface-container-low']} href={chapterUrl(c)}>
+                    <span class="flex flex-col">
+                      <span class="font-label-sm text-label-sm text-terracotta-accent">{chapterLabel(c)}</span>
+                      <span class="font-body-sm text-body-sm font-semibold text-primary group-hover:text-botanical-deep">{c.data.title}</span>
+                    </span>
+                    <Icon name="chevron_right" class="text-[20px] text-outline-variant group-hover:text-primary transition-colors" />
+                  </a>
+                ))}
+              </div>
+            </div>
+          )
+        }
+      </aside>
+
+      <article
+        class="chapter lg:col-span-8 m-0 max-w-none flex flex-col gap-space-lg order-1 lg:order-2"
+        data-chapter={number}
+        data-title={title}
+        data-label={label}
+        data-version={chapter.data.versions[0]?.label ?? 'v1'}
+        data-words={wordCount(chapter.body)}
+      >
+        <header class="flex flex-col gap-space-sm">
+          <div class="flex flex-wrap items-center gap-space-sm">
+            <span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-bold uppercase tracking-wider">{label}</span>
+            <span class="inline-flex items-center gap-1 font-label-md text-label-md text-on-surface-variant">
+              <Icon name="schedule" class="text-[16px] text-terracotta-accent" />
+              {s.minRead(readingMinutes(chapter.body))}
+            </span>
+            <span class="font-label-md text-label-md text-on-surface-variant">{formatDate(published, lang)}</span>
+          </div>
+          <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-primary tracking-tight leading-tight">{title}</h1>
+          <p class="font-body-md text-body-md md:font-body-lg md:text-body-lg text-on-surface-variant italic">{excerpt}</p>
+        </header>
+
+        <AudioPlayer chapter={chapter} playlist={playlist} />
+        <PdfVersions chapter={chapter} compact />
+
+        <div class="prose max-w-[42rem]"><Content /></div>
+        <div id="chapter-end"></div>
+
+        <section class="rounded-xl p-space-lg bg-surface-container-low flex flex-col items-center gap-space-sm text-center">
+          <p class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">{s.endOf(label)}</p>
+          <h2 class="font-headline-md text-headline-md text-primary">{s.takeWithYou}</h2>
+          <PdfVersions chapter={chapter} />
+          <button type="button" class="px-space-md py-2.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors" data-share={shareUrl} data-share-title={`${title} · ${s.bookTitle}`} data-copied={s.linkCopied}>{s.share}</button>
+        </section>
+
+        <Feedback lang={lang} number={number} label={label} title={title} />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+          {
+            feedbackOn && (
+              <a class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-sm hover:shadow-md transition-shadow" href="#" data-wa-general={s.waGeneralMsg} data-source="chapter" rel="noopener" target="_blank">
+                <span class="w-10 h-10 rounded-full bg-[#25d366]/15 text-[#128c7e] flex items-center justify-center shrink-0"><Icon name="chat" class="text-[22px]" /></span>
+                <span class="font-label-lg text-label-lg text-on-surface">{s.footerFeedback.replace(/^💬\s*/, '')}</span>
+              </a>
+            )
+          }
+          <a class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-sm hover:shadow-md transition-shadow" href={instagramUrl} data-track="instagram_clicked" data-prop-location="chapter" rel="me noopener">
+            <span class="w-10 h-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0"><Icon name="photo_camera" class="text-[22px]" /></span>
+            <span class="font-label-lg text-label-lg text-on-surface">{s.follow(SITE.instagram)}</span>
+          </a>
+        </div>
+
+        <nav class="grid grid-cols-2 gap-space-md" aria-label="Chapter navigation">
+          {
+            prev ? (
+              <a href={chapterUrl(prev)} class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-0.5 hover:shadow-md transition-shadow">
+                <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">{s.previous}</span>
+                <span class="font-label-lg text-label-lg text-primary">{prev.data.title}</span>
+              </a>
+            ) : (
+              <span />
+            )
+          }
+          {
+            next ? (
+              <a href={chapterUrl(next)} class="p-space-md rounded-xl bg-primary hover:bg-botanical-deep text-on-primary shadow-md flex flex-col gap-0.5 text-right transition-colors" data-track="next_chapter_clicked" data-prop-from={String(number)}>
+                <span class="font-label-sm text-label-sm uppercase opacity-80">{s.next}</span>
+                <span class="font-label-lg text-label-lg">{next.data.title}</span>
+              </a>
+            ) : (
+              <a href={localePath(lang, '/chapters/')} class="p-space-md rounded-xl bg-primary hover:bg-botanical-deep text-on-primary shadow-md flex flex-col gap-0.5 text-right transition-colors">
+                <span class="font-label-sm text-label-sm uppercase opacity-80">{s.allForNow}</span>
+                <span class="font-label-lg text-label-lg">{s.seeComing}</span>
+              </a>
+            )
+          }
+        </nav>
+      </article>
+    </div>
+  </div>
+</div>
