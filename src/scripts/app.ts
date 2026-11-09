@@ -25,6 +25,21 @@ document.addEventListener('click', (e) => {
   track(el.dataset.track!, props);
 });
 
+// ---- Section views --------------------------------------------------------
+// Any element with data-track-view="name" sends section_viewed once per page when it scrolls into
+// view. These are the denominators: how many people saw the Contribute box, not just who clicked it.
+const viewed = new IntersectionObserver(
+  (entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      viewed.unobserve(entry.target);
+      track('section_viewed', { section: (entry.target as HTMLElement).dataset.trackView });
+    }
+  },
+  { rootMargin: '0px 0px -25% 0px' },
+);
+document.querySelectorAll('[data-track-view]').forEach((el) => viewed.observe(el));
+
 // ---- Share buttons --------------------------------------------------------
 // Clipboard access is unreliable in in-app browsers, so fall back to the older copy command.
 async function copyText(text: string, near: Element): Promise<boolean> {

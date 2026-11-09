@@ -36,7 +36,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
   <div class="sticky top-16 lg:top-20 z-10 w-full bg-sand-light/95 backdrop-blur-md shadow-sm">
     <div class:list={[wrap, 'py-2.5 flex items-center justify-between gap-space-md']}>
       <div class="flex items-center gap-space-sm min-w-0">
-        <a class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors shrink-0" href={localePath(lang, '/chapters/')}>
+        <a class="flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors shrink-0" href={localePath(lang, '/chapters/')} data-track="nav_clicked" data-prop-to="chapters" data-prop-location="reader_bar">
           <Icon name="arrow_back" class="text-[18px]" />
           <span>{s.navChapters}</span>
         </a>
@@ -49,7 +49,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
       <div class="flex items-center gap-space-xs sm:gap-space-sm shrink-0">
         {
           audio && (
-            <a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-container text-primary font-label-sm text-label-sm shadow-sm transition-all" href="#listen" aria-label={s.listen(Math.round(audio.duration / 60))}>
+            <a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-container text-primary font-label-sm text-label-sm shadow-sm transition-all" href="#listen" data-track="chapter_audio_clicked" data-prop-chapter={String(number)} data-prop-location="reader_bar" aria-label={s.listen(Math.round(audio.duration / 60))}>
               <Icon name="volume_up" class="text-[17px] text-terracotta-accent" />
               <span class="hidden md:inline">{formatClock(audio.duration)}</span>
             </a>
@@ -57,7 +57,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
         }
         {
           next && (
-            <a class="p-1.5 rounded-lg bg-surface hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors hidden sm:flex items-center justify-center" href={chapterUrl(next)} title={next.data.title} aria-label={next.data.title}>
+            <a class="p-1.5 rounded-lg bg-surface hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors hidden sm:flex items-center justify-center" href={chapterUrl(next)} title={next.data.title} aria-label={next.data.title} data-track="next_chapter_clicked" data-prop-from={String(number)} data-prop-location="reader_bar">
               <Icon name="chevron_right" class="text-[20px]" />
             </a>
           )
@@ -88,7 +88,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
               </div>
               <div class="flex flex-col gap-2">
                 {upNext.map((c, i) => (
-                  <a class:list={['p-2.5 rounded-lg transition-colors flex items-start justify-between gap-2 group', i === 0 ? 'bg-sand-light/70 hover:bg-sand-light' : 'hover:bg-surface-container-low']} href={chapterUrl(c)}>
+                  <a class:list={['p-2.5 rounded-lg transition-colors flex items-start justify-between gap-2 group', i === 0 ? 'bg-sand-light/70 hover:bg-sand-light' : 'hover:bg-surface-container-low']} href={chapterUrl(c)} data-track="up_next_clicked" data-prop-from={String(number)} data-prop-to={String(c.data.number)}>
                     <span class="flex flex-col">
                       <span class="font-label-sm text-label-sm text-terracotta-accent">{chapterLabel(c)}</span>
                       <span class="font-body-sm text-body-sm font-semibold text-primary group-hover:text-botanical-deep">{c.data.title}</span>
@@ -133,7 +133,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
           <p class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">{s.endOf(label)}</p>
           <h2 class="font-headline-md text-headline-md text-primary">{s.takeWithYou}</h2>
           <PdfVersions chapter={chapter} />
-          <button type="button" class="px-space-md py-2.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors" data-share={shareUrl} data-share-title={`${title} · ${s.bookTitle}`} data-copied={s.linkCopied}>{s.share}</button>
+          <button type="button" class="px-space-md py-2.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors" data-share={shareUrl} data-share-title={`${title} · ${s.bookTitle}`} data-copied={s.linkCopied} data-share-location="chapter_end">{s.share}</button>
         </section>
 
         <Feedback lang={lang} number={number} label={label} title={title} />
@@ -156,7 +156,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
         <nav class="grid grid-cols-2 gap-space-md" aria-label="Chapter navigation">
           {
             prev ? (
-              <a href={chapterUrl(prev)} class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-0.5 hover:shadow-md transition-shadow">
+              <a href={chapterUrl(prev)} class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-0.5 hover:shadow-md transition-shadow" data-track="previous_chapter_clicked" data-prop-from={String(number)}>
                 <span class="font-label-sm text-label-sm text-on-surface-variant uppercase">{s.previous}</span>
                 <span class="font-label-lg text-label-lg text-primary">{prev.data.title}</span>
               </a>
@@ -166,7 +166,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
           }
           {
             next ? (
-              <a href={chapterUrl(next)} class="p-space-md rounded-xl bg-primary hover:bg-botanical-deep text-on-primary shadow-md flex flex-col gap-0.5 text-right transition-colors" data-track="next_chapter_clicked" data-prop-from={String(number)}>
+              <a href={chapterUrl(next)} class="p-space-md rounded-xl bg-primary hover:bg-botanical-deep text-on-primary shadow-md flex flex-col gap-0.5 text-right transition-colors" data-track="next_chapter_clicked" data-prop-from={String(number)} data-prop-location="pager">
                 <span class="font-label-sm text-label-sm uppercase opacity-80">{s.next}</span>
                 <span class="font-label-lg text-label-lg">{next.data.title}</span>
               </a>

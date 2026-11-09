@@ -46,7 +46,7 @@ export function initSettings() {
     setSuperProps(prefsForAnalytics(prefs));
     syncWakeLock(prefs.awake);
     render();
-    track('reading_settings_changed', { setting: key, value, from, page_type: document.querySelector('.chapter') ? 'chapter' : 'other' });
+    track('reading_settings_changed', { setting: key, value, from });
   };
 
   const sizeDown = panel.querySelector<HTMLButtonElement>('[data-size="down"]')!;

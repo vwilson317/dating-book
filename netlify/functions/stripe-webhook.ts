@@ -3,6 +3,7 @@
 // and edition perks are handled by hand from this record (Netlify Blobs store "contributions").
 import { getStore } from '@netlify/blobs';
 import type Stripe from 'stripe';
+import { captureContribution } from '../lib/analytics';
 import { requireEnv, stripeClient } from '../lib/stripe';
 
 export const config = { path: '/api/stripe-webhook' };
@@ -46,6 +47,7 @@ async function recordContribution(session: Stripe.Checkout.Session) {
     { onlyIfNew: true },
   );
   console.log(`${modified ? 'recorded' : 'duplicate delivery for'} contribution ${session.id} (${tier})`);
+  if (modified) await captureContribution(session);
 }
 
 async function handleEvent(event: Stripe.Event) {

@@ -2,7 +2,7 @@
 //
 // The prompt opens once after 3 finished chapters and once after every published chapter, counted
 // per language on this device. Readers who already paid never see the button or the prompts.
-import { track } from './analytics';
+import { distinctId, track } from './analytics';
 import { allProgress } from './progress';
 
 const PROMPT_AFTER = 3;
@@ -44,6 +44,15 @@ function tagCheckoutForms() {
   document.querySelectorAll<HTMLFormElement>('form[data-checkout]').forEach((form) => {
     form.querySelector<HTMLInputElement>('input[name="ref"]')!.value = ref;
     form.querySelector<HTMLElement>('[data-track]')!.dataset.propRef = ref;
+    // Lets the Stripe webhook attach the purchase to this reader's anonymous analytics history
+    const visitor = distinctId();
+    if (visitor) {
+      const field = document.createElement('input');
+      field.type = 'hidden';
+      field.name = 'ph_id';
+      field.value = visitor;
+      form.append(field);
+    }
   });
 }
 

@@ -225,9 +225,21 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 |---|---|
 | `$pageview` / `$pageleave` | automatic |
 | `pdf_downloaded` | any PDF click; props: `kind` (chapter/edition), `chapter`, `version`, `file` |
-| `next_chapter_clicked` | reader taps "Next →" |
-| `instagram_clicked` | Instagram links; props: `location` (footer/home/contact/support_modal) |
-| `shared` | share buttons; props: `url`, `method` (native/clipboard), `location` (page/support_modal) |
+| `next_chapter_clicked` | reader taps "Next →"; props: `from`, `location` (pager/reader_bar) |
+| `previous_chapter_clicked` | "← Previous"; props: `from` |
+| `up_next_clicked` | chapter sidebar; props: `from`, `to` |
+| `chapter_card_clicked` | chapter directory card; props: `chapter`, `audio` |
+| `chapter_audio_clicked` | a link straight to a chapter's audio; props: `chapter`, `location` (directory/audio_card/reader_bar) |
+| `chapter_filter_used`, `chapter_search_used`, `chapter_sort_toggled` | directory tools; props: `filter`, `results`, `query_length` (never the search text), `order` |
+| `nav_clicked` | header, tab bar and other navigation; props: `to`, `location` |
+| `buy_page_clicked` | any link to the Contribute page; props: `location` (header/tabbar/fab/footer) |
+| `section_viewed` | a section scrolled into view, once per page; props: `section` (home_contribute/home_hero/home_directory/home_pricing/buy_tiers/buy_free_help/buy_faq/buy_total_contributions) |
+| `faq_opened` | Contribute FAQ; props: `question` |
+| `checkout_returned` | back from Stripe without paying; props: `status` (canceled/error) |
+| `contribution_recorded` | **sent by the Stripe webhook**, once per paid contribution, even if the buyer closes the tab. Use this for revenue, not `purchase_completed`, which only fires on the thank-you page. Props: `tier`, `lang`, `value`, `currency`, `session_id`, `ref`, `linked_to_visitor`. No names or emails |
+| `audio_seeked`, `audio_skipped`, `audio_autonext_toggled` | audio controls; props: `from`, `to`, `seconds`, `enabled` |
+| `instagram_clicked` | Instagram links; props: `location` |
+| `shared` | share buttons; props: `url`, `method` (native/clipboard), `location` |
 | `landing_chapter_opened` | reader taps a chapter open on the home page; props: `chapter`, `lang`, `title`, `words_total`, `source` |
 | `landing_next_auto_opened` | reader reaches the end of a chapter and the next one opens; same props (`chapter` is the one just finished) |
 | `landing_chapter_page_clicked` | "better reading experience and audio" button; props: `chapter`, `audio` |

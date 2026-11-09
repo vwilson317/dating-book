@@ -25,6 +25,23 @@ export function inAppBrowser(): string | null {
   return null;
 }
 
+/** Which kind of page this is, so events can be compared across the site without parsing URLs */
+function pageType(): string {
+  const path = location.pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '').replace(/\/$/, '') || '/';
+  if (path === '/') return 'home';
+  if (path === '/chapters') return 'chapters';
+  if (path.startsWith('/chapters/')) return 'chapter';
+  return path.slice(1).split('/')[0] || 'other';
+}
+
+function isSupporter(): boolean {
+  try {
+    return !!localStorage.getItem('supporter');
+  } catch {
+    return false;
+  }
+}
+
 export function initAnalytics() {
   if (ready || !key) return;
   posthog.init(key, {
@@ -42,12 +59,18 @@ export function initAnalytics() {
     display_mode: isStandalone() ? 'standalone' : 'browser',
     in_app_browser: inAppBrowser() ?? 'none',
     lang: document.documentElement.lang,
+    page_type: pageType(),
+    site_design: 'stitch', // compare against events from before the redesign, which don't have this
+    is_supporter: isSupporter(),
     ...prefsForAnalytics(loadPrefs()),
     ...environmentForAnalytics(),
   });
   ready = true;
   posthog.capture('$pageview');
 }
+
+/** This browser's anonymous PostHog ID, or undefined when analytics isn't running */
+export const distinctId = (): string | undefined => (ready ? posthog.get_distinct_id() : undefined);
 
 /** Attach properties to every future event (e.g. the reader's display settings) */
 export function setSuperProps(props: Record<string, unknown>) {

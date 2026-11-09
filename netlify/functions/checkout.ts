@@ -65,6 +65,9 @@ export default async (req: Request, context: { site?: { url?: string } }) => {
   // Ad attribution, built in src/scripts/support.ts. Optional, and never worth failing a payment over.
   const rawRef = form?.get('ref');
   const ref = typeof rawRef === 'string' && /^[\w-]{1,200}$/.test(rawRef) ? rawRef : undefined;
+  // The reader's anonymous PostHog ID, added in src/scripts/support.ts. Optional in the same way.
+  const rawVisitor = form?.get('ph_id');
+  const visitor = typeof rawVisitor === 'string' && /^[\w.:$-]{1,200}$/.test(rawVisitor) ? rawVisitor : undefined;
 
   let buyUrl = '/buy/';
   try {
@@ -78,7 +81,7 @@ export default async (req: Request, context: { site?: { url?: string } }) => {
       custom_fields: customFields(tier, lang),
       client_reference_id: ref,
       locale: lang === 'pt' ? 'pt-BR' : 'en',
-      metadata: { tier, lang },
+      metadata: { tier, lang, ...(visitor ? { ph_id: visitor } : {}) },
       success_url: `${origin}${prefix}/thanks/?tier=${tier}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${buyUrl}?checkout=canceled`,
     });

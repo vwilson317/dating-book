@@ -13,14 +13,14 @@ export const SITE = {
   // Contribution tiers, lowest first (used by the contribute prompt, /buy/ and /thanks/).
   // Contributing stays hidden on the live site until PUBLIC_CHECKOUT_ENABLED=true (see README).
   // Tier text is in src/i18n/buy.ts. The real price is set in Stripe (STRIPE_PRICE_* env vars), so
-  // change both together.
+  // change both together. `amount` (USD) is what analytics reports as revenue.
   support: {
     // Shown at the bottom of the Contribute page. Updated by hand.
     totalContributions: 347,
     tiers: [
-      { id: 'name', price: { en: '$3.99', pt: 'US$ 3,99' } },
-      { id: 'instagram', price: { en: '$5.99', pt: 'US$ 5,99' } },
-      { id: 'story', price: { en: '$20', pt: 'US$ 20' } },
+      { id: 'name', amount: 3.99, price: { en: '$3.99', pt: 'US$ 3,99' } },
+      { id: 'instagram', amount: 5.99, price: { en: '$5.99', pt: 'US$ 5,99' } },
+      { id: 'story', amount: 20, price: { en: '$20', pt: 'US$ 20' } },
     ],
   },
 };

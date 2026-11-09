@@ -79,7 +79,7 @@ const tierIds = SITE.support.tiers.map((tier) => tier.id);
     <a href={localePath(lang, '/chapters/')} class="thanks-read">{b.readCta}</a>
   </section>
 
-  <section class="contact-grid thanks-more" data-tier-ids={tierIds.join(',')}>
+  <section class="contact-grid thanks-more" data-tier-amounts={JSON.stringify(Object.fromEntries(SITE.support.tiers.map((t) => [t.id, t.amount])))} data-tier-ids={tierIds.join(',')}>
     {
       feedbackOn && (
         <div class="contact-card">
@@ -140,7 +140,10 @@ const tierIds = SITE.support.tiers.map((tier) => tier.id);
       } catch {
         /* private mode */
       }
-      if (!seen) track('purchase_completed', { lang: document.documentElement.lang, session_id: session, tier });
+      if (!seen) {
+        const amounts = JSON.parse(document.querySelector<HTMLElement>('[data-tier-amounts]')!.dataset.tierAmounts!) as Record<string, number>;
+        track('purchase_completed', { lang: document.documentElement.lang, session_id: session, tier, value: tier ? amounts[tier] : undefined, currency: 'USD' });
+      }
       params.delete('session_id');
       const qs = params.toString();
       history.replaceState(null, '', location.pathname + (qs ? `?${qs}` : '') + location.hash);

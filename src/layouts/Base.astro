@@ -219,6 +219,9 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
               <a
                 href={n.href}
                 aria-current={isCurrent(n.href) ? 'page' : undefined}
+                data-track={n.href === buyHref ? 'buy_page_clicked' : 'nav_clicked'}
+                data-prop-to={n.href}
+                data-prop-location="header"
                 class:list={['font-label-lg text-label-lg transition-colors whitespace-nowrap', isCurrent(n.href) ? 'text-on-surface font-semibold' : 'text-on-surface-variant hover:text-on-surface']}
               >
                 {n.label}
@@ -301,6 +304,9 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
             <a
               href={tab.href}
               aria-current={tab.current ? 'page' : undefined}
+              data-track={tab.href === buyHref ? 'buy_page_clicked' : 'nav_clicked'}
+              data-prop-to={tab.reader ? 'reader' : tab.href}
+              data-prop-location="tabbar"
               class:list={['flex flex-col items-center justify-center gap-1 min-w-[64px] h-11 transition-colors', tab.current ? 'text-primary font-semibold' : 'text-on-surface-variant hover:text-primary']}
               {...(tab.reader ? { 'data-tab-reader': '' } : {})}
             >

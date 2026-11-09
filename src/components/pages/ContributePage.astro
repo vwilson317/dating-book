@@ -51,7 +51,7 @@ const mockQuotes = [
 
   {
     supportTiers(lang).length > 0 && (
-      <section class="w-full bg-surface-container-low py-space-xl">
+      <section class="w-full bg-surface-container-low py-space-xl" data-track-view="buy_tiers">
         <div class={wrap}>
           <div class="flex flex-col md:flex-row md:items-end justify-between gap-space-sm md:gap-space-md mb-space-lg md:mb-space-xl">
             <h2 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary tracking-tight">{page.tiersTitle}</h2>
@@ -67,7 +67,7 @@ const mockQuotes = [
   }
   {!checkoutEnabled && import.meta.env.DEV && <p class="text-center py-2 font-body-sm text-body-sm text-terracotta-accent">{b.notSet}</p>}
 
-  <section class="w-full bg-surface py-space-xl">
+  <section class="w-full bg-surface py-space-xl" data-track-view="buy_free_help">
     <div class={wrap}>
       <div class="rounded-xl bg-surface-container-low p-space-md md:p-space-xl shadow-sm">
         <div class="max-w-2xl mb-space-lg">
@@ -132,7 +132,7 @@ const mockQuotes = [
     )
   }
 
-  <section class="w-full py-space-xl">
+  <section class="w-full py-space-xl" data-track-view="buy_faq">
     <div class="max-w-3xl mx-auto px-margin-mobile md:px-margin">
       <div class="text-center mb-space-lg">
         <span class="font-label-sm text-label-sm uppercase tracking-widest text-secondary">{page.faqEyebrow}</span>
@@ -140,8 +140,8 @@ const mockQuotes = [
       </div>
       <div class="flex flex-col gap-space-sm">
         {
-          b.faq.map((f) => (
-            <details class="group rounded-lg bg-surface-container-low overflow-hidden">
+          b.faq.map((f, i) => (
+            <details class="group rounded-lg bg-surface-container-low overflow-hidden" data-faq={i}>
               <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer p-space-md flex items-center justify-between gap-space-sm font-headline-sm text-headline-sm text-on-surface">
                 {f.q}
                 <Icon name="expand_more" class="text-[20px] text-on-surface-variant transition-transform group-open:rotate-180" />
@@ -166,7 +166,7 @@ const mockQuotes = [
     </div>
   </section>
 
-  <section class="w-full pb-space-xl">
+  <section class="w-full pb-space-xl" data-track-view="buy_total_contributions">
     <div class={wrap}>
       <div class="rounded-xl bg-surface-container-lowest p-space-lg shadow-md flex items-baseline justify-between gap-space-md">
         <span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">{page.totalContributions}</span>

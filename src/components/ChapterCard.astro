@@ -29,7 +29,7 @@ const place = location?.split(',')[0].trim();
     {!soon && <span class="ml-auto font-body-sm text-body-sm text-on-surface-variant">{s.minRead(readingMinutes(chapter.body))}</span>}
   </div>
   <h3 class="font-headline-md text-headline-md text-on-surface">
-    {soon ? title : <a href={chapterUrl(chapter)} class="after:absolute after:inset-0 hover:text-primary transition-colors">{title}</a>}
+    {soon ? title : <a href={chapterUrl(chapter)} class="after:absolute after:inset-0 hover:text-primary transition-colors" data-track="chapter_card_clicked" data-prop-chapter={String(number)} data-prop-audio={String(!!audio)}>{title}</a>}
   </h3>
   <p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">{excerpt}</p>
   <div class="flex items-center justify-between gap-2 pt-space-xs font-label-md text-label-md">
@@ -44,7 +44,7 @@ const place = location?.split(',')[0].trim();
           </span>
           {
             audio ? (
-              <a class="relative z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors font-label-sm text-label-sm" href={`${chapterUrl(chapter)}#listen`}>
+              <a class="relative z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-secondary/10 text-secondary hover:bg-secondary/20 transition-colors font-label-sm text-label-sm" href={`${chapterUrl(chapter)}#listen`} data-track="chapter_audio_clicked" data-prop-chapter={String(number)} data-prop-location="directory">
                 <Icon name="play_circle" class="text-[16px]" />
                 {formatClock(audio.duration)}
               </a>

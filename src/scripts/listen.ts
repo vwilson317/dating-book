@@ -115,7 +115,10 @@ export function initListen(root: HTMLElement, mini: HTMLElement) {
     }),
   );
   autoNext.checked = store.get('listen:autonext', true);
-  autoNext.addEventListener('change', () => store.set('listen:autonext', autoNext.checked));
+  autoNext.addEventListener('change', () => {
+    store.set('listen:autonext', autoNext.checked);
+    track('audio_autonext_toggled', { ...base(), enabled: autoNext.checked });
+  });
 
   // ---- loading a track ----
   const savedPos = (t: Track) => {
@@ -218,6 +221,7 @@ export function initListen(root: HTMLElement, mini: HTMLElement) {
   });
   seek.addEventListener('change', () => {
     seeking = false;
+    track('audio_seeked', { ...base(), from: Math.round(pendingSeek ?? audio.currentTime), to: Number(seek.value) });
     jumpTo(Number(seek.value));
   });
   const jumpTo = (t: number) => {
@@ -228,7 +232,10 @@ export function initListen(root: HTMLElement, mini: HTMLElement) {
     savePos();
   };
   document.querySelectorAll<HTMLButtonElement>('[data-skip]').forEach((b) =>
-    b.addEventListener('click', () => jumpTo((pendingSeek ?? audio.currentTime) + Number(b.dataset.skip))),
+    b.addEventListener('click', () => {
+      track('audio_skipped', { ...base(), seconds: Number(b.dataset.skip) });
+      jumpTo((pendingSeek ?? audio.currentTime) + Number(b.dataset.skip));
+    }),
   );
 
   // ---- end of chapter -> next chapter ----

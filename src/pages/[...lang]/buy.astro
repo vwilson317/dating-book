@@ -26,7 +26,15 @@ const p = (tpl: string) => fillPrice(tpl, SITE.support.tiers[0].price[lang]);
   <ContributePage lang={lang} />
 
   <script>
+    import { track } from '../../scripts/analytics';
+
     const status = new URLSearchParams(location.search).get('checkout');
+    if (status) track('checkout_returned', { status });
+    document.querySelectorAll<HTMLDetailsElement>('[data-faq]').forEach((faq) =>
+      faq.addEventListener('toggle', () => {
+        if (faq.open) track('faq_opened', { question: Number(faq.dataset.faq) + 1 });
+      }),
+    );
     document.querySelectorAll<HTMLElement>('[data-checkout-notice]').forEach((el) => {
       el.hidden = el.dataset.checkoutNotice !== status;
     });

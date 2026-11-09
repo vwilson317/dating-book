@@ -143,7 +143,7 @@ const chip = 'shrink-0 px-space-md py-1.5 rounded-full font-label-md text-label-
               <div class="rounded-xl p-space-md bg-[#124030] text-[#faf5ec] shadow-md flex flex-col gap-space-sm">
                 <h2 class="font-headline-sm text-headline-sm flex items-center gap-2"><Icon name="headphones" class="text-[20px] text-[#93d4b7]" />{s.audioCardTitle}</h2>
                 <p class="font-body-sm text-body-sm opacity-85">{s.audioCardBody}</p>
-                <a class="inline-flex items-center justify-center py-2.5 rounded-lg bg-[#b84e29] hover:bg-[#a23e1a] text-[#faf5ec] font-label-md text-label-md transition-colors" href={`${chapterUrl(firstAudio)}#listen`}>{s.audioCardCta}</a>
+                <a class="inline-flex items-center justify-center py-2.5 rounded-lg bg-[#b84e29] hover:bg-[#a23e1a] text-[#faf5ec] font-label-md text-label-md transition-colors" href={`${chapterUrl(firstAudio)}#listen`} data-track="chapter_audio_clicked" data-prop-chapter={String(firstAudio.data.number)} data-prop-location="audio_card">{s.audioCardCta}</a>
               </div>
             )
           }
@@ -154,6 +154,8 @@ const chip = 'shrink-0 px-space-md py-1.5 rounded-full font-label-md text-label-
 </div>
 
 <script>
+  import { track } from '../../scripts/analytics';
+
   const list = document.getElementById('chapter-list')!;
   const empty = document.getElementById('no-matches')!;
   const cards = [...document.querySelectorAll<HTMLElement>('[data-chapter-card]')];
@@ -178,11 +180,21 @@ const chip = 'shrink-0 px-space-md py-1.5 rounded-full font-label-md text-label-
       filter = chip.dataset.filter!;
       chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
       apply();
+      track('chapter_filter_used', { filter: filter || 'all', results: cards.filter((c) => !c.hidden).length });
     }),
   );
-  search.addEventListener('input', apply);
+  // Sent once typing pauses. Only the length is recorded, not what the reader typed.
+  let searchTimer = 0;
+  search.addEventListener('input', () => {
+    apply();
+    clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => {
+      if (search.value.trim()) track('chapter_search_used', { query_length: search.value.trim().length, results: cards.filter((c) => !c.hidden).length });
+    }, 1000);
+  });
   document.getElementById('sort-toggle')!.addEventListener('click', () => {
     reversed = !reversed;
+    track('chapter_sort_toggled', { order: reversed ? 'newest_first' : 'book_order' });
     (reversed ? [...cards].reverse() : cards).forEach((card) => list.insertBefore(card, empty));
   });
 </script>
