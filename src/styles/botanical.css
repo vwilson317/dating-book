@@ -651,7 +651,7 @@ button.chip {
 .contribute-cue:hover,
 .contribute-cue:focus-visible {
   transform: translateY(-3px);
-  box-shadow: 0 0 0 2px var(--contribute), 0 8px 16px -6px rgb(26 26 26 / 0.25);
+  box-shadow: 0 0 0 2px var(--st-sand-light), 0 0 0 4px var(--contribute), 0 8px 16px -6px rgb(26 26 26 / 0.25);
 }
 @media (prefers-reduced-motion: no-preference) {
   .contribute-cue:not(:hover, :focus-visible) {
@@ -668,6 +668,6 @@ button.chip {
   }
   8% {
     transform: translateY(-4px);
-    box-shadow: 0 0 0 2px var(--contribute), 0 8px 16px -6px rgb(26 26 26 / 0.25);
+    box-shadow: 0 0 0 2px var(--st-sand-light), 0 0 0 4px var(--contribute), 0 8px 16px -6px rgb(26 26 26 / 0.25);
   }
 }

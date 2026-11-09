@@ -67,15 +67,15 @@ const narrow = 'max-w-[1020px] mx-auto px-margin-mobile md:px-margin';
                   <input type="hidden" name="ref" value="" />
                   <button
                     type="submit"
-                    class="contribute-cue flex flex-col items-center justify-center p-2 md:p-3 rounded-lg bg-surface-container-lowest active:scale-95 text-center shadow-sm cursor-pointer"
+                    class="contribute-cue flex flex-col items-center justify-center p-2 md:p-3 rounded-lg bg-[#b84e29] hover:bg-[#a23e1a] text-[#faf5ec] active:scale-95 text-center shadow-sm cursor-pointer"
                     style={`--i: ${i}`}
                     data-track="buy_clicked"
                     data-prop-location="landing_top"
                     data-prop-tier={tier.id}
                     data-prop-price={tier.price[lang]}
                   >
-                    <span class="font-label-lg text-label-lg text-primary">{tier.price[lang]}</span>
-                    <span class="font-label-sm text-label-sm text-on-surface font-medium leading-tight mt-0.5">{b.support.amountNotes[tier.id as keyof typeof b.support.amountNotes]}</span>
+                    <span class="inline-flex items-center gap-1 font-label-lg text-label-lg whitespace-nowrap">{tier.price[lang]}<Icon name="arrow_forward" class="text-[16px]" /></span>
+                    <span class="font-label-sm text-label-sm font-medium leading-tight mt-0.5">{b.support.amountNotes[tier.id as keyof typeof b.support.amountNotes]}</span>
                   </button>
                 </form>
               ))}
