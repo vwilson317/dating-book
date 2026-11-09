@@ -53,10 +53,6 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
             </a>
           )
         }
-        <button type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary hover:bg-botanical-deep text-on-primary font-label-sm text-label-sm shadow-sm transition-all" onclick="event.stopPropagation(); document.getElementById('settings-btn').click()" aria-label={s.readingSettings}>
-          <Icon name="tune" class="text-[17px]" />
-          <span class="hidden sm:inline">{s.readingMode}</span>
-        </button>
         {
           next && (
             <a class="p-1.5 rounded-lg bg-surface hover:bg-surface-container text-on-surface-variant hover:text-primary transition-colors hidden sm:flex items-center justify-center" href={chapterUrl(next)} title={next.data.title} aria-label={next.data.title}>
