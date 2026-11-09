@@ -642,3 +642,32 @@ button.chip {
 .listen-play.is-playing .i-pause {
   display: inline-flex;
 }
+
+/* ---------- Home: signal that the Contribute prices are clickable ---------- */
+
+.contribute-cue {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.contribute-cue:hover,
+.contribute-cue:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 2px var(--contribute), 0 8px 16px -6px rgb(26 26 26 / 0.25);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .contribute-cue:not(:hover, :focus-visible) {
+    animation: contribute-nudge 4.5s ease-in-out infinite;
+    animation-delay: calc(1s + var(--i) * 0.2s);
+  }
+}
+@keyframes contribute-nudge {
+  0%,
+  16%,
+  100% {
+    transform: none;
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+  8% {
+    transform: translateY(-4px);
+    box-shadow: 0 0 0 2px var(--contribute), 0 8px 16px -6px rgb(26 26 26 / 0.25);
+  }
+}

@@ -60,14 +60,15 @@ const narrow = 'max-w-[1020px] mx-auto px-margin-mobile md:px-margin';
               <span class="font-headline-sm text-headline-sm text-on-surface font-semibold" id="landing-cta-label">{b.support.cta}</span>
             </div>
             <div class="grid grid-cols-3 gap-2" role="group" aria-labelledby="landing-cta-label">
-              {tiers.map((tier) => (
+              {tiers.map((tier, i) => (
                 <form action="/api/checkout" method="post" data-checkout class="contents">
                   <input type="hidden" name="tier" value={tier.id} />
                   <input type="hidden" name="lang" value={lang} />
                   <input type="hidden" name="ref" value="" />
                   <button
                     type="submit"
-                    class="flex flex-col items-center justify-center p-2 md:p-3 rounded-lg bg-surface-container-lowest hover:shadow-md active:scale-95 transition text-center shadow-sm"
+                    class="contribute-cue flex flex-col items-center justify-center p-2 md:p-3 rounded-lg bg-surface-container-lowest active:scale-95 text-center shadow-sm cursor-pointer"
+                    style={`--i: ${i}`}
                     data-track="buy_clicked"
                     data-prop-location="landing_top"
                     data-prop-tier={tier.id}
