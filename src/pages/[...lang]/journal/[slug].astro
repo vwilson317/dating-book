@@ -1,0 +1,166 @@
+---
+// /journal/<slug>/: one long-form video or written post. This is the link to put on an Instagram Reel
+// (add ?utm_source=instagram&utm_medium=reel&utm_campaign=<post> so PostHog shows which Reel sent them).
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import VideoPlayer from '../../../components/VideoPlayer.astro';
+import JournalCard from '../../../components/JournalCard.astro';
+import Icon from '../../../components/home/Icon.astro';
+import { SITE, instagramUrl } from '../../../site.config';
+import { journalSchema, abs } from '../../../lib/seo';
+import {
+  getJournal,
+  getPublishedChapters,
+  chapterLabel,
+  chapterUrl,
+  formatClock,
+  formatDate,
+  postImage,
+  postKind,
+  postSlug,
+  postUrl,
+  readingMinutes,
+  wordCount,
+} from '../../../lib/content';
+import { LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const out = [];
+  for (const lang of LANG_CODES) {
+    const posts = await getJournal(lang);
+    const chapters = await getPublishedChapters(lang);
+    for (const post of posts) {
+      out.push({
+        params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: postSlug(post) },
+        props: {
+          lang,
+          post,
+          chapters: chapters.filter((c) => post.data.chapters.includes(c.data.number)),
+          more: posts.filter((p) => p !== post).slice(0, 3),
+        },
+      });
+    }
+  }
+  return out;
+}
+
+const { post, chapters, more } = Astro.props;
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+const { Content } = await render(post);
+const kind = postKind(post);
+const video = post.data.video;
+const slug = postSlug(post);
+const ogImage = postImage(post) ?? `/og/${lang}/journal/${slug}.png`;
+const shareUrl = new URL(postUrl(post), Astro.site).toString();
+const hasBody = !!post.body?.trim();
+const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
+const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop';
+const videoMime = video && /\.webm(\?|$)/i.test(video.src) ? 'video/webm' : 'video/mp4';
+---
+
+<Base
+  lang={lang}
+  title={post.data.title}
+  description={post.data.excerpt}
+  type={kind === 'video' ? 'video.other' : 'article'}
+  image={ogImage}
+  published={post.data.published}
+  video={video ? { url: abs(video.src, Astro.site), type: videoMime } : undefined}
+  alternates={Object.fromEntries(LANG_CODES.map((l) => [l, localePath(l, '/journal/')]))}
+  untranslated={LANG_CODES.filter((l) => l !== lang)}
+  jsonLd={journalSchema(post, Astro.site, abs(ogImage, Astro.site))}
+  stitch
+>
+  <div class="flex flex-col w-full bg-background font-body-md text-on-surface antialiased">
+    {
+      video && (
+        <section class="w-full bg-[#141414] md:py-space-lg">
+          <div class="w-full max-w-[1100px] mx-auto md:px-margin">
+            <VideoPlayer post={post} />
+          </div>
+        </section>
+      )
+    }
+
+    <article
+      class:list={[wrap, 'py-space-lg lg:py-space-xl flex flex-col gap-space-lg max-w-3xl']}
+      data-journal-post={slug}
+      data-kind={kind}
+      data-words={wordCount(post.body)}
+    >
+      <header class="flex flex-col gap-space-sm">
+        <a class="self-start flex items-center gap-1 font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href={localePath(lang, '/journal/')} data-track="nav_clicked" data-prop-to="journal" data-prop-location="journal_post">
+          <Icon name="arrow_back" class="text-[18px]" />
+          {s.journalTitle}
+        </a>
+        <div class="flex flex-wrap items-center gap-space-sm font-label-md text-label-md text-on-surface-variant">
+          <span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-bold uppercase tracking-wider">{kind === 'video' ? s.kindVideo : s.kindPost}</span>
+          {video?.duration && <span class="inline-flex items-center gap-1"><Icon name="schedule" class="text-[16px] text-terracotta-accent" />{formatClock(video.duration)}</span>}
+          {kind === 'post' && <span class="inline-flex items-center gap-1"><Icon name="schedule" class="text-[16px] text-terracotta-accent" />{s.minRead(readingMinutes(post.body))}</span>}
+          <span>{formatDate(post.data.published, lang)}</span>
+          {post.data.location && <span class="text-terracotta-accent">{post.data.location}</span>}
+        </div>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-primary tracking-tight leading-tight">{post.data.title}</h1>
+        <p class="font-body-md text-body-md md:font-body-lg md:text-body-lg text-on-surface-variant italic">{post.data.excerpt}</p>
+      </header>
+
+      {
+        chapters.length > 0 && (
+          <nav class="flex flex-col gap-space-xs" aria-label={s.fromTheBook}>
+            <span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">{s.fromTheBook}</span>
+            <div class="flex flex-wrap gap-space-sm">
+              {chapters.map((c) => (
+                <a class="inline-flex items-center gap-2 px-space-md py-2 rounded-lg bg-surface-container-low hover:bg-surface-container text-primary font-label-md text-label-md transition-colors" href={chapterUrl(c)} data-track="journal_chapter_clicked" data-prop-post={slug} data-prop-chapter={String(c.data.number)}>
+                  <Icon name="menu_book" class="text-[18px] text-terracotta-accent" />
+                  <span>{chapterLabel(c)}: {c.data.title}</span>
+                </a>
+              ))}
+            </div>
+          </nav>
+        )
+      }
+
+      {hasBody && <div class="prose max-w-[42rem]"><Content /></div>}
+
+      <div class="flex flex-wrap gap-space-sm">
+        <button type="button" class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors" data-share={shareUrl} data-share-title={`${post.data.title} · ${s.bookTitle}`} data-copied={s.linkCopied} data-share-location="journal_post">
+          <Icon name="share" class="text-[18px]" />
+          {s.sharePost}
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+        {
+          feedbackOn && (
+            <a class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-sm hover:shadow-md transition-shadow" href="#" data-wa-general={s.waGeneralMsg} data-source="journal" rel="noopener" target="_blank">
+              <span class="w-10 h-10 rounded-full bg-[#25d366]/15 text-[#128c7e] flex items-center justify-center shrink-0"><Icon name="chat" class="text-[22px]" /></span>
+              <span class="font-label-lg text-label-lg text-on-surface">{s.footerFeedback.replace(/^💬\s*/, '')}</span>
+            </a>
+          )
+        }
+        <a class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex items-center gap-space-sm hover:shadow-md transition-shadow" href={instagramUrl} data-track="instagram_clicked" data-prop-location="journal_post" rel="me noopener">
+          <span class="w-10 h-10 rounded-full bg-secondary/10 text-secondary flex items-center justify-center shrink-0"><Icon name="photo_camera" class="text-[22px]" /></span>
+          <span class="font-label-lg text-label-lg text-on-surface">{s.follow(SITE.instagram)}</span>
+        </a>
+      </div>
+    </article>
+
+    {
+      more.length > 0 && (
+        <section class:list={[wrap, 'pb-space-xl flex flex-col gap-space-md']} data-track-view="journal_more">
+          <h2 class="font-headline-md text-headline-md text-primary">{s.moreJournal}</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-md">
+            {more.map((p) => <JournalCard post={p} location="journal_more" />)}
+          </div>
+        </section>
+      )
+    }
+  </div>
+
+  <script>
+    import { initJournal } from '../../../scripts/journal';
+
+    initJournal();
+  </script>
+</Base>

@@ -63,6 +63,31 @@ export const chapterLabel = (c: Chapter) => c.data.label ?? t(chapterLang(c)).ch
 
 export const chapterUrl = (c: Chapter) => localePath(chapterLang(c), `/chapters/${chapterSlug(c)}/`);
 
+// ---- Journal (long-form videos and written posts) ----
+export type JournalPost = CollectionEntry<'journal'>;
+
+export const postLang = (p: JournalPost): Lang => {
+  const folder = p.filePath?.split('/').at(-2);
+  return isLang(folder) ? folder : DEFAULT_LANG;
+};
+export const postSlug = (p: JournalPost) => p.id.replace(/^[a-z]{2}\//, '');
+export const postUrl = (p: JournalPost) => localePath(postLang(p), `/journal/${postSlug(p)}/`);
+export const postKind = (p: JournalPost): 'video' | 'post' => (p.data.video ? 'video' : 'post');
+/** Card / preview image: the cover, else the video's poster */
+export const postImage = (p: JournalPost) => p.data.cover ?? p.data.video?.poster;
+
+/** Published posts in one language, newest first */
+export async function getJournal(lang: Lang): Promise<JournalPost[]> {
+  const all = await getCollection('journal', (p) => p.data.status === 'published' && postLang(p) === lang);
+  return all.sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
+}
+
+/** Posts tied to a chapter (by number, same language), videos first */
+export async function getRelatedPosts(c: Chapter): Promise<JournalPost[]> {
+  const posts = (await getJournal(chapterLang(c))).filter((p) => p.data.chapters.includes(c.data.number));
+  return posts.sort((a, b) => Number(!!b.data.video) - Number(!!a.data.video));
+}
+
 // Narrated audio: MP3s in public/audio/<lang>/, indexed by `npm run audio` (scripts/audio.mjs). Keyed "<lang>:<number>".
 import audioManifest from '../content/audio.json';
 
@@ -76,5 +101,10 @@ export function chapterAudio(c: Chapter): ChapterAudio | undefined {
   return (audioManifest as Record<string, ChapterAudio>)[`${chapterLang(c)}:${c.data.number}`];
 }
 
-/** 754 -> "12:34" */
-export const formatClock = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
+/** 754 -> "12:34", 3754 -> "1:02:34" */
+export const formatClock = (sec: number) => {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const ss = String(Math.floor(sec % 60)).padStart(2, '0');
+  return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`;
+};

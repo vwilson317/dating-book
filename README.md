@@ -209,6 +209,59 @@ Edit `src/content/editions.yaml`. Each entry has a `lang`. The entry marked `fea
 
 Change the author and Instagram handle in `src/site.config.ts`, and the book title, subtitle, and interface text in `src/i18n/ui.ts`. To change the app icon and share image, edit the SVGs in `scripts/make-icons.mjs` and run `npm run icons`.
 
+## Journal: long-form videos and posts
+
+The Journal (`/journal/`, `/pt/journal/`, `/es/journal/`) holds long-form videos and written posts. The idea: post a clip as a Reel, then link to the full video on the site, where you control the experience and the analytics.
+
+### Adding a post
+
+Create `src/content/journal/en/<slug>.md` (or `pt/`, `es/`). The file name is the URL: `/journal/<slug>/`.
+
+```md
+---
+title: "The night the rain started"
+excerpt: "The full story behind the shirt-umbrella Reel."   # cards and link previews
+published: 2026-12-01
+chapters: [9]                  # optional: chapter numbers this belongs with
+location: "Rio de Janeiro"     # optional
+status: published              # published | draft
+video:                         # leave out for a written post
+  src: /video/rain-night.mp4   # or a full URL on a video host
+  poster: /video/rain-night.jpg
+  duration: 754                # seconds: shown on cards, sent to Google
+  orientation: landscape       # landscape (default) | portrait
+  captions: /video/rain-night.en.vtt   # optional
+---
+
+Anything written here appears under the video (or is the whole post, for a written one).
+```
+
+- **Posters matter.** The poster is what people see before pressing play, the card image, and the WhatsApp/Instagram link preview. Use a 1280×720 JPG. A post without a poster or `cover` gets a generated title image instead.
+- **Captions:** many people watch on their phone with the sound off. A `.vtt` subtitles file turns captions on by default.
+- **Where to keep the video files:** short clips can go in `public/video/` and are served from your own site. Long videos are big, and every play counts against Netlify's bandwidth. For those, upload the MP4 to a storage/CDN service (Cloudflare R2, Bunny, Backblaze B2 and similar) and put its full URL in `src`. Export as MP4 (H.264 + AAC), 1080p or 720p. If you ever replace a video, give it a new file name: browsers keep `/video/` files for a week.
+- The Journal tab appears in the menu once a language has at least one post.
+
+### The Reel → website flow
+
+1. Post a clip as a Reel. In the caption or a story link sticker, link to the post: `https://YOURSITE/journal/<slug>/?utm_source=instagram&utm_medium=reel&utm_campaign=<slug>`
+2. The page opens with the video at the top, the poster and a big play button.
+3. **On a phone, tapping play opens the video full screen and turns it sideways.**
+   - Android/Chrome: full screen, locked to landscape.
+   - iPhone: Safari's own full-screen player, which rotates when the phone does. Websites can't force rotation on iOS.
+   - Inside Instagram's browser, where full screen isn't always allowed: the video plays in the page with a "turn your phone sideways" hint. Turning the phone makes the video cover the whole screen.
+   - Portrait videos (`orientation: portrait`) play upright, Reel-style.
+4. Under the video: the written part, links to the chapters it's from, share, WhatsApp feedback, and more from the Journal. Where people stopped is remembered on their device, and the play button offers to pick up from there.
+
+### Linking videos and posts from chapters
+
+- **Automatically:** list the chapter numbers in the post's `chapters`. That chapter's page then gets:
+  - an Extras button (▶) in the reading bar;
+  - a "Watch the extra for this chapter →" link under the title, which goes straight to the post if there's one, or to the list if there are several;
+  - a "Videos and extras from this chapter" section at the end.
+
+  The post links back to those chapters ("From the book").
+- **Inside the chapter text:** write a normal Markdown link, e.g. `[watch what happened next](/journal/rain-night/)`. Links to the Journal get a ▶ in front. Any other link to a page on the site works the same way, and both kinds are tracked.
+
 ## Analytics (PostHog)
 
 1. Copy your Project API key from PostHog (Project settings → *Project API key*, starts with `phc_`).
@@ -246,7 +299,7 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 | `chapter_card_clicked` | chapter directory card; props: `chapter`, `audio` |
 | `chapter_audio_clicked` | a link straight to a chapter's audio; props: `chapter`, `location` (directory/audio_card/reader_bar) |
 | `chapter_filter_used`, `chapter_search_used`, `chapter_sort_toggled` | directory tools; props: `filter`, `results`, `query_length` (never the search text), `order` |
-| `nav_clicked` | header, tab bar and other navigation; props: `to`, `location` |
+| `nav_clicked` | header, tab bar, footer and other navigation; props: `to`, `location` (header/tabbar/footer/reader_bar/journal_post) |
 | `buy_page_clicked` | any link to the Contribute page; props: `location` (header/tabbar/fab/footer) |
 | `section_viewed` | a section scrolled into view, once per page; props: `section` (home_contribute/home_hero/home_directory/home_pricing/buy_tiers/buy_free_help/buy_faq/buy_total_contributions) |
 | `faq_opened` | Contribute FAQ; props: `question` |
@@ -258,9 +311,12 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 | `landing_chapter_opened` | reader taps a chapter open on the home page; props: `chapter`, `lang`, `title`, `words_total`, `source` |
 | `landing_next_auto_opened` | reader reaches the end of a chapter and the next one opens; same props (`chapter` is the one just finished) |
 | `landing_chapter_page_clicked` | "better reading experience and audio" button; props: `chapter`, `audio` |
+| `home_start_clicked` | the "Start with Chapter 1" button at the top of the home page |
 | `back_to_top_clicked` | back-to-top button |
 | `in_app_browser_seen` | page opened inside the Instagram/Facebook/TikTok browser |
-| `language_suggested`, `language_switched` | "read in the other language" link shown / EN-PT switch used; props: `from`, `to`, `via` |
+| `language_suggested`, `language_switched` | "read in another language" link shown / language switch used; props: `from`, `to`, `via` (header/suggestion), `reason` |
+| `language_auto_selected` | a home page visit was sent to another language's home page; props: `from`, `to`, `reason` (preference/location), `tz`, `app` |
+| `text_link_clicked` | a link to another page of the site inside chapter or journal text; props: `to`, `chapter` |
 | `install_clicked`, `install_prompt_result`, `app_installed` | PWA install funnel |
 
 ### Insights to set up in PostHog
@@ -303,7 +359,35 @@ ORDER BY lang, toInt(chapter)
 
 **Quick version without SQL.** Trends → `chapter_read` → "Property value: average" of `percent_read` or `words_read`, broken down by `chapter`. Add a filter `summary_number = 1` to count each visit once. This slightly undercounts readers who came back to the same tab.
 
-Every event also carries `lang` (`en`/`pt`), `display_mode` (browser vs. installed app), and `in_app_browser`.
+### Journal and video events
+
+Every video event includes `video` (the post's slug), `title`, `lang`, `duration`, `orientation`, `phone` (true on phones), and `watch_id` (one ID per visit to a video page).
+
+| Event | When | Extra properties |
+|---|---|---|
+| `video_play_clicked` | Tapped the big play button | `resumed_at` (seconds, when picking up where they left off), `fullscreen_attempted` |
+| `video_started` | The first frame actually played | `startup_ms` (tap to first frame: slow means the file is too big or the host is slow) |
+| `video_progress` | Passed 25 / 50 / 75 / 90% | `percent`, `seconds_watched` |
+| `video_finished` | Reached the end | `seconds_watched` |
+| `video_watched` | **Visit summary**, sent when they leave or switch apps (again with updated totals if they come back) | `seconds_watched` (video actually played, not skipped), `max_percent`, `finished`, `fullscreen_seconds`, `stalls` (times it stopped to buffer), `summary_number` |
+| `video_fullscreen_entered` / `video_fullscreen_exited` | Full screen opened / closed | `method` (api/ios_native), `orientation_locked`, `trigger` (play/controls); `seconds` on exit |
+| `video_rotate_hint_shown` | Full screen wasn't possible (usually Instagram's browser), so they were asked to turn the phone | |
+| `video_seeked`, `video_speed_changed`, `video_captions_toggled` | Player controls | `from`, `to`, `speed`, `enabled` |
+| `video_error` | The video failed to load | `code`, `host` |
+| `journal_read` | Visit summary for the written part of a post | `post`, `kind`, `percent_read`, `active_seconds`, `finished`, `read_id`, `summary_number` |
+| `journal_card_clicked` | A post card; props: `post`, `kind`, `location` (journal_latest/journal_list/journal_more) | |
+| `related_content_clicked` | A chapter's link to its videos/posts | `chapter`, `post`, `kind`, `count`, `location` (reader_bar/chapter_header/chapter_end/inline) |
+| `journal_chapter_clicked` | "From the book" link on a post, back to a chapter | `post`, `chapter` |
+
+**Reel → site funnel.** Funnel: `$pageview` (filtered to `page_type` = journal_post and `utm_medium` = reel) → `video_play_clicked` → `video_started` → `video_progress` (percent = 50) → `video_finished`, broken down by `utm_campaign` to compare Reels.
+
+**Did they watch, and how?** Use `video_watched` with `summary_number` = 1, or the latest per `watch_id`: average `seconds_watched` and `max_percent` per `video`. Break down by `in_app_browser` and `orientation_locked` to see how Instagram's browser compares, and check `stalls` and `startup_ms` to spot a file that's too heavy for phones.
+
+**Do chapters send people to videos, and back?** Trends on `related_content_clicked` by `location`, and `journal_chapter_clicked` by `chapter`.
+
+### Properties on every event
+
+`lang` (`en`/`pt`/`es`), `page_type` (home, chapters, chapter, journal, journal_post, preview, buy, downloads, 404, offline, …), `display_mode` (browser vs. installed app), `in_app_browser`, `is_supporter`, and the reader's display settings.
 
 To track new buttons without writing code, add `data-track="event_name"` and `data-prop-anything="value"` to any element.
 
@@ -314,6 +398,7 @@ Add UTM tags so PostHog can show which posts drive traffic:
 - Bio: `https://YOURSITE/?utm_source=instagram&utm_medium=bio`
 - A chapter on the home page, already open: `https://YOURSITE/?utm_source=instagram&utm_medium=story#chapter-5`
 - Story link sticker: `https://YOURSITE/chapters/the-slug/?utm_source=instagram&utm_medium=story&utm_campaign=ch4-launch`
+- Reel → full video: `https://YOURSITE/journal/the-slug/?utm_source=instagram&utm_medium=reel&utm_campaign=the-slug`
 
 Instagram opens links in its own in-app browser. That browser can't install the app and handles downloads poorly, so the home page is built for it: a contribute button at the top, then every chapter readable in place in an accordion, with a button to each chapter page for audio and the full reading experience. Visitors in those apps also see no download buttons on chapter pages. The "Open in browser" banner only appears on the Downloads page, where it matters.
 

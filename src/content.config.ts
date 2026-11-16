@@ -43,4 +43,31 @@ const editions = defineCollection({
   }),
 });
 
-export const collections = { chapters, editions };
+// Journal: long-form videos and written posts, one markdown file per post in
+// src/content/journal/<lang>/. Instagram Reels link straight to a post's page. See README "Journal".
+const journal = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/journal' }),
+  schema: z.object({
+    title: z.string(),
+    excerpt: z.string(), // cards, link previews, search results
+    published: z.coerce.date(),
+    status: z.enum(['published', 'draft']).default('published'),
+    // Chapter numbers this post belongs with. It's offered on those chapters' pages (same language).
+    chapters: z.array(z.number()).default([]),
+    location: z.string().optional(),
+    // Image for cards and link previews (a path under /public or a full URL). Defaults to the video poster.
+    cover: z.string().optional(),
+    // Leave out for a written post.
+    video: z
+      .object({
+        src: z.string(), // MP4 path under /public (e.g. /video/rio-night.mp4) or a full URL on a video host/CDN
+        poster: z.string().optional(), // still shown before playing; strongly recommended
+        duration: z.number().optional(), // seconds, shown on cards and sent to search engines
+        orientation: z.enum(['landscape', 'portrait']).default('landscape'),
+        captions: z.string().optional(), // WebVTT file (.vtt); many people watch with the sound off
+      })
+      .optional(),
+  }),
+});
+
+export const collections = { chapters, editions, journal };

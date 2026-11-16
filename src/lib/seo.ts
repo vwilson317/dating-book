@@ -1,7 +1,7 @@
 // SEO helpers: absolute URLs and schema.org structured data (JSON-LD) that search engines read.
 import { SITE, instagramUrl } from '../site.config';
 import { DEFAULT_LANG, LANGS, LANG_CODES, localePath, t, type Lang } from '../i18n/ui';
-import { chapterLabel, chapterLang, chapterUrl, wordCount, type Chapter } from './content';
+import { chapterLabel, chapterLang, chapterUrl, postLang, postUrl, wordCount, type Chapter, type JournalPost } from './content';
 
 export const abs = (path: string, site: URL | undefined) => new URL(path, site).toString();
 
@@ -110,6 +110,53 @@ export function pageSchema(lang: Lang, site: URL | undefined, name: string, path
         [
           [s.bookTitle, localePath(lang, '/')],
           [name, path],
+        ],
+        site,
+      ),
+    ],
+  };
+}
+
+/** "PT12M34S" for schema.org durations */
+const isoDuration = (sec: number) => `PT${Math.floor(sec / 60)}M${Math.round(sec % 60)}S`;
+
+/** A journal post: a VideoObject (so it can show up in Google's video results) or a BlogPosting */
+export function journalSchema(p: JournalPost, site: URL | undefined, image: string) {
+  const lang = postLang(p);
+  const s = t(lang);
+  const url = abs(postUrl(p), site);
+  const v = p.data.video;
+  const common = {
+    '@id': `${url}#post`,
+    url,
+    name: p.data.title,
+    headline: p.data.title,
+    description: p.data.excerpt,
+    inLanguage: LANGS[lang].locale,
+    datePublished: p.data.published.toISOString(),
+    author: { '@id': abs('/#author', site) },
+    isAccessibleForFree: true,
+  };
+  const main = v
+    ? {
+        '@type': 'VideoObject',
+        ...common,
+        uploadDate: p.data.published.toISOString(),
+        thumbnailUrl: abs(v.poster ?? image, site),
+        contentUrl: abs(v.src, site),
+        ...(v.duration ? { duration: isoDuration(v.duration) } : {}),
+      }
+    : { '@type': 'BlogPosting', ...common, image, wordCount: wordCount(p.body) };
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      main,
+      author(site),
+      breadcrumbs(
+        [
+          [s.bookTitle, localePath(lang, '/')],
+          [s.journalTitle, localePath(lang, '/journal/')],
+          [p.data.title, postUrl(p)],
         ],
         site,
       ),

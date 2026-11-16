@@ -27,10 +27,13 @@ export function inAppBrowser(): string | null {
 
 /** Which kind of page this is, so events can be compared across the site without parsing URLs */
 function pageType(): string {
+  if (document.body.dataset.pageType) return document.body.dataset.pageType; // set by the page (404, offline)
   const path = location.pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '').replace(/\/$/, '') || '/';
   if (path === '/') return 'home';
   if (path === '/chapters') return 'chapters';
   if (path.startsWith('/chapters/')) return 'chapter';
+  if (path === '/journal') return 'journal';
+  if (path.startsWith('/journal/')) return 'journal_post';
   return path.slice(1).split('/')[0] || 'other';
 }
 

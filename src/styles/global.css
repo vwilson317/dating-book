@@ -2411,3 +2411,13 @@ html:has(.support-modal[open]) {
 .contact-card[hidden] {
   display: none;
 }
+
+/* A link to a journal video or post inside chapter text (marked by src/scripts/app.ts) */
+.prose a.journal-link::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 0.3em;
+  font-size: 0.7em;
+  vertical-align: 0.12em;
+  color: #c2532f;
+}

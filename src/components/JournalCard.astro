@@ -1,0 +1,61 @@
+---
+// One journal post as a card: poster/cover, play badge and length for videos.
+// `event` and `props` set the analytics event for the click (journal_card_clicked by default).
+import type { JournalPost } from '../lib/content';
+import { formatClock, formatDate, postImage, postKind, postLang, postSlug, postUrl, readingMinutes } from '../lib/content';
+import { t } from '../i18n/ui';
+import Icon from './home/Icon.astro';
+
+interface Props {
+  post: JournalPost;
+  location: string;
+  event?: string;
+  props?: Record<string, string>;
+  compact?: boolean;
+}
+const { post, location, event = 'journal_card_clicked', props = {}, compact = false } = Astro.props;
+const lang = postLang(post);
+const s = t(lang);
+const kind = postKind(post);
+const image = postImage(post);
+const video = post.data.video;
+const dataProps = Object.fromEntries(Object.entries({ post: postSlug(post), kind, location, ...props }).map(([k, v]) => [`data-prop-${k}`, v]));
+---
+
+<a
+  href={postUrl(post)}
+  class:list={['group flex rounded-xl overflow-hidden bg-surface-container-lowest shadow-sm hover:shadow-md transition-shadow', compact ? 'flex-row items-stretch' : 'flex-col']}
+  data-track={event}
+  {...dataProps}
+>
+  <span class:list={['relative block shrink-0 bg-[#1a1a1a] overflow-hidden', compact ? 'w-32 sm:w-40 aspect-video self-center' : 'w-full aspect-video']}>
+    {image ? (
+      <img src={image} alt="" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.02] transition-transform" />
+    ) : (
+      <span class="absolute inset-0 flex items-center justify-center bg-sand-light text-primary">
+        <Icon name={kind === 'video' ? 'smart_display' : 'article'} class="text-[40px]" />
+      </span>
+    )}
+    {
+      kind === 'video' && (
+        <>
+          <span class="absolute inset-0 flex items-center justify-center">
+            <span class:list={['rounded-full bg-terracotta-accent text-white flex items-center justify-center shadow-lg', compact ? 'w-9 h-9' : 'w-14 h-14']}>
+              <Icon name="play_arrow" class={compact ? 'text-[22px]' : 'text-[32px]'} />
+            </span>
+          </span>
+          {video?.duration && <span class="absolute bottom-1.5 right-1.5 px-1.5 py-0.5 rounded bg-black/70 text-white font-label-sm text-label-sm">{formatClock(video.duration)}</span>}
+        </>
+      )
+    }
+  </span>
+  <span class:list={['flex flex-col gap-1 min-w-0', compact ? 'p-space-sm justify-center' : 'p-space-md']}>
+    <span class="flex items-center gap-2 font-label-sm text-label-sm text-terracotta-accent uppercase tracking-wider">
+      {kind === 'video' ? s.kindVideo : s.kindPost}
+      {!compact && <span class="text-on-surface-variant normal-case tracking-normal">· {formatDate(post.data.published, lang)}</span>}
+      {!compact && kind === 'post' && <span class="text-on-surface-variant normal-case tracking-normal">· {s.minRead(readingMinutes(post.body))}</span>}
+    </span>
+    <span class:list={['font-semibold text-primary group-hover:text-botanical-deep', compact ? 'font-body-sm text-body-sm line-clamp-2' : 'font-headline-sm text-headline-sm']}>{post.data.title}</span>
+    {!compact && <span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">{post.data.excerpt}</span>}
+  </span>
+</a>
