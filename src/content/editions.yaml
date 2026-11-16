@@ -1,5 +1,12 @@
 # Full-book PDF downloads, newest first. `npm run release` adds to this automatically.
 # The entry with `featured: true` (per language) is promoted on that language's home page.
+- id: es-early-reader-v1
+  lang: es
+  title: Edición Anticipada (v1)
+  description: Capítulos 0–17 en un solo PDF.
+  date: 2026-11-16
+  file: /pdfs/es/read-my-book-early-reader-v1.pdf
+  featured: true
 - id: pt-early-reader-v2
   lang: pt
   title: Edição Antecipada (v2)
