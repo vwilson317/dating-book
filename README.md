@@ -13,7 +13,7 @@ npm run preview    # serve the production build (service worker on)
 
 ## Releasing a new version of the book (the easy way)
 
-The book exists in English and Portuguese. Each language has its own manuscript PDF, and that PDF is the source of truth for that language's chapters.
+The book exists in English, Portuguese and Spanish. Each language has its own manuscript PDF, and that PDF is the source of truth for that language's chapters.
 
 **1. Put the PDFs in the inbox folders** (PDFs here are not committed to git):
 
@@ -21,6 +21,7 @@ The book exists in English and Portuguese. Each language has its own manuscript 
 manuscript/
   en/  ← English manuscript PDF
   pt/  ← Portuguese manuscript PDF
+  es/  ← Spanish manuscript PDF
 ```
 
 You only need to drop in the language(s) you changed. If a folder has several PDFs, the newest one is used.
@@ -41,7 +42,7 @@ Add `--notes "Rewrote the ending of chapter 4"` to show readers a note next to t
 
 **4. Commit and push.** That deploys the site. The release writes the chapter text to `src/content/chapters/<lang>/` and the PDFs to `public/pdfs/<lang>/`. Those are the files that get committed.
 
-You can also pass PDFs straight from anywhere: `npm run release -- ~/Downloads/book.pdf ~/Downloads/livro.pdf`. Each file's language is detected from its headings ("Chapter" vs "Capítulo") and wording. To skip detection for a single file, add `--lang pt`.
+You can also pass PDFs straight from anywhere: `npm run release -- ~/Downloads/book.pdf ~/Downloads/livro.pdf`. Each file's language is detected from its headings ("Chapter" vs "Capítulo", and the number words) and wording. Portuguese and Spanish both say "Capítulo", so the folder is the surest way to say which one a PDF is. To skip detection for a single file, add `--lang pt` or `--lang es`.
 
 What a release does, per language:
 
@@ -53,24 +54,24 @@ What a release does, per language:
 | A chapter that didn't change | Left alone |
 | The whole file | New **Early Reader Edition** / **Edição Antecipada** on that language's Downloads page, featured on its home page |
 
-Languages are versioned separately. Chapter 2 can be at `v3` in English and `v1` in Portuguese. When one language has chapters the other doesn't, the release tells you (for example, "Português is missing chapter(s) 5"). On the site, the EN/PT switcher on a chapter that isn't translated yet goes to the other language's chapter list.
+Languages are versioned separately. Chapter 2 can be at `v3` in English and `v1` in Portuguese. When one language has chapters the other doesn't, the release tells you (for example, "Português is missing chapter(s) 5"). On the site, the language switcher on a chapter that isn't translated yet goes to the other language's chapter list. Spanish appears on the site (switcher, sitemap, suggestions) with its first release.
 
 The first release in each language deletes that language's placeholder sample chapters.
 
 **What the PDF needs:** each chapter starts on a new page, with a heading near the top:
 
-| | English | Portuguese |
-|---|---|---|
-| Chapters | `Chapter 3`, `CHAPTER THREE`, `Chapter 3: Title` | `Capítulo 3`, `CAPÍTULO TRÊS`, `Capítulo Vinte e Um` |
-| Chapter 0 | `Prologue`, `Preface`, `Introduction` | `Prólogo`, `Prefácio`, `Introdução` |
-| After the last chapter | `Epilogue`, `Afterword` | `Epílogo`, `Posfácio` |
-| Back matter (left out) | `Acknowledgments`, `About the Author` | `Agradecimentos`, `Sobre o autor` |
+| | English | Portuguese | Spanish |
+|---|---|---|---|
+| Chapters | `Chapter 3`, `CHAPTER THREE`, `Chapter 3: Title` | `Capítulo 3`, `CAPÍTULO TRÊS`, `Capítulo Vinte e Um` | `Capítulo 3`, `CAPÍTULO TRES`, `Capítulo Veintiuno` |
+| Chapter 0 | `Prologue`, `Preface`, `Introduction` | `Prólogo`, `Prefácio`, `Introdução` | `Prólogo`, `Prefacio`, `Introducción` |
+| After the last chapter | `Epilogue`, `Afterword` | `Epílogo`, `Posfácio` | `Epílogo` |
+| Back matter (left out) | `Acknowledgments`, `About the Author` | `Agradecimentos`, `Sobre o autor` | `Agradecimientos`, `Sobre el autor` |
 
 If the title is on its own line, set it larger than the body text. The script skips the table of contents, running headers, and page numbers. It keeps italics, bold, and scene breaks (`* * *`). The words it looks for are in `scripts/release/languages.mjs`.
 
 **Good to know**
 - **The PDF is the source of truth.** A release replaces a changed chapter's web text with what's in the PDF, so make text edits in your manuscript, not in the `.md` files. Frontmatter you add by hand (`location`, a custom `excerpt`, `slug`) is kept.
-- **Chapters are matched by number**, within each language. EN chapter 4 and PT chapter 4 are treated as the same chapter for the language switcher, so keep the numbering the same in both manuscripts. If you insert a chapter in the middle and renumber the rest, every chapter after it will look changed.
+- **Chapters are matched by number**, within each language. EN, PT and ES chapter 4 are treated as the same chapter for the language switcher, so keep the numbering the same in every manuscript. If you insert a chapter in the middle and renumber the rest, every chapter after it will look changed.
 - **Re-exporting with a different layout is fine.** Changing fonts or margins doesn't create new versions; only changes to the words, italics, or paragraph breaks do.
 
 ## Audiobook (narrated chapters)

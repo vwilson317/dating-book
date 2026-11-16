@@ -29,7 +29,10 @@ export const SITE = {
 
 export const instagramUrl = `https://instagram.com/${SITE.instagram}`;
 
-export const checkoutEnabled = import.meta.env.PUBLIC_CHECKOUT_ENABLED === 'true';
+// Astro fills import.meta.env; scripts run with plain Node (npm run release) have none.
+const env: Partial<ImportMetaEnv> = import.meta.env ?? {};
+
+export const checkoutEnabled = env.PUBLIC_CHECKOUT_ENABLED === 'true';
 
 /** Temporarily off. Set to true to show the testimonials and extra tier perks on the Contribute page again. */
 export const contributePlaceholders = false;
@@ -38,7 +41,7 @@ export const contributePlaceholders = false;
  * Mockup content from the Stitch redesign that isn't real yet (see PLACEHOLDERS.md).
  * Shown in dev and on Netlify previews only, so it can never reach the production site.
  */
-export const showPlaceholders = import.meta.env.DEV || (!!process.env.CONTEXT && process.env.CONTEXT !== 'production');
+export const showPlaceholders = !!env.DEV || (!!process.env.CONTEXT && process.env.CONTEXT !== 'production');
 
 /** Tiers readers can choose in this language. In dev all of them show, even with checkout off. */
-export const supportTiers = (_lang: Lang) => (checkoutEnabled || import.meta.env.DEV ? SITE.support.tiers : []);
+export const supportTiers = (_lang: Lang) => (checkoutEnabled || env.DEV ? SITE.support.tiers : []);
