@@ -24,6 +24,9 @@ export function initReading(
   // On the landing page many chapters share one page, so only count the one being read,
   // and leave reading position alone (that belongs to the chapter pages).
   const inline = source === 'landing';
+  // Draft previews (/preview/, page_type "preview" in analytics) never touch saved reading position,
+  // so a draft can't take over "Continue reading" or count toward chapters read.
+  const preview = 'preview' in article.dataset;
   const beingRead = () => {
     if (!inline) return true;
     if (!(article as HTMLDetailsElement).open) return false;
@@ -119,7 +122,7 @@ export function initReading(
 
   // ---- resume where you left off ----
   // Position = where the top of the screen is in the chapter text, saved on the device.
-  const saved = getProgress(base.lang, base.chapter);
+  const saved = preview ? null : getProgress(base.lang, base.chapter);
   const topPct = () => {
     const rect = prose.getBoundingClientRect();
     return rect.height > 0 ? Math.min(100, Math.max(0, (-rect.top / rect.height) * 100)) : 0;
@@ -132,7 +135,7 @@ export function initReading(
     finished: finished || !!saved?.finished,
     updated: Date.now(),
   });
-  if (!inline) {
+  if (!inline && !preview) {
     let saveTimer = 0;
     document.addEventListener(
       'scroll',

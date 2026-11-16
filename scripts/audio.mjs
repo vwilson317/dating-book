@@ -5,7 +5,7 @@
 //   npm run audio -- --export    # write each chapter's narration text to narration/<lang>/, ready to
 //                                # paste into ElevenLabs (no Markdown, title read out first)
 //
-// Put one MP3 per chapter in public/audio/en/ or public/audio/pt/, named starting with the chapter
+// Put one MP3 per chapter in public/audio/en/, public/audio/pt/ or public/audio/es/, named starting with the chapter
 // number: 01.mp3, 1.mp3, 01-how-i-met-my-wife.mp3 all work. The introduction is 00.mp3.
 //
 // Indexing writes src/content/audio.json, which the site reads: each file's duration and a content

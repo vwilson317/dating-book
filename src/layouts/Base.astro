@@ -10,7 +10,7 @@ import { LANGS, LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../i1
 import { buy } from '../i18n/buy';
 import Support from '../components/Support.astro';
 import Icon from '../components/home/Icon.astro';
-import { chapterUrl, getPublishedChapters } from '../lib/content';
+import { chapterUrl, getLiveLangs, getPublishedChapters } from '../lib/content';
 
 interface Props {
   lang: Lang;
@@ -28,14 +28,22 @@ interface Props {
   noindex?: boolean;
   /** Page is built directly from a Stitch export: full width, Tailwind reset applies */
   stitch?: boolean;
+  /** Private draft (/preview/): noindex, and none of the app install, contribute or language prompts */
+  preview?: boolean;
   published?: Date;
   modified?: Date;
 }
 
-const { lang, title, description, image, type = 'website', untranslated = [], jsonLd, published, modified, stitch = false } = Astro.props;
+const { lang, title, description, image, type = 'website', jsonLd, published, modified, stitch = false, preview = false } = Astro.props;
 // Deploy previews and branch deploys on Netlify shouldn't compete with the real site in search
 const isProduction = !process.env.CONTEXT || process.env.CONTEXT === 'production';
-const noindex = Astro.props.noindex || !isProduction;
+const noindex = Astro.props.noindex || preview || !isProduction;
+// Languages with published chapters. A language with none yet (say, Spanish before its first release)
+// still builds, but isn't offered in the switcher, hreflang, suggestions or redirects. Its own pages
+// still show it, so you can check them.
+const liveLangs = await getLiveLangs();
+const shownLangs = LANG_CODES.filter((l) => l === lang || liveLangs.includes(l));
+const untranslated = [...(Astro.props.untranslated ?? []), ...LANG_CODES.filter((l) => !liveLangs.includes(l))];
 const s = t(lang);
 const bookFull = `${s.bookTitle}: ${s.bookSubtitle}`;
 const fullTitle = title ? `${title} · ${s.bookTitle}` : bookFull;
@@ -49,7 +57,7 @@ const basePath = lang === DEFAULT_LANG ? path : path.replace(new RegExp(`^/${lan
 const alternates: Record<Lang, string> = Object.fromEntries(
   LANG_CODES.map((l) => [l, Astro.props.alternates?.[l] ?? localePath(l, basePath)]),
 ) as Record<Lang, string>;
-const otherLangs = LANG_CODES.filter((l) => l !== lang);
+const otherLangs = shownLangs.filter((l) => l !== lang);
 
 const tiers = supportTiers(lang);
 const homeHref = localePath(lang, '/');
@@ -80,7 +88,7 @@ const tabs = [
 const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
 const manifest = lang === DEFAULT_LANG ? '/manifest.webmanifest' : `/${lang}/manifest.webmanifest`;
 const onDownloads = path.startsWith(localePath(lang, '/downloads/'));
-const showSupport = !/\/(buy|thanks)\/?$/.test(path);
+const showSupport = !preview && !/\/(buy|thanks)\/?$/.test(path);
 ---
 
 <!doctype html>
@@ -101,8 +109,8 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
     <link rel="alternate" type="application/rss+xml" title={`${s.bookTitle}: ${s.chaptersTitle}`} href={localePath(lang, '/rss.xml')} />
     <meta name="author" content={SITE.author} />
 
-    <!-- PWA -->
-    <link rel="manifest" href={manifest} />
+    <!-- PWA (left off drafts, so nobody installs the app from a preview link) -->
+    {!preview && <link rel="manifest" href={manifest} />}
     <meta name="theme-color" content="#fcf9f8" media="(prefers-color-scheme: light)" data-scheme="light" />
     <meta name="theme-color" content="#fcf9f8" media="(prefers-color-scheme: dark)" data-scheme="dark" />
     <script is:inline>
@@ -124,10 +132,10 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
     </script>
     {
       path.replace(/\/?$/, '/') === localePath(lang, '/') && (
-        <script is:inline define:vars={{ pageLang: lang, isDefault: lang === DEFAULT_LANG, zones: Object.fromEntries(LANG_CODES.map((l) => [l, LANGS[l].timeZones])), homes: Object.fromEntries(LANG_CODES.map((l) => [l, localePath(l, '/')])) }}>
+        <script is:inline define:vars={{ pageLang: lang, isDefault: lang === DEFAULT_LANG, zones: Object.fromEntries(liveLangs.map((l) => [l, LANGS[l].timeZones])), homes: Object.fromEntries(liveLangs.map((l) => [l, localePath(l, '/')])) }}>
           // Arriving at a home page from outside the site (the Instagram bio link, or opening the
           // installed app, which always starts on the home page it was installed from):
-          //   1. the language the reader last picked with the EN/PT switch wins;
+          //   1. the language the reader last picked with the language switch wins;
           //   2. otherwise, on the English home page, guess from the device time zone.
           // Links inside the site and links to a specific chapter are never redirected.
           try {
@@ -181,7 +189,7 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
     <meta name="twitter:image" content={ogImage} />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
-  <body data-lang={lang}>
+  <body data-lang={lang} data-preview={preview ? '' : undefined}>
     <a class="skip" href="#main">{s.skip}</a>
 
     {
@@ -194,10 +202,10 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
     }
 
     {
-      otherLangs.map((l) => (
+      !preview && otherLangs.map((l) => (
         <div class="lang-banner" data-suggest-lang={l} hidden>
           <a href={alternates[l]} hreflang={l} lang={l} data-lang-switch={l} data-track="language_switched" data-prop-to={l} data-prop-from={lang} data-prop-via="suggestion">
-            {s.suggestLang}
+            {t(l).readInThisLang}
           </a>
           <button type="button" class="icon-btn" data-dismiss-lang aria-label={s.dismiss}>✕</button>
         </div>
@@ -232,7 +240,7 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
         <div class="flex items-center gap-space-xs sm:gap-space-sm shrink-0">
           <span class="h-9 px-2.5 rounded-full bg-surface-container-low flex items-center gap-1 font-label-sm text-label-sm" role="group" aria-label={s.languageLabel}>
             {
-              LANG_CODES.map((l, i) => (
+              shownLangs.map((l, i) => (
                 <>
                   {i > 0 && <span class="text-outline-variant" aria-hidden="true">/</span>}
                   {l === lang ? (
@@ -255,7 +263,7 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
           >
             <span aria-hidden="true">Aa</span>
           </button>
-          <button type="button" class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm rounded-lg bg-primary hover:bg-botanical-deep text-on-primary font-label-md text-label-md whitespace-nowrap transition-all" id="install-btn" hidden>{s.getApp}</button>
+          {!preview && <button type="button" class="hidden sm:inline-flex items-center justify-center px-space-md py-space-sm rounded-lg bg-primary hover:bg-botanical-deep text-on-primary font-label-md text-label-md whitespace-nowrap transition-all" id="install-btn" hidden>{s.getApp}</button>}
         </div>
       </div>
     </header>
@@ -384,7 +392,7 @@ const showSupport = !/\/(buy|thanks)\/?$/.test(path);
       <span aria-hidden="true">↑</span>
     </button>
 
-    <script type="application/json" id="lang-zones" set:html={JSON.stringify(Object.fromEntries(LANG_CODES.map((l) => [l, LANGS[l].timeZones])))} />
+    <script type="application/json" id="lang-zones" set:html={JSON.stringify(Object.fromEntries(liveLangs.map((l) => [l, LANGS[l].timeZones])))} />
     {feedbackOn && <div id="wa-config" hidden data-number={SITE.whatsapp} data-name={SITE.authorFirstName} />}
 
     <script>

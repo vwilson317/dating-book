@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Release new versions of the book from full-manuscript PDFs (one per language).
 //
-//   npm run release                                   # newest PDF in manuscript/en/ and manuscript/pt/
+//   npm run release                                   # newest PDF in manuscript/en/, pt/ and es/
 //   npm run release -- --dry-run                      # just show what would change
 //   npm run release -- ~/Downloads/book-en.pdf ~/Downloads/livro-pt.pdf
 //   npm run release -- livro.pdf --lang pt            # skip language detection
@@ -85,7 +85,7 @@ async function inputs() {
   if (loose) found.push({ file: loose, lang: forcedLang });
   if (!found.length) {
     fail(
-      'No PDFs found. Put your manuscripts in manuscript/en/ and manuscript/pt/, or pass paths:\n' +
+      'No PDFs found. Put your manuscripts in manuscript/en/, manuscript/pt/ or manuscript/es/, or pass paths:\n' +
         '  npm run release -- book-en.pdf livro-pt.pdf [--dry-run] [--notes "what changed"]',
     );
   }
@@ -208,7 +208,7 @@ async function release({ file, lang: knownLang, bytes, book }) {
     ),
   );
   if (!book.chapters.length) {
-    const word = lang === 'pt' ? '"Capítulo 1" or "Capítulo Um"' : '"Chapter 1" or "Chapter One"';
+    const word = { en: '"Chapter 1" or "Chapter One"', pt: '"Capítulo 1" or "Capítulo Um"', es: '"Capítulo 1" or "Capítulo Uno"' }[lang] ?? '"Chapter 1"';
     console.error(c.red(`No chapters found. Each chapter needs to start on a new page with a heading like ${word}.`));
     return { lang, changes: [], chapters: [] };
   }
@@ -343,7 +343,7 @@ for (const input of await inputs()) {
   if (dup) {
     fail(
       `${path.basename(dup.file)} and ${path.basename(input.file)} both look like ${LANGS[book.lang].label}.\n` +
-        'Pass one PDF per language, put them in manuscript/en/ and manuscript/pt/, or set --lang.',
+        'Pass one PDF per language, put them in manuscript/<lang>/ (en, pt, es), or set --lang.',
     );
   }
   prepared.push({ ...input, bytes, book });

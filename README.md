@@ -146,10 +146,12 @@ The page text, price shown, and perks are in `src/i18n/buy.ts` and `SITE.support
 
 ## Languages on the site
 
-- English lives at `/`, Portuguese at `/pt/`. Every page has an EN/PT switcher, and chapters link to the same chapter in the other language.
-- A visitor whose phone is set to Portuguese and lands on an English page sees a small "Leia em português →" link, and the reverse for English speakers. It never redirects automatically, so a link you share always opens the page you shared. A reader's choice is remembered on their device.
-- Each language gets its own share image (`og.png` and `og-pt.png`) and its own install manifest, so installing from a Portuguese page opens the Portuguese site.
-- **All interface text** (buttons, headings, banners, and the edition names and notes the release writes) is in `src/i18n/ui.ts`. The Portuguese book subtitle there, *Desventuras de um Gringo Namorando no Exterior*, is a placeholder translation. Change it to your real Portuguese title, then run `npm run icons` to update the Portuguese share image.
+- English lives at `/`, Portuguese at `/pt/`, Spanish at `/es/`. Every page has a language switcher, and chapters link to the same chapter in the other languages.
+- **A language goes live with its first published chapter.** Until then its pages still build (open `/es/` to check them), but it stays out of the switcher on other languages' pages, the sitemap, hreflang links, language suggestions and the time-zone redirect. Spanish is in that state now: add chapters to `src/content/chapters/es/` (or put a manuscript in `manuscript/es/` and run `npm run release`) and it switches on by itself.
+- A visitor whose phone or location points to another live language sees a small link like "Leia em português →" or "Lee en español →". It never redirects automatically, so a link you share always opens the page you shared. A reader's choice is remembered on their device.
+- Each language gets its own share image (`og.png`, `og-pt.png`, `og-es.png`) and its own install manifest, so installing from a Portuguese page opens the Portuguese site.
+- **All interface text** (buttons, headings, banners, and the edition names and notes the release writes) is in `src/i18n/ui.ts`, with the Contribute text in `src/i18n/buy.ts` and the quiz in `src/i18n/quiz.ts`. The Portuguese and Spanish titles there (*Leia Meu Livro: Desventuras de um Gringo Namorando no Exterior*, *Lee Mi Libro: Desventuras de un Gringo Saliendo en el Extranjero*) are placeholder translations. Change them to your real titles, then run `npm run icons` to update the share images.
+- Spanish follows Latin American usage (`es-419`, informal "tú"). Visitors in Spanish-speaking time zones (Mexico, Central and South America, Spain) are offered Spanish once it's live.
 
 ## Adding content by hand
 
@@ -178,7 +180,20 @@ Chapter text in Markdown...
 Put the PDF at `public/pdfs/en/chapter-04-v1.pdf` (or `pdfs/pt/`).
 
 - `coming-soon` shows a teaser card, with no page yet. Good for building hype on Instagram.
+- `preview` builds a private page for a rough draft (see below).
 - `draft` hides the chapter completely.
+
+### Sharing a rough draft (preview links)
+
+To get early feedback from the people in a story before it's published, set `status: preview` in the chapter's frontmatter and deploy. The chapter gets a page at `/preview/<slug>/` (`/pt/preview/<slug>/`, `/es/preview/<slug>/`), using the file name as the slug unless you set `slug`. Send that link to them.
+
+- It's reachable **only by the link**: it's not in the sitemap, RSS, chapter list, home page or downloads, and nothing on the site links to it.
+- Search engines are told not to index it (a `noindex` meta tag plus an `X-Robots-Tag` header in `netlify.toml`). It's deliberately not listed in `robots.txt`, because that file is public.
+- The page says it's an unpublished draft and asks them not to share it. It keeps the reactions, the "send this line" button and the WhatsApp feedback link, and drops audio, PDFs, the share button, chapter navigation and the Contribute prompt.
+- **Kept out of the app:** the service worker never caches preview pages, they don't register the service worker or link the install manifest, and there's no "Get the app" button. Reading one doesn't save a reading position, so it can't show up in "Continue reading".
+- In PostHog, events from these pages have `page_type` = `preview`.
+- Anyone with the link can read it, and a URL built from the chapter's title could be guessed. If that matters for a chapter, give it an unguessable `slug` (for example `slug: carnival-k7q2m`).
+- When it's ready, change the status to `published`. It moves to `/chapters/<slug>/`, and the old preview link forwards there, so the people you sent it to can still open it.
 
 ### A new version of a chapter
 
@@ -464,9 +479,9 @@ Useful insights:
 
 What's built in:
 
-- **Sitemap** at `/sitemap.xml`, covering every page in both languages. Each page is linked to its translation (hreflang), so Google shows English searchers the English page and Portuguese searchers the Portuguese one.
+- **Sitemap** at `/sitemap.xml`, covering every page in every live language (draft previews are never listed). Each page is linked to its translation (hreflang), so Google shows English searchers the English page and Portuguese searchers the Portuguese one.
 - **robots.txt**, pointing search engines to the sitemap.
-- **RSS feeds** at `/rss.xml` and `/pt/rss.xml`, so feed readers and search engines pick up new chapters quickly.
+- **RSS feeds** at `/rss.xml`, `/pt/rss.xml` and `/es/rss.xml`, so feed readers and search engines pick up new chapters quickly.
 - **Structured data (schema.org):**
   - The home page describes the book, with its Portuguese translation and you as the author (linked to your Instagram).
   - Each chapter is described as a chapter of that book, with its publish and update dates, word count, PDF, and breadcrumbs.
@@ -489,5 +504,5 @@ New chapters are added to the sitemap and RSS feeds automatically on each releas
 ## How the PWA works
 
 - `public/manifest.webmanifest` holds the app name, icons, and colors.
-- `src/pages/sw.js.ts` builds `/sw.js` on each deploy. Pages load network-first, so readers always get the newest text, with cached copies used when offline. Build assets are cache-first. PDFs are cached after the first open so they work offline.
+- `src/pages/sw.js.ts` builds `/sw.js` on each deploy. Pages load network-first, so readers always get the newest text, with cached copies used when offline. Build assets are cache-first. PDFs are cached after the first open so they work offline. Draft previews (`/preview/`) are skipped entirely and always load from the network.
 - "Get the app" shows the native install prompt on Android/Chrome and step-by-step instructions on iPhone Safari.

@@ -243,7 +243,7 @@ export function plainText(md) {
 
 // ---------------------------------------------------------------------------
 
-/** @param {{ lang?: string }} [opts] lang: 'en' | 'pt'; detected from the text when omitted */
+/** @param {{ lang?: string }} [opts] lang: 'en' | 'pt' | 'es'; detected from the text when omitted */
 export async function extractBook(data, opts = {}) {
   const pages = await readPages(data);
   const lang = opts.lang ?? detectLanguage(pages.flatMap((p) => p.lines.map((l) => l.text)));

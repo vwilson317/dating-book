@@ -1,13 +1,15 @@
-// /sitemap.xml: every indexable page in both languages, with hreflang links between translations
-// so Google shows English readers the English page and Portuguese readers the Portuguese one.
+// /sitemap.xml: every indexable page in every live language (one with published chapters), with
+// hreflang links between translations so Google shows each reader the page in their language.
+// Draft previews (/preview/) are never listed.
 import type { APIRoute } from 'astro';
-import { getPublishedChapters, chapterUrl } from '../lib/content';
-import { LANG_CODES, DEFAULT_LANG, localePath, type Lang } from '../i18n/ui';
+import { getLiveLangs, getPublishedChapters, chapterUrl } from '../lib/content';
+import { DEFAULT_LANG, localePath, type Lang } from '../i18n/ui';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
 export const GET: APIRoute = async ({ site }) => {
   const abs = (p: string) => new URL(p, site).toString();
+  const LANG_CODES = await getLiveLangs();
   const byLang = Object.fromEntries(await Promise.all(LANG_CODES.map(async (l) => [l, await getPublishedChapters(l)] as const)));
   const day = (d: Date) => d.toISOString().slice(0, 10);
   const newest = (l: Lang) =>

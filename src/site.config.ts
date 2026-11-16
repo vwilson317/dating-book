@@ -1,3 +1,5 @@
+import type { Lang } from './i18n/ui';
+
 // Central place for site-wide settings. Book title/subtitle per language live in src/i18n/ui.ts.
 export const SITE = {
   author: 'Vincent Wilson',
@@ -18,9 +20,9 @@ export const SITE = {
     // Shown at the bottom of the Contribute page. Updated by hand.
     totalContributions: 347,
     tiers: [
-      { id: 'name', amount: 3.99, price: { en: '$3.99', pt: 'US$ 3,99' } },
-      { id: 'instagram', amount: 5.99, price: { en: '$5.99', pt: 'US$ 5,99' } },
-      { id: 'story', amount: 20, price: { en: '$20', pt: 'US$ 20' } },
+      { id: 'name', amount: 3.99, price: { en: '$3.99', pt: 'US$ 3,99', es: 'US$3.99' } },
+      { id: 'instagram', amount: 5.99, price: { en: '$5.99', pt: 'US$ 5,99', es: 'US$5.99' } },
+      { id: 'story', amount: 20, price: { en: '$20', pt: 'US$ 20', es: 'US$20' } },
     ],
   },
 };
@@ -39,4 +41,4 @@ export const contributePlaceholders = false;
 export const showPlaceholders = import.meta.env.DEV || (!!process.env.CONTEXT && process.env.CONTEXT !== 'production');
 
 /** Tiers readers can choose in this language. In dev all of them show, even with checkout off. */
-export const supportTiers = (_lang: 'en' | 'pt') => (checkoutEnabled || import.meta.env.DEV ? SITE.support.tiers : []);
+export const supportTiers = (_lang: Lang) => (checkoutEnabled || import.meta.env.DEV ? SITE.support.tiers : []);

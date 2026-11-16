@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob, file } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { LANG_CODES, type Lang } from './i18n/ui';
 
 // A downloadable PDF. List newest first.
 const pdfVersion = z.object({
@@ -10,7 +11,7 @@ const pdfVersion = z.object({
   notes: z.string().optional(), // what changed in this version
 });
 
-// One markdown file per chapter in src/content/chapters/<lang>/ (en, pt)
+// One markdown file per chapter in src/content/chapters/<lang>/ (en, pt, es)
 const chapters = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/chapters' }),
   schema: z.object({
@@ -22,8 +23,9 @@ const chapters = defineCollection({
     location: z.string().optional(), // where the misadventure happened
     published: z.coerce.date(),
     // "published" shows the full chapter, "coming-soon" shows a teaser card only,
+    // "preview" builds a private page at /preview/<slug>/ (link only: not listed anywhere, not indexed),
     // "draft" hides it from the site entirely.
-    status: z.enum(['published', 'coming-soon', 'draft']).default('published'),
+    status: z.enum(['published', 'coming-soon', 'preview', 'draft']).default('published'),
     versions: z.array(pdfVersion).default([]),
   }),
 });
@@ -32,7 +34,7 @@ const chapters = defineCollection({
 const editions = defineCollection({
   loader: file('./src/content/editions.yaml'),
   schema: z.object({
-    lang: z.enum(['en', 'pt']).default('en'),
+    lang: z.enum(LANG_CODES as [Lang, ...Lang[]]).default('en'),
     title: z.string(),
     description: z.string().optional(),
     date: z.coerce.date(),

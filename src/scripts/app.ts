@@ -180,7 +180,8 @@ if (installBtn && !isStandalone()) {
 window.addEventListener('appinstalled', () => track('app_installed'));
 
 // ---- Service worker -------------------------------------------------------
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+// Not from draft previews: someone opening a private link shouldn't get the whole app cached.
+if ('serviceWorker' in navigator && import.meta.env.PROD && !('preview' in document.body.dataset)) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });

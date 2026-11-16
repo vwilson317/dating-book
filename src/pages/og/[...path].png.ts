@@ -1,14 +1,15 @@
 // /og/<lang>/<chapter>.png: a share image per chapter (title + chapter label), built at deploy time.
 import type { APIRoute } from 'astro';
 import sharp from 'sharp';
-import { getPublishedChapters, chapterSlug, chapterLabel } from '../../lib/content';
+import { getPublishedChapters, getPreviewChapters, chapterSlug, chapterLabel } from '../../lib/content';
 import { LANG_CODES, t } from '../../i18n/ui';
 import { chapterOgSvg } from '../../lib/og';
 
 export async function getStaticPaths() {
   const out = [];
   for (const lang of LANG_CODES) {
-    for (const c of await getPublishedChapters(lang)) {
+    // draft previews too, so a preview link sent on WhatsApp shows the chapter title
+    for (const c of [...(await getPublishedChapters(lang)), ...(await getPreviewChapters(lang))]) {
       const s = t(lang);
       out.push({
         params: { path: `${lang}/${chapterSlug(c)}` },

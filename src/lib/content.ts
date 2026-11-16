@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { DEFAULT_LANG, LANGS, isLang, localePath, t, type Lang } from '../i18n/ui';
+import { DEFAULT_LANG, LANGS, LANG_CODES, isLang, localePath, t, type Lang } from '../i18n/ui';
 
 export type Chapter = CollectionEntry<'chapters'>;
 
@@ -14,8 +14,25 @@ export const chapterSlug = (c: Chapter) => c.id.replace(/^[a-z]{2}\//, '');
 
 /** Every chapter that should appear on the site (published + coming soon), in book order. */
 export async function getVisibleChapters(lang: Lang): Promise<Chapter[]> {
-  const all = await getCollection('chapters', (c) => c.data.status !== 'draft' && chapterLang(c) === lang);
+  const all = await getCollection(
+    'chapters',
+    (c) => (c.data.status === 'published' || c.data.status === 'coming-soon') && chapterLang(c) === lang,
+  );
   return all.sort((a, b) => a.data.number - b.data.number);
+}
+
+/** Rough drafts shared by private link at /preview/<slug>/. Never listed, linked or indexed. */
+export async function getPreviewChapters(lang: Lang): Promise<Chapter[]> {
+  return getCollection('chapters', (c) => c.data.status === 'preview' && chapterLang(c) === lang);
+}
+
+export const previewUrl = (c: Chapter) => localePath(chapterLang(c), `/preview/${chapterSlug(c)}/`);
+
+/** Languages with at least one published chapter. The others still build (so you can check them
+ * at /es/ etc.) but stay out of the language switcher, sitemap, hreflang and automatic redirects. */
+export async function getLiveLangs(): Promise<Lang[]> {
+  const live = await Promise.all(LANG_CODES.map(async (l) => ((await getPublishedChapters(l)).length > 0 ? l : null)));
+  return live.filter((l): l is Lang => l !== null);
 }
 
 export async function getPublishedChapters(lang: Lang): Promise<Chapter[]> {

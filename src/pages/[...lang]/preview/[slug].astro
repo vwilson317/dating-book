@@ -1,0 +1,83 @@
+---
+// /preview/<slug>/ (and /pt/preview/..., /es/preview/...): a rough draft shared by private link with the
+// people in the story, for a first round of feedback. Set `status: preview` in the chapter's frontmatter.
+// Kept out of the sitemap, RSS, chapter lists, search engines (noindex) and the app's offline cache.
+// Once the chapter is published, its old preview link forwards to the real chapter page.
+import { render } from 'astro:content';
+import Base from '../../../layouts/Base.astro';
+import ChapterPage from '../../../components/pages/ChapterPage.astro';
+import { getPreviewChapters, getPublishedChapters, chapterSlug, chapterLabel, chapterUrl, previewUrl } from '../../../lib/content';
+import { SITE } from '../../../site.config';
+import { LANG_CODES, DEFAULT_LANG, localePath, t, type Lang } from '../../../i18n/ui';
+
+export async function getStaticPaths() {
+  const byLang = Object.fromEntries(
+    await Promise.all(LANG_CODES.map(async (l) => [l, await getPreviewChapters(l)] as const)),
+  );
+  const published = await Promise.all(
+    LANG_CODES.map(async (lang) =>
+      (await getPublishedChapters(lang)).map((chapter) => ({
+        params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: chapterSlug(chapter) },
+        props: { lang, chapter, alternates: {}, redirectTo: chapterUrl(chapter) },
+      })),
+    ),
+  );
+  const previews = LANG_CODES.flatMap((lang) =>
+    byLang[lang].map((chapter) => {
+      // The same draft in the other languages if there is one, else that language's home page
+      const alternates = Object.fromEntries(
+        LANG_CODES.map((l) => {
+          const twin = byLang[l].find((c) => c.data.number === chapter.data.number);
+          return [l, twin ? previewUrl(twin) : localePath(l, '/')];
+        }),
+      );
+      return {
+        params: { lang: lang === DEFAULT_LANG ? undefined : lang, slug: chapterSlug(chapter) },
+        props: { lang, chapter, alternates, redirectTo: undefined as string | undefined },
+      };
+    }),
+  );
+  return [...previews, ...published.flat()];
+}
+
+const { chapter, alternates, redirectTo } = Astro.props;
+if (redirectTo) return Astro.redirect(redirectTo, 301);
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+const { Content } = await render(chapter);
+const { title, excerpt } = chapter.data;
+const label = chapterLabel(chapter);
+---
+
+<Base
+  lang={lang}
+  title={`${label}: ${title}`}
+  description={excerpt}
+  type="article"
+  image={`/og/${lang}/${chapterSlug(chapter)}.png`}
+  alternates={alternates}
+  untranslated={LANG_CODES}
+  preview
+  stitch
+>
+  {
+    (SITE.whatsapp || import.meta.env.DEV) && (
+      <a class="quote-btn" id="quote-btn" href="#" target="_blank" rel="noopener" data-msg={s.waQuoteMsg} hidden>
+        {s.quoteButton.replace('{name}', SITE.authorFirstName)}
+      </a>
+    )
+  }
+
+  <ChapterPage chapter={chapter} Content={Content} playlist={[]} shareUrl="" preview />
+
+  <script>
+    import { initReading } from '../../../scripts/reading';
+
+    initReading(
+      document.querySelector<HTMLElement>('.chapter')!,
+      document.querySelector<HTMLElement>('.prose')!,
+      document.getElementById('chapter-end')!,
+      document.getElementById('progress-bar')!,
+    );
+  </script>
+</Base>

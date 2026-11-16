@@ -41,6 +41,7 @@ const ogFor = ({ eyebrow, subtitle, stamp, title = 'Read My Book', subtitleSize 
   </g>
 </svg>`;
 const og = ogFor({ eyebrow: 'FREE CHAPTERS · PDF DOWNLOADS', subtitle: 'Misadventures of a Gringo Dating Abroad', stamp: 'Abroad' });
+const ogEs = ogFor({ eyebrow: 'CAPÍTULOS GRATIS · PDF PARA DESCARGAR', subtitle: 'Desventuras de un Gringo Saliendo en el Extranjero', stamp: 'Exterior', title: 'Lee Mi Libro', subtitleSize: 36 });
 const ogPt = ogFor({ eyebrow: 'CAPÍTULOS GRÁTIS · PDFS PARA BAIXAR', subtitle: 'Desventuras de um Gringo Namorando no Exterior', stamp: 'Exterior', title: 'Leia Meu Livro', subtitleSize: 40 });
 
 await mkdir('public/icons', { recursive: true });
@@ -53,5 +54,6 @@ await png(stamp(512), 'public/icons/apple-touch-icon.png', 180);
 await writeFile('public/icons/favicon.svg', favicon);
 await sharp(Buffer.from(og)).png().toFile('public/og.png');
 await sharp(Buffer.from(ogPt)).png().toFile('public/og-pt.png');
+await sharp(Buffer.from(ogEs)).png().toFile('public/og-es.png');
 
 console.log('Icons and og.png written.');

@@ -41,6 +41,8 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET' || url.origin !== self.location.origin) return;
   if (url.pathname.startsWith('/ingest')) return; // analytics proxy
   if (url.pathname.startsWith('/audio/')) return; // narration streams with range requests; let the browser handle it
+  const parts = url.pathname.split('/'); // "/preview/x/" or "/pt/preview/x/"
+  if (parts[1] === 'preview' || parts[2] === 'preview') return; // private drafts: always from the network, never cached
 
   // Pages: network first so readers always get the latest text; fall back to cache, then offline page.
   if (req.mode === 'navigate') {

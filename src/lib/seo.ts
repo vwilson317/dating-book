@@ -1,6 +1,6 @@
 // SEO helpers: absolute URLs and schema.org structured data (JSON-LD) that search engines read.
 import { SITE, instagramUrl } from '../site.config';
-import { LANGS, LANG_CODES, localePath, t, type Lang } from '../i18n/ui';
+import { DEFAULT_LANG, LANGS, LANG_CODES, localePath, t, type Lang } from '../i18n/ui';
 import { chapterLabel, chapterLang, chapterUrl, wordCount, type Chapter } from './content';
 
 export const abs = (path: string, site: URL | undefined) => new URL(path, site).toString();
@@ -23,7 +23,7 @@ export function bookSchema(lang: Lang, site: URL | undefined) {
     alternateName: s.bookTitle,
     inLanguage: LANGS[lang].locale,
     url: abs(localePath(lang, '/'), site),
-    image: abs(lang === 'en' ? '/og.png' : `/og-${lang}.png`, site),
+    image: abs(lang === DEFAULT_LANG ? '/og.png' : `/og-${lang}.png`, site),
     description: s.description,
     genre: ['Memoir', 'Humor', 'Dating', 'Travel'],
     bookFormat: 'https://schema.org/EBook',

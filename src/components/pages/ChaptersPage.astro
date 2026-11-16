@@ -1,7 +1,7 @@
 ---
 // The chapter directory, from stitch/chapters_directory and stitch/mobile_chapters_directory.
 import type { Chapter } from '../../lib/content';
-import { chapterAudio, chapterUrl, readingMinutes } from '../../lib/content';
+import { chapterAudio, chapterUrl, getLiveLangs, readingMinutes } from '../../lib/content';
 import { SITE, instagramUrl, supportTiers } from '../../site.config';
 import { LANG_CODES, LANGS, localePath, t, type Lang } from '../../i18n/ui';
 import { buy } from '../../i18n/buy';
@@ -21,12 +21,14 @@ const published = chapters.filter((c) => c.data.status === 'published');
 const totalMinutes = published.reduce((sum, c) => sum + readingMinutes(c.body), 0);
 const places = [...new Set(chapters.map((c) => c.data.location?.split(',')[0].trim()).filter(Boolean))] as string[];
 const firstAudio = published.find((c) => chapterAudio(c));
+const liveLangs = await getLiveLangs();
+const shownLangs = LANG_CODES.filter((l) => l === lang || liveLangs.includes(l));
 const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop';
 const stats = [
   { label: s.statTotalRead, value: `${totalMinutes} min`, icon: 'timelapse' as const, tone: 'text-charcoal-ink' },
   ...(places.length > 0 ? [{ label: s.statLocations, value: String(places.length), icon: 'translate' as const, tone: 'text-charcoal-ink' }] : []),
   { label: s.statAccess, value: s.statFreeValue, icon: 'lock_open' as const, tone: 'text-primary' },
-  { label: s.statLanguages, value: LANG_CODES.map((l) => LANGS[l].short).join(' & '), icon: 'translate' as const, tone: 'text-terracotta-accent' },
+  { label: s.statLanguages, value: shownLangs.map((l) => LANGS[l].short).join(' · '), icon: 'translate' as const, tone: 'text-terracotta-accent' },
 ];
 const chip = 'shrink-0 px-space-md py-1.5 rounded-full font-label-md text-label-md transition-all bg-surface-container-low hover:bg-surface-container text-primary aria-pressed:bg-primary aria-pressed:text-on-primary';
 ---

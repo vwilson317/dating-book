@@ -1,4 +1,4 @@
-// /rss.xml and /pt/rss.xml: a feed of chapters, newest first. Feed readers, aggregators and
+// /rss.xml, /pt/rss.xml and /es/rss.xml: a feed of chapters, newest first. Feed readers, aggregators and
 // search engines use it to discover new chapters as soon as they're released.
 import type { APIRoute } from 'astro';
 import { getPublishedChapters, chapterUrl, chapterLabel } from '../../lib/content';
