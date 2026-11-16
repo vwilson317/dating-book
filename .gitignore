@@ -8,3 +8,7 @@ dist/
 .DS_Store
 manuscript/**/*.pdf
 narration/
+# Raw videos for npm run video (the converted MP4s in public/video/ are committed)
+videos/**
+!videos/**/
+!videos/**/README.md
