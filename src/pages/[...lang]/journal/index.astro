@@ -1,0 +1,61 @@
+---
+// /journal/: long-form videos and written posts, newest first. Posts live in src/content/journal/<lang>/.
+import Base from '../../../layouts/Base.astro';
+import JournalCard from '../../../components/JournalCard.astro';
+import Icon from '../../../components/home/Icon.astro';
+import { getJournal } from '../../../lib/content';
+import { SITE, instagramUrl } from '../../../site.config';
+import { langPaths, localePath, t, type Lang } from '../../../i18n/ui';
+import { pageSchema } from '../../../lib/seo';
+
+export const getStaticPaths = langPaths;
+
+const lang = Astro.props.lang as Lang;
+const s = t(lang);
+const posts = await getJournal(lang);
+const [latest, ...rest] = posts;
+const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-margin-desktop';
+---
+
+<Base
+  lang={lang}
+  title={s.journalTitle}
+  description={s.journalDescription}
+  jsonLd={pageSchema(lang, Astro.site, s.journalTitle, localePath(lang, '/journal/'), 'CollectionPage')}
+  stitch
+>
+  <div class="flex flex-col w-full bg-background font-body-md text-on-surface antialiased">
+    <section class="w-full bg-sand-light py-space-lg lg:py-space-xl">
+      <div class:list={[wrap, 'flex flex-col gap-space-sm max-w-3xl']}>
+        <span class="self-start px-space-sm py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm uppercase tracking-wider">{s.journalEyebrow}</span>
+        <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-primary tracking-tight leading-[1.1]">{s.journalTitle}</h1>
+        <p class="font-body-md text-body-md md:font-body-lg md:text-body-lg text-on-surface-variant leading-relaxed">{s.journalLede}</p>
+      </div>
+    </section>
+
+    <section class:list={[wrap, 'py-space-lg lg:py-space-xl flex flex-col gap-space-lg']} data-track-view="journal_list">
+      {
+        latest ? (
+          <>
+            <div class="max-w-4xl">
+              <JournalCard post={latest} location="journal_latest" />
+            </div>
+            {rest.length > 0 && (
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-space-md">
+                {rest.map((p) => <JournalCard post={p} location="journal_list" />)}
+              </div>
+            )}
+          </>
+        ) : (
+          <div class="rounded-xl p-space-lg bg-surface-container-low flex flex-col items-center gap-space-sm text-center">
+            <p class="font-body-lg text-body-lg text-on-surface-variant">{s.journalEmpty}</p>
+            <a class="inline-flex items-center gap-2 px-space-md py-2.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md" href={instagramUrl} data-track="instagram_clicked" data-prop-location="journal_empty" rel="me noopener">
+              <Icon name="photo_camera" class="text-[18px]" />
+              {s.follow(SITE.instagram)}
+            </a>
+          </div>
+        )
+      }
+    </section>
+  </div>
+</Base>

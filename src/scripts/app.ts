@@ -25,6 +25,33 @@ document.addEventListener('click', (e) => {
   track(el.dataset.track!, props);
 });
 
+// ---- Links inside chapter and journal text ----------------------------------
+// Write a normal Markdown link in a chapter, e.g. [the video](/journal/carnival-night/). Links to the
+// journal get a ▶ and count as related_content_clicked (location "inline"); other links to the site
+// count as text_link_clicked.
+document.querySelectorAll<HTMLAnchorElement>('.prose a[href]').forEach((a) => {
+  let url: URL;
+  try {
+    url = new URL(a.getAttribute('href')!, location.href);
+  } catch {
+    return;
+  }
+  if (url.origin !== location.origin || a.dataset.track) return;
+  const chapter = a.closest<HTMLElement>('[data-chapter]')?.dataset.chapter;
+  const journal = url.pathname.match(/^(?:\/[a-z]{2})?\/journal\/([^/]+)\/?$/);
+  if (journal) {
+    a.classList.add('journal-link');
+    a.dataset.track = 'related_content_clicked';
+    a.dataset.propPost = journal[1];
+    a.dataset.propLocation = 'inline';
+    if (chapter) a.dataset.propChapter = chapter;
+  } else {
+    a.dataset.track = 'text_link_clicked';
+    a.dataset.propTo = url.pathname + url.hash;
+    if (chapter) a.dataset.propChapter = chapter;
+  }
+});
+
 // ---- Section views --------------------------------------------------------
 // Any element with data-track-view="name" sends section_viewed once per page when it scrolls into
 // view. These are the denominators: how many people saw the Contribute box, not just who clicked it.
@@ -180,7 +207,8 @@ if (installBtn && !isStandalone()) {
 window.addEventListener('appinstalled', () => track('app_installed'));
 
 // ---- Service worker -------------------------------------------------------
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+// Not from draft previews: someone opening a private link shouldn't get the whole app cached.
+if ('serviceWorker' in navigator && import.meta.env.PROD && !('preview' in document.body.dataset)) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });

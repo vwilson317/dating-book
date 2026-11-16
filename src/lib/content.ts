@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { DEFAULT_LANG, LANGS, isLang, localePath, t, type Lang } from '../i18n/ui';
+import { DEFAULT_LANG, LANGS, LANG_CODES, isLang, localePath, t, type Lang } from '../i18n/ui';
 
 export type Chapter = CollectionEntry<'chapters'>;
 
@@ -14,8 +14,25 @@ export const chapterSlug = (c: Chapter) => c.id.replace(/^[a-z]{2}\//, '');
 
 /** Every chapter that should appear on the site (published + coming soon), in book order. */
 export async function getVisibleChapters(lang: Lang): Promise<Chapter[]> {
-  const all = await getCollection('chapters', (c) => c.data.status !== 'draft' && chapterLang(c) === lang);
+  const all = await getCollection(
+    'chapters',
+    (c) => (c.data.status === 'published' || c.data.status === 'coming-soon') && chapterLang(c) === lang,
+  );
   return all.sort((a, b) => a.data.number - b.data.number);
+}
+
+/** Rough drafts shared by private link at /preview/<slug>/. Never listed, linked or indexed. */
+export async function getPreviewChapters(lang: Lang): Promise<Chapter[]> {
+  return getCollection('chapters', (c) => c.data.status === 'preview' && chapterLang(c) === lang);
+}
+
+export const previewUrl = (c: Chapter) => localePath(chapterLang(c), `/preview/${chapterSlug(c)}/`);
+
+/** Languages with at least one published chapter. The others still build (so you can check them
+ * at /es/ etc.) but stay out of the language switcher, sitemap, hreflang and automatic redirects. */
+export async function getLiveLangs(): Promise<Lang[]> {
+  const live = await Promise.all(LANG_CODES.map(async (l) => ((await getPublishedChapters(l)).length > 0 ? l : null)));
+  return live.filter((l): l is Lang => l !== null);
 }
 
 export async function getPublishedChapters(lang: Lang): Promise<Chapter[]> {
@@ -46,6 +63,31 @@ export const chapterLabel = (c: Chapter) => c.data.label ?? t(chapterLang(c)).ch
 
 export const chapterUrl = (c: Chapter) => localePath(chapterLang(c), `/chapters/${chapterSlug(c)}/`);
 
+// ---- Journal (long-form videos and written posts) ----
+export type JournalPost = CollectionEntry<'journal'>;
+
+export const postLang = (p: JournalPost): Lang => {
+  const folder = p.filePath?.split('/').at(-2);
+  return isLang(folder) ? folder : DEFAULT_LANG;
+};
+export const postSlug = (p: JournalPost) => p.id.replace(/^[a-z]{2}\//, '');
+export const postUrl = (p: JournalPost) => localePath(postLang(p), `/journal/${postSlug(p)}/`);
+export const postKind = (p: JournalPost): 'video' | 'post' => (p.data.video ? 'video' : 'post');
+/** Card / preview image: the cover, else the video's poster */
+export const postImage = (p: JournalPost) => p.data.cover ?? p.data.video?.poster;
+
+/** Published posts in one language, newest first */
+export async function getJournal(lang: Lang): Promise<JournalPost[]> {
+  const all = await getCollection('journal', (p) => p.data.status === 'published' && postLang(p) === lang);
+  return all.sort((a, b) => b.data.published.getTime() - a.data.published.getTime());
+}
+
+/** Posts tied to a chapter (by number, same language), videos first */
+export async function getRelatedPosts(c: Chapter): Promise<JournalPost[]> {
+  const posts = (await getJournal(chapterLang(c))).filter((p) => p.data.chapters.includes(c.data.number));
+  return posts.sort((a, b) => Number(!!b.data.video) - Number(!!a.data.video));
+}
+
 // Narrated audio: MP3s in public/audio/<lang>/, indexed by `npm run audio` (scripts/audio.mjs). Keyed "<lang>:<number>".
 import audioManifest from '../content/audio.json';
 
@@ -59,5 +101,10 @@ export function chapterAudio(c: Chapter): ChapterAudio | undefined {
   return (audioManifest as Record<string, ChapterAudio>)[`${chapterLang(c)}:${c.data.number}`];
 }
 
-/** 754 -> "12:34" */
-export const formatClock = (sec: number) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
+/** 754 -> "12:34", 3754 -> "1:02:34" */
+export const formatClock = (sec: number) => {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const ss = String(Math.floor(sec % 60)).padStart(2, '0');
+  return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`;
+};

@@ -42,12 +42,37 @@
   [headers.values]
     X-Robots-Tag = "noindex"
 
+# Private draft previews (status: preview): reachable by link only, never in search results
+[[headers]]
+  for = "/preview/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/pt/preview/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-cache"
+
+[[headers]]
+  for = "/es/preview/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+    Cache-Control = "no-cache"
+
 # Narration MP3s are linked with ?v=<content hash>, so each URL never changes
 [[headers]]
   for = "/audio/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
     X-Robots-Tag = "noindex"
+
+# Journal videos and posters. Give a changed video a new file name, since browsers keep these for a week.
+[[headers]]
+  for = "/video/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
 
 [[headers]]
   for = "/_astro/*"

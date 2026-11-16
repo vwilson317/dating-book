@@ -29,6 +29,23 @@ export const LANGUAGES = {
     connectors: ['e'], // "vinte e um"
     common: ['que', 'não', 'uma', 'com', 'para', 'ela', 'mas', 'você', 'como', 'eu'],
   },
+  es: {
+    chapter: new RegExp(String.raw`^\s*cap[ií]tulo\s+([0-9]+|[\p{L}][\p{L}\- ]*?)` + SEP, 'iu'),
+    prologue: new RegExp(String.raw`^\s*(pr[óo]logo|prefacio|introducci[óo]n|presentaci[óo]n)` + SEP, 'iu'),
+    epilogue: new RegExp(String.raw`^\s*(ep[íi]logo)` + SEP, 'iu'),
+    stop: /^\s*(agradecimientos?|sobre el autor|acerca del autor|del mismo autor|notas|bibliograf[íi]a|referencias)\s*$/iu,
+    ones: ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce',
+      'trece', 'catorce', 'quince', 'dieciséis', 'diecisiete', 'dieciocho', 'diecinueve'],
+    // without accents, 21-29 written as one word, and "un"/"una" -> number
+    extra: {
+      un: 1, una: 1, dieciseis: 16, veintiuno: 21, veintiún: 21, veintiun: 21, veintidós: 22, veintidos: 22,
+      veintitrés: 23, veintitres: 23, veinticuatro: 24, veinticinco: 25, veintiséis: 26, veintiseis: 26,
+      veintisiete: 27, veintiocho: 28, veintinueve: 29,
+    },
+    tens: ['', '', 'veinte', 'treinta', 'cuarenta', 'cincuenta', 'sesenta', 'setenta', 'ochenta', 'noventa'],
+    connectors: ['y'], // "treinta y uno"
+    common: ['que', 'pero', 'una', 'con', 'para', 'ella', 'como', 'yo', 'muy', 'cuando'],
+  },
 };
 
 export function parseNumber(s, rules) {

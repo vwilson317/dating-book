@@ -178,6 +178,71 @@ export const quiz: Record<Lang, Quiz> = {
     promo: '💘 Então você quer namorar o gringo? Faça o quiz de 3 perguntas',
     promoBody: 'Cada pergunta é uma referência ao livro. Quem pontua alto ganha o direito de chamar no meu WhatsApp.',
   },
+
+  es: {
+    navLabel: 'Quiz',
+    title: '¿Así que quieres salir con el gringo?',
+    lede: 'Tres preguntas, cada una con una referencia al libro. Si sacas buen puntaje, te ganas el derecho de escribirme por WhatsApp. ¿Puntaje bajo? Escríbeme igual.',
+    adultsOnly: 'Solo mayores de 18 y solteros. Obvio.',
+    start: 'Vamos a ver',
+    questionOf: 'Pregunta {i} de {n}',
+    callbackLabel: '¿Te acuerdas? {ch}',
+    next: 'Siguiente pregunta →',
+    seeScore: 'Ver mi puntaje →',
+    restart: 'Hacerlo de nuevo',
+    shareScore: 'Compartir mi puntaje',
+    shareText: 'Saqué {score}/{max} en "¿Así que quieres salir con el gringo?": {tier}. Te toca:',
+    scoreLabel: '{score} / {max}',
+    linePromptTitle: 'Ahora viene lo difícil',
+    linePrompt:
+      'En el Capítulo 7, una comediante me propuso escapar de un crimen en una bicicleta tándem, y yo le respondí: "¿Adelante o atrás?" La vara está alta. Mándame tu frase para romper el hielo.',
+    lineHint: 'Escribe tu frase después de "Mi frase:"',
+    waMsg: '¡Hola {name}! Hice el quiz y saqué {score}/{max}: {emoji} {tier}.\n\nMi frase: ',
+    waNeedLine: 'Primero escribe tu frase 😉',
+    questions: [
+      {
+        id: 'puddle',
+        chapter: 0,
+        callback: 'Desde niño sueño con el gesto de poner la chaqueta sobre el charco. Sin ningún plan para la chaqueta mojada.',
+        question: 'Empieza a llover fuerte en nuestra primera cita. ¿Qué esperas de mí?',
+        answers: [
+          { id: 'jacket', text: 'Tu chaqueta sobre el charco. Obvio.', points: 2, quip: 'Clásico. Pero ¿quién se lleva la chaqueta empapada a casa? (Sigo sin plan.)' },
+          { id: 'shirt', text: 'Quitarte la camisa y usarla de paraguas.', points: 3, quip: 'Leíste el Capítulo 9. Pregúntame por esa cita. Así es como me robas el corazón.' },
+          { id: 'umbrella', text: 'Traer un paraguas, como un adulto.', points: 1, quip: 'Responsable. Sospechosamente responsable.' },
+        ],
+      },
+      {
+        id: 'toxic',
+        chapter: 4,
+        callback: 'Después de conocer a alguien en la playa, le escribí: "Mucho gusto. Asegúrate de elegir al correcto."',
+        question: 'Te mando exactamente ese mensaje. ¿Qué haces?',
+        answers: [
+          { id: 'are_you_toxic', text: 'Te acercas, celular en mano: "¿Eres tóxico?"', points: 3, quip: '"Sí, un poquito." Ya sabes cómo terminó esa. 💋' },
+          { id: 'who_said', text: 'Respondes: "¿Quién dijo que estoy eligiendo?"', points: 2, quip: 'Segura. Lo respeto, y me da un poco de miedo.' },
+          { id: 'read', text: 'Me dejas en visto.', points: 0, quip: 'Brutal. Pero muy de Río.' },
+        ],
+      },
+      {
+        id: 'fortune',
+        chapter: 3,
+        callback: 'La galleta de la fortuna de mi cita de sushi decía: "Deberías explorar tu lado femenino."',
+        question: 'Abrimos las galletas de la fortuna y la mía dice exactamente eso. Tú:',
+        answers: [
+          { id: 'boyfriend', text: 'Me preguntas cuánto tiempo llevo saliendo con mi novio.', points: 0, quip: 'Eso fue palabra por palabra lo que ella preguntó. No hubo segunda cita.' },
+          { id: 'skincare', text: 'Te ofreces a hacerme la rutina de skincare.', points: 2, quip: '¿Sinceramente? Sí, por favor.' },
+          { id: 'steal', text: 'Te ríes y me robas la galleta.', points: 3, quip: 'Un pequeño robo. El Capítulo 9 te dijo que ese era el camino.' },
+        ],
+      },
+    ],
+    tiers: [
+      { min: 9, emoji: '🧩', title: 'La próxima pieza del rompecabezas', body: 'Puntaje perfecto. Dije que todavía estoy buscando mi próxima pieza del rompecabezas. Demuéstralo.' },
+      { min: 7, emoji: '🚲', title: 'Cómplice de fuga en bicicleta tándem', body: 'Dirías "¿adelante o atrás?" sin pensarlo dos veces. Peligroso. Me apunto.' },
+      { min: 4, emoji: '😏', title: 'Material de situationship', body: 'Prometedor. Una buena frase para romper el hielo podría hacer toda la diferencia.' },
+      { min: 0, emoji: '🏖️', title: 'Zand erover (arena encima)', body: 'Duraríamos unas ocho semanas. Por suerte vivo en Río y aquí sobra arena. Escríbeme igual.' },
+    ],
+    promo: '💘 ¿Así que quieres salir con el gringo? Haz el quiz de 3 preguntas',
+    promoBody: 'Cada pregunta es una referencia al libro. Los puntajes altos se ganan el derecho de escribirme por WhatsApp.',
+  },
 };
 
 export const maxScore = (q: Quiz) => q.questions.reduce((sum, x) => sum + Math.max(...x.answers.map((a) => a.points)), 0);

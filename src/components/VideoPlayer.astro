@@ -1,0 +1,132 @@
+---
+// Video player for journal posts. Native <video> controls (best on phones: scrubbing, AirPlay,
+// picture-in-picture), with a poster and a big play button on top. On a phone, tapping play opens the
+// video full screen and turns it sideways (src/scripts/video.ts). Events are listed there.
+import type { JournalPost } from '../lib/content';
+import { formatClock, postLang, postSlug } from '../lib/content';
+import { LANGS, t } from '../i18n/ui';
+import Icon from './home/Icon.astro';
+
+interface Props {
+  post: JournalPost;
+}
+const { post } = Astro.props;
+const video = post.data.video!;
+const lang = postLang(post);
+const s = t(lang);
+const portrait = video.orientation === 'portrait';
+// A captions file on another domain only loads with CORS
+const crossOrigin = video.captions?.startsWith('http') ? 'anonymous' : undefined;
+---
+
+<figure
+  class:list={['vplayer', portrait ? 'vplayer--portrait' : 'vplayer--landscape']}
+  data-video={postSlug(post)}
+  data-title={post.data.title}
+  data-duration={video.duration ?? ''}
+  data-orientation={video.orientation}
+  data-poster={video.poster ?? ''}
+>
+  <div class="vplayer-frame">
+    <video preload="metadata" playsinline poster={video.poster} src={video.src} crossorigin={crossOrigin}>
+      {video.captions && <track kind="captions" src={video.captions} srclang={lang} label={LANGS[lang].label} default />}
+    </video>
+    <button type="button" class="vplayer-play" aria-label={`${s.playVideo}: ${post.data.title}`} data-resume-label={s.resumeVideo}>
+      <span class="vplayer-play-icon"><Icon name="play_arrow" class="text-[44px]" /></span>
+      <span class="vplayer-play-meta">
+        <span class="vplayer-resume" hidden></span>
+        {video.duration && <span class="vplayer-duration">{formatClock(video.duration)}</span>}
+      </span>
+    </button>
+    <p class="vplayer-error" role="alert" hidden>{s.videoError}</p>
+  </div>
+  <p class="vplayer-hint" hidden>↻ {s.rotateHint}</p>
+</figure>
+
+<style is:global>
+  .vplayer { margin: 0; width: 100%; }
+  .vplayer-frame {
+    position: relative;
+    width: 100%;
+    background: #111;
+    overflow: hidden;
+  }
+  .vplayer--landscape .vplayer-frame { aspect-ratio: 16 / 9; }
+  .vplayer--portrait .vplayer-frame {
+    aspect-ratio: 9 / 16;
+    width: auto;
+    height: min(80svh, 720px);
+    max-width: 100%;
+    margin-inline: auto;
+  }
+  @media (min-width: 768px) {
+    .vplayer-frame { border-radius: 16px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25); }
+  }
+  .vplayer video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #111; }
+  .vplayer video:fullscreen { object-fit: contain; }
+
+  .vplayer-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    border: 0;
+    cursor: pointer;
+    color: #fff;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.1) 55%, rgba(0, 0, 0, 0.15));
+  }
+  .vplayer-play[hidden] { display: none; }
+  .vplayer-play-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #c2532f;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+    transition: transform 0.15s ease;
+  }
+  .vplayer-play:hover .vplayer-play-icon, .vplayer-play:focus-visible .vplayer-play-icon { transform: scale(1.06); }
+  .vplayer-play-meta { display: flex; gap: 8px; align-items: center; font: 600 14px/1 'Plus Jakarta Sans Variable', system-ui, sans-serif; }
+  .vplayer-duration, .vplayer-resume { padding: 5px 10px; border-radius: 999px; background: rgba(0, 0, 0, 0.55); }
+  .vplayer-resume[hidden] { display: none; }
+
+  .vplayer-error {
+    position: absolute;
+    inset: auto 12px 12px;
+    margin: 0;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    font: 500 14px/1.4 'Plus Jakarta Sans Variable', system-ui, sans-serif;
+    text-align: center;
+  }
+  .vplayer-error[hidden] { display: none; }
+  .vplayer-hint {
+    margin: 10px 0 0;
+    text-align: center;
+    font: 500 14px/1.4 'Plus Jakarta Sans Variable', system-ui, sans-serif;
+    color: var(--color-on-surface-variant, #555);
+  }
+  .vplayer-hint[hidden] { display: none; }
+
+  /* Phone turned sideways without real full screen (e.g. inside Instagram): the poster fills the
+     screen height, and once it's playing the video covers the whole screen, above the header, tab
+     bar and Contribute button. */
+  @media (orientation: landscape) and (max-height: 540px) {
+    .vplayer--landscape .vplayer-frame { aspect-ratio: auto; height: 100svh; border-radius: 0; }
+    .vplayer--landscape.is-active .vplayer-frame {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      width: 100vw;
+      height: 100svh;
+      box-shadow: none;
+    }
+  }
+</style>

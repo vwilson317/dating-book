@@ -14,6 +14,9 @@ const PRICE_ENV = {
 type Tier = keyof typeof PRICE_ENV;
 type Lang = keyof typeof buy;
 
+// Stripe Checkout's page language for each site language
+const STRIPE_LOCALE: Record<Lang, Stripe.Checkout.SessionCreateParams.Locale> = { en: 'en', pt: 'pt-BR', es: 'es-419' };
+
 const isTier = (v: unknown): v is Tier => typeof v === 'string' && Object.hasOwn(PRICE_ENV, v);
 const isLang = (v: unknown): v is Lang => typeof v === 'string' && Object.hasOwn(buy, v);
 
@@ -80,7 +83,7 @@ export default async (req: Request, context: { site?: { url?: string } }) => {
       line_items: [{ price: requireEnv(PRICE_ENV[tier]), quantity: 1 }],
       custom_fields: customFields(tier, lang),
       client_reference_id: ref,
-      locale: lang === 'pt' ? 'pt-BR' : 'en',
+      locale: STRIPE_LOCALE[lang],
       metadata: { tier, lang, ...(visitor ? { ph_id: visitor } : {}) },
       success_url: `${origin}${prefix}/thanks/?tier=${tier}&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${buyUrl}?checkout=canceled`,

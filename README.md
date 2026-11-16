@@ -13,7 +13,7 @@ npm run preview    # serve the production build (service worker on)
 
 ## Releasing a new version of the book (the easy way)
 
-The book exists in English and Portuguese. Each language has its own manuscript PDF, and that PDF is the source of truth for that language's chapters.
+The book exists in English, Portuguese and Spanish. Each language has its own manuscript PDF, and that PDF is the source of truth for that language's chapters.
 
 **1. Put the PDFs in the inbox folders** (PDFs here are not committed to git):
 
@@ -21,6 +21,7 @@ The book exists in English and Portuguese. Each language has its own manuscript 
 manuscript/
   en/  ← English manuscript PDF
   pt/  ← Portuguese manuscript PDF
+  es/  ← Spanish manuscript PDF
 ```
 
 You only need to drop in the language(s) you changed. If a folder has several PDFs, the newest one is used.
@@ -41,7 +42,7 @@ Add `--notes "Rewrote the ending of chapter 4"` to show readers a note next to t
 
 **4. Commit and push.** That deploys the site. The release writes the chapter text to `src/content/chapters/<lang>/` and the PDFs to `public/pdfs/<lang>/`. Those are the files that get committed.
 
-You can also pass PDFs straight from anywhere: `npm run release -- ~/Downloads/book.pdf ~/Downloads/livro.pdf`. Each file's language is detected from its headings ("Chapter" vs "Capítulo") and wording. To skip detection for a single file, add `--lang pt`.
+You can also pass PDFs straight from anywhere: `npm run release -- ~/Downloads/book.pdf ~/Downloads/livro.pdf`. Each file's language is detected from its headings ("Chapter" vs "Capítulo", and the number words) and wording. Portuguese and Spanish both say "Capítulo", so the folder is the surest way to say which one a PDF is. To skip detection for a single file, add `--lang pt` or `--lang es`.
 
 What a release does, per language:
 
@@ -53,24 +54,24 @@ What a release does, per language:
 | A chapter that didn't change | Left alone |
 | The whole file | New **Early Reader Edition** / **Edição Antecipada** on that language's Downloads page, featured on its home page |
 
-Languages are versioned separately. Chapter 2 can be at `v3` in English and `v1` in Portuguese. When one language has chapters the other doesn't, the release tells you (for example, "Português is missing chapter(s) 5"). On the site, the EN/PT switcher on a chapter that isn't translated yet goes to the other language's chapter list.
+Languages are versioned separately. Chapter 2 can be at `v3` in English and `v1` in Portuguese. When one language has chapters the other doesn't, the release tells you (for example, "Português is missing chapter(s) 5"). On the site, the language switcher on a chapter that isn't translated yet goes to the other language's chapter list. Spanish appears on the site (switcher, sitemap, suggestions) with its first release.
 
 The first release in each language deletes that language's placeholder sample chapters.
 
 **What the PDF needs:** each chapter starts on a new page, with a heading near the top:
 
-| | English | Portuguese |
-|---|---|---|
-| Chapters | `Chapter 3`, `CHAPTER THREE`, `Chapter 3: Title` | `Capítulo 3`, `CAPÍTULO TRÊS`, `Capítulo Vinte e Um` |
-| Chapter 0 | `Prologue`, `Preface`, `Introduction` | `Prólogo`, `Prefácio`, `Introdução` |
-| After the last chapter | `Epilogue`, `Afterword` | `Epílogo`, `Posfácio` |
-| Back matter (left out) | `Acknowledgments`, `About the Author` | `Agradecimentos`, `Sobre o autor` |
+| | English | Portuguese | Spanish |
+|---|---|---|---|
+| Chapters | `Chapter 3`, `CHAPTER THREE`, `Chapter 3: Title` | `Capítulo 3`, `CAPÍTULO TRÊS`, `Capítulo Vinte e Um` | `Capítulo 3`, `CAPÍTULO TRES`, `Capítulo Veintiuno` |
+| Chapter 0 | `Prologue`, `Preface`, `Introduction` | `Prólogo`, `Prefácio`, `Introdução` | `Prólogo`, `Prefacio`, `Introducción` |
+| After the last chapter | `Epilogue`, `Afterword` | `Epílogo`, `Posfácio` | `Epílogo` |
+| Back matter (left out) | `Acknowledgments`, `About the Author` | `Agradecimentos`, `Sobre o autor` | `Agradecimientos`, `Sobre el autor` |
 
 If the title is on its own line, set it larger than the body text. The script skips the table of contents, running headers, and page numbers. It keeps italics, bold, and scene breaks (`* * *`). The words it looks for are in `scripts/release/languages.mjs`.
 
 **Good to know**
 - **The PDF is the source of truth.** A release replaces a changed chapter's web text with what's in the PDF, so make text edits in your manuscript, not in the `.md` files. Frontmatter you add by hand (`location`, a custom `excerpt`, `slug`) is kept.
-- **Chapters are matched by number**, within each language. EN chapter 4 and PT chapter 4 are treated as the same chapter for the language switcher, so keep the numbering the same in both manuscripts. If you insert a chapter in the middle and renumber the rest, every chapter after it will look changed.
+- **Chapters are matched by number**, within each language. EN, PT and ES chapter 4 are treated as the same chapter for the language switcher, so keep the numbering the same in every manuscript. If you insert a chapter in the middle and renumber the rest, every chapter after it will look changed.
 - **Re-exporting with a different layout is fine.** Changing fonts or margins doesn't create new versions; only changes to the words, italics, or paragraph breaks do.
 
 ## Audiobook (narrated chapters)
@@ -146,10 +147,12 @@ The page text, price shown, and perks are in `src/i18n/buy.ts` and `SITE.support
 
 ## Languages on the site
 
-- English lives at `/`, Portuguese at `/pt/`. Every page has an EN/PT switcher, and chapters link to the same chapter in the other language.
-- A visitor whose phone is set to Portuguese and lands on an English page sees a small "Leia em português →" link, and the reverse for English speakers. It never redirects automatically, so a link you share always opens the page you shared. A reader's choice is remembered on their device.
-- Each language gets its own share image (`og.png` and `og-pt.png`) and its own install manifest, so installing from a Portuguese page opens the Portuguese site.
-- **All interface text** (buttons, headings, banners, and the edition names and notes the release writes) is in `src/i18n/ui.ts`. The Portuguese book subtitle there, *Desventuras de um Gringo Namorando no Exterior*, is a placeholder translation. Change it to your real Portuguese title, then run `npm run icons` to update the Portuguese share image.
+- English lives at `/`, Portuguese at `/pt/`, Spanish at `/es/`. Every page has a language switcher, and chapters link to the same chapter in the other languages.
+- **A language goes live with its first published chapter.** Until then its pages still build (open `/es/` to check them), but it stays out of the switcher on other languages' pages, the sitemap, hreflang links, language suggestions and the time-zone redirect. Spanish is in that state now: add chapters to `src/content/chapters/es/` (or put a manuscript in `manuscript/es/` and run `npm run release`) and it switches on by itself.
+- A visitor whose phone or location points to another live language sees a small link like "Leia em português →" or "Lee en español →". It never redirects automatically, so a link you share always opens the page you shared. A reader's choice is remembered on their device.
+- Each language gets its own share image (`og.png`, `og-pt.png`, `og-es.png`) and its own install manifest, so installing from a Portuguese page opens the Portuguese site.
+- **All interface text** (buttons, headings, banners, and the edition names and notes the release writes) is in `src/i18n/ui.ts`, with the Contribute text in `src/i18n/buy.ts` and the quiz in `src/i18n/quiz.ts`. The Portuguese and Spanish titles there (*Leia Meu Livro: Desventuras de um Gringo Namorando no Exterior*, *Lee Mi Libro: Desventuras de un Gringo Saliendo en el Extranjero*) are placeholder translations. Change them to your real titles, then run `npm run icons` to update the share images.
+- Spanish follows Latin American usage (`es-419`, informal "tú"). Visitors in Spanish-speaking time zones (Mexico, Central and South America, Spain) are offered Spanish once it's live.
 
 ## Adding content by hand
 
@@ -178,7 +181,20 @@ Chapter text in Markdown...
 Put the PDF at `public/pdfs/en/chapter-04-v1.pdf` (or `pdfs/pt/`).
 
 - `coming-soon` shows a teaser card, with no page yet. Good for building hype on Instagram.
+- `preview` builds a private page for a rough draft (see below).
 - `draft` hides the chapter completely.
+
+### Sharing a rough draft (preview links)
+
+To get early feedback from the people in a story before it's published, set `status: preview` in the chapter's frontmatter and deploy. The chapter gets a page at `/preview/<slug>/` (`/pt/preview/<slug>/`, `/es/preview/<slug>/`), using the file name as the slug unless you set `slug`. Send that link to them.
+
+- It's reachable **only by the link**: it's not in the sitemap, RSS, chapter list, home page or downloads, and nothing on the site links to it.
+- Search engines are told not to index it (a `noindex` meta tag plus an `X-Robots-Tag` header in `netlify.toml`). It's deliberately not listed in `robots.txt`, because that file is public.
+- The page says it's an unpublished draft and asks them not to share it. It keeps the reactions, the "send this line" button and the WhatsApp feedback link, and drops audio, PDFs, the share button, chapter navigation and the Contribute prompt.
+- **Kept out of the app:** the service worker never caches preview pages, they don't register the service worker or link the install manifest, and there's no "Get the app" button. Reading one doesn't save a reading position, so it can't show up in "Continue reading".
+- In PostHog, events from these pages have `page_type` = `preview`.
+- Anyone with the link can read it, and a URL built from the chapter's title could be guessed. If that matters for a chapter, give it an unguessable `slug` (for example `slug: carnival-k7q2m`).
+- When it's ready, change the status to `published`. It moves to `/chapters/<slug>/`, and the old preview link forwards there, so the people you sent it to can still open it.
 
 ### A new version of a chapter
 
@@ -193,6 +209,59 @@ Edit `src/content/editions.yaml`. Each entry has a `lang`. The entry marked `fea
 ### Site settings
 
 Change the author and Instagram handle in `src/site.config.ts`, and the book title, subtitle, and interface text in `src/i18n/ui.ts`. To change the app icon and share image, edit the SVGs in `scripts/make-icons.mjs` and run `npm run icons`.
+
+## Journal: long-form videos and posts
+
+The Journal (`/journal/`, `/pt/journal/`, `/es/journal/`) holds long-form videos and written posts. The idea: post a clip as a Reel, then link to the full video on the site, where you control the experience and the analytics.
+
+### Adding a post
+
+Create `src/content/journal/en/<slug>.md` (or `pt/`, `es/`). The file name is the URL: `/journal/<slug>/`.
+
+```md
+---
+title: "The night the rain started"
+excerpt: "The full story behind the shirt-umbrella Reel."   # cards and link previews
+published: 2026-12-01
+chapters: [9]                  # optional: chapter numbers this belongs with
+location: "Rio de Janeiro"     # optional
+status: published              # published | draft
+video:                         # leave out for a written post
+  src: /video/rain-night.mp4   # or a full URL on a video host
+  poster: /video/rain-night.jpg
+  duration: 754                # seconds: shown on cards, sent to Google
+  orientation: landscape       # landscape (default) | portrait
+  captions: /video/rain-night.en.vtt   # optional
+---
+
+Anything written here appears under the video (or is the whole post, for a written one).
+```
+
+- **Posters matter.** The poster is what people see before pressing play, the card image, and the WhatsApp/Instagram link preview. Use a 1280×720 JPG. A post without a poster or `cover` gets a generated title image instead.
+- **Captions:** many people watch on their phone with the sound off. A `.vtt` subtitles file turns captions on by default.
+- **Where to keep the video files:** short clips can go in `public/video/` and are served from your own site. Long videos are big, and every play counts against Netlify's bandwidth. For those, upload the MP4 to a storage/CDN service (Cloudflare R2, Bunny, Backblaze B2 and similar) and put its full URL in `src`. Export as MP4 (H.264 + AAC), 1080p or 720p. If you ever replace a video, give it a new file name: browsers keep `/video/` files for a week.
+- The Journal tab appears in the menu once a language has at least one post.
+
+### The Reel → website flow
+
+1. Post a clip as a Reel. In the caption or a story link sticker, link to the post: `https://YOURSITE/journal/<slug>/?utm_source=instagram&utm_medium=reel&utm_campaign=<slug>`
+2. The page opens with the video at the top, the poster and a big play button.
+3. **On a phone, tapping play opens the video full screen and turns it sideways.**
+   - Android/Chrome: full screen, locked to landscape.
+   - iPhone: Safari's own full-screen player, which rotates when the phone does. Websites can't force rotation on iOS.
+   - Inside Instagram's browser, where full screen isn't always allowed: the video plays in the page with a "turn your phone sideways" hint. Turning the phone makes the video cover the whole screen.
+   - Portrait videos (`orientation: portrait`) play upright, Reel-style.
+4. Under the video: the written part, links to the chapters it's from, share, WhatsApp feedback, and more from the Journal. Where people stopped is remembered on their device, and the play button offers to pick up from there.
+
+### Linking videos and posts from chapters
+
+- **Automatically:** list the chapter numbers in the post's `chapters`. That chapter's page then gets:
+  - an Extras button (▶) in the reading bar;
+  - a "Watch the extra for this chapter →" link under the title, which goes straight to the post if there's one, or to the list if there are several;
+  - a "Videos and extras from this chapter" section at the end.
+
+  The post links back to those chapters ("From the book").
+- **Inside the chapter text:** write a normal Markdown link, e.g. `[watch what happened next](/journal/rain-night/)`. Links to the Journal get a ▶ in front. Any other link to a page on the site works the same way, and both kinds are tracked.
 
 ## Analytics (PostHog)
 
@@ -231,7 +300,7 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 | `chapter_card_clicked` | chapter directory card; props: `chapter`, `audio` |
 | `chapter_audio_clicked` | a link straight to a chapter's audio; props: `chapter`, `location` (directory/audio_card/reader_bar) |
 | `chapter_filter_used`, `chapter_search_used`, `chapter_sort_toggled` | directory tools; props: `filter`, `results`, `query_length` (never the search text), `order` |
-| `nav_clicked` | header, tab bar and other navigation; props: `to`, `location` |
+| `nav_clicked` | header, tab bar, footer and other navigation; props: `to`, `location` (header/tabbar/footer/reader_bar/journal_post) |
 | `buy_page_clicked` | any link to the Contribute page; props: `location` (header/tabbar/fab/footer) |
 | `section_viewed` | a section scrolled into view, once per page; props: `section` (home_contribute/home_hero/home_directory/home_pricing/buy_tiers/buy_free_help/buy_faq/buy_total_contributions) |
 | `faq_opened` | Contribute FAQ; props: `question` |
@@ -243,9 +312,12 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 | `landing_chapter_opened` | reader taps a chapter open on the home page; props: `chapter`, `lang`, `title`, `words_total`, `source` |
 | `landing_next_auto_opened` | reader reaches the end of a chapter and the next one opens; same props (`chapter` is the one just finished) |
 | `landing_chapter_page_clicked` | "better reading experience and audio" button; props: `chapter`, `audio` |
+| `home_start_clicked` | the "Start with Chapter 1" button at the top of the home page |
 | `back_to_top_clicked` | back-to-top button |
 | `in_app_browser_seen` | page opened inside the Instagram/Facebook/TikTok browser |
-| `language_suggested`, `language_switched` | "read in the other language" link shown / EN-PT switch used; props: `from`, `to`, `via` |
+| `language_suggested`, `language_switched` | "read in another language" link shown / language switch used; props: `from`, `to`, `via` (header/suggestion), `reason` |
+| `language_auto_selected` | a home page visit was sent to another language's home page; props: `from`, `to`, `reason` (preference/location), `tz`, `app` |
+| `text_link_clicked` | a link to another page of the site inside chapter or journal text; props: `to`, `chapter` |
 | `install_clicked`, `install_prompt_result`, `app_installed` | PWA install funnel |
 
 ### Insights to set up in PostHog
@@ -288,7 +360,35 @@ ORDER BY lang, toInt(chapter)
 
 **Quick version without SQL.** Trends → `chapter_read` → "Property value: average" of `percent_read` or `words_read`, broken down by `chapter`. Add a filter `summary_number = 1` to count each visit once. This slightly undercounts readers who came back to the same tab.
 
-Every event also carries `lang` (`en`/`pt`), `display_mode` (browser vs. installed app), and `in_app_browser`.
+### Journal and video events
+
+Every video event includes `video` (the post's slug), `title`, `lang`, `duration`, `orientation`, `phone` (true on phones), and `watch_id` (one ID per visit to a video page).
+
+| Event | When | Extra properties |
+|---|---|---|
+| `video_play_clicked` | Tapped the big play button | `resumed_at` (seconds, when picking up where they left off), `fullscreen_attempted` |
+| `video_started` | The first frame actually played | `startup_ms` (tap to first frame: slow means the file is too big or the host is slow) |
+| `video_progress` | Passed 25 / 50 / 75 / 90% | `percent`, `seconds_watched` |
+| `video_finished` | Reached the end | `seconds_watched` |
+| `video_watched` | **Visit summary**, sent when they leave or switch apps (again with updated totals if they come back) | `seconds_watched` (video actually played, not skipped), `max_percent`, `finished`, `fullscreen_seconds`, `stalls` (times it stopped to buffer), `summary_number` |
+| `video_fullscreen_entered` / `video_fullscreen_exited` | Full screen opened / closed | `method` (api/ios_native), `orientation_locked`, `trigger` (play/controls); `seconds` on exit |
+| `video_rotate_hint_shown` | Full screen wasn't possible (usually Instagram's browser), so they were asked to turn the phone | |
+| `video_seeked`, `video_speed_changed`, `video_captions_toggled` | Player controls | `from`, `to`, `speed`, `enabled` |
+| `video_error` | The video failed to load | `code`, `host` |
+| `journal_read` | Visit summary for the written part of a post | `post`, `kind`, `percent_read`, `active_seconds`, `finished`, `read_id`, `summary_number` |
+| `journal_card_clicked` | A post card; props: `post`, `kind`, `location` (journal_latest/journal_list/journal_more) | |
+| `related_content_clicked` | A chapter's link to its videos/posts | `chapter`, `post`, `kind`, `count`, `location` (reader_bar/chapter_header/chapter_end/inline) |
+| `journal_chapter_clicked` | "From the book" link on a post, back to a chapter | `post`, `chapter` |
+
+**Reel → site funnel.** Funnel: `$pageview` (filtered to `page_type` = journal_post and `utm_medium` = reel) → `video_play_clicked` → `video_started` → `video_progress` (percent = 50) → `video_finished`, broken down by `utm_campaign` to compare Reels.
+
+**Did they watch, and how?** Use `video_watched` with `summary_number` = 1, or the latest per `watch_id`: average `seconds_watched` and `max_percent` per `video`. Break down by `in_app_browser` and `orientation_locked` to see how Instagram's browser compares, and check `stalls` and `startup_ms` to spot a file that's too heavy for phones.
+
+**Do chapters send people to videos, and back?** Trends on `related_content_clicked` by `location`, and `journal_chapter_clicked` by `chapter`.
+
+### Properties on every event
+
+`lang` (`en`/`pt`/`es`), `page_type` (home, chapters, chapter, journal, journal_post, preview, buy, downloads, 404, offline, …), `display_mode` (browser vs. installed app), `in_app_browser`, `is_supporter`, and the reader's display settings.
 
 To track new buttons without writing code, add `data-track="event_name"` and `data-prop-anything="value"` to any element.
 
@@ -299,6 +399,7 @@ Add UTM tags so PostHog can show which posts drive traffic:
 - Bio: `https://YOURSITE/?utm_source=instagram&utm_medium=bio`
 - A chapter on the home page, already open: `https://YOURSITE/?utm_source=instagram&utm_medium=story#chapter-5`
 - Story link sticker: `https://YOURSITE/chapters/the-slug/?utm_source=instagram&utm_medium=story&utm_campaign=ch4-launch`
+- Reel → full video: `https://YOURSITE/journal/the-slug/?utm_source=instagram&utm_medium=reel&utm_campaign=the-slug`
 
 Instagram opens links in its own in-app browser. That browser can't install the app and handles downloads poorly, so the home page is built for it: a contribute button at the top, then every chapter readable in place in an accordion, with a button to each chapter page for audio and the full reading experience. Visitors in those apps also see no download buttons on chapter pages. The "Open in browser" banner only appears on the Downloads page, where it matters.
 
@@ -464,9 +565,9 @@ Useful insights:
 
 What's built in:
 
-- **Sitemap** at `/sitemap.xml`, covering every page in both languages. Each page is linked to its translation (hreflang), so Google shows English searchers the English page and Portuguese searchers the Portuguese one.
+- **Sitemap** at `/sitemap.xml`, covering every page in every live language (draft previews are never listed). Each page is linked to its translation (hreflang), so Google shows English searchers the English page and Portuguese searchers the Portuguese one.
 - **robots.txt**, pointing search engines to the sitemap.
-- **RSS feeds** at `/rss.xml` and `/pt/rss.xml`, so feed readers and search engines pick up new chapters quickly.
+- **RSS feeds** at `/rss.xml`, `/pt/rss.xml` and `/es/rss.xml`, so feed readers and search engines pick up new chapters quickly.
 - **Structured data (schema.org):**
   - The home page describes the book, with its Portuguese translation and you as the author (linked to your Instagram).
   - Each chapter is described as a chapter of that book, with its publish and update dates, word count, PDF, and breadcrumbs.
@@ -489,5 +590,5 @@ New chapters are added to the sitemap and RSS feeds automatically on each releas
 ## How the PWA works
 
 - `public/manifest.webmanifest` holds the app name, icons, and colors.
-- `src/pages/sw.js.ts` builds `/sw.js` on each deploy. Pages load network-first, so readers always get the newest text, with cached copies used when offline. Build assets are cache-first. PDFs are cached after the first open so they work offline.
+- `src/pages/sw.js.ts` builds `/sw.js` on each deploy. Pages load network-first, so readers always get the newest text, with cached copies used when offline. Build assets are cache-first. PDFs are cached after the first open so they work offline. Draft previews (`/preview/`) are skipped entirely and always load from the network.
 - "Get the app" shows the native install prompt on Android/Chrome and step-by-step instructions on iPhone Safari.

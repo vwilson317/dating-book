@@ -1,8 +1,8 @@
 ---
 // One chapter, from stitch/chapter_1_reader_audio and stitch/mobile_chapter_1_reader.
 // scripts/reading.ts needs .chapter, .prose, #chapter-end and #progress-bar.
-import type { Chapter } from '../../lib/content';
-import { chapterAudio, chapterLabel, chapterLang, chapterUrl, formatClock, formatDate, readingMinutes, wordCount } from '../../lib/content';
+import type { Chapter, JournalPost } from '../../lib/content';
+import { postSlug, postUrl, chapterAudio, chapterLabel, chapterLang, chapterUrl, formatClock, formatDate, readingMinutes, wordCount } from '../../lib/content';
 import { SITE, instagramUrl } from '../../site.config';
 import { localePath, t } from '../../i18n/ui';
 import AudioPlayer from '../AudioPlayer.astro';
@@ -10,6 +10,7 @@ import Feedback from '../Feedback.astro';
 import PdfVersions from '../PdfVersions.astro';
 import Placeholder from '../Placeholder.astro';
 import Icon from '../home/Icon.astro';
+import JournalCard from '../JournalCard.astro';
 
 interface Props {
   chapter: Chapter;
@@ -18,14 +19,28 @@ interface Props {
   next?: Chapter;
   playlist: Chapter[];
   shareUrl: string;
+  /** Private draft at /preview/: a "draft" notice, and no audio, PDFs, sharing or chapter navigation */
+  preview?: boolean;
+  /** Journal videos and posts tied to this chapter (their `chapters` frontmatter) */
+  related?: JournalPost[];
 }
-const { chapter, Content, prev, next, playlist, shareUrl } = Astro.props;
+const { chapter, Content, prev, next, playlist, shareUrl, preview = false, related = [] } = Astro.props;
+// One extra: link straight to it. Several: jump to the list at the end of the chapter.
+const extrasHref = related.length === 1 ? postUrl(related[0]) : '#extras';
+const extrasProps = (location: string) => ({
+  'data-track': 'related_content_clicked',
+  'data-prop-chapter': String(chapter.data.number),
+  'data-prop-location': location,
+  'data-prop-count': String(related.length),
+  ...(related.length === 1 ? { 'data-prop-post': postSlug(related[0]), 'data-prop-kind': related[0].data.video ? 'video' : 'post' } : {}),
+});
 const lang = chapterLang(chapter);
 const s = t(lang);
 const { number, title, excerpt, location, published } = chapter.data;
 const label = chapterLabel(chapter);
 const place = location?.split(',')[0];
-const audio = chapterAudio(chapter);
+// Audio is matched by chapter number, so a draft could pick up the published chapter's narration
+const audio = preview ? undefined : chapterAudio(chapter);
 const index = playlist.findIndex((c) => c.data.number === number);
 const upNext = playlist.slice(index + 1, index + 3);
 const feedbackOn = !!SITE.whatsapp || import.meta.env.DEV;
@@ -44,9 +59,18 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
         <span class="hidden sm:inline font-label-md text-label-md text-on-surface-variant shrink-0">{label}</span>
         <span class="hidden sm:inline text-outline-variant select-none">/</span>
         <span class="font-label-md text-label-md text-primary font-bold truncate">{title}</span>
+        {preview && <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-terracotta-accent/15 text-terracotta-accent font-label-sm text-label-sm font-bold uppercase tracking-wider shrink-0">{s.previewTag}</span>}
         {place && <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-terracotta-accent font-label-sm text-label-sm">{place}</span>}
       </div>
       <div class="flex items-center gap-space-xs sm:gap-space-sm shrink-0">
+        {
+          related.length > 0 && (
+            <a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-container text-primary font-label-sm text-label-sm shadow-sm transition-all" href={extrasHref} aria-label={s.extrasTitle} {...extrasProps('reader_bar')}>
+              <Icon name="smart_display" class="text-[17px] text-terracotta-accent" />
+              <span class="hidden md:inline">{s.extrasPill}</span>
+            </a>
+          )
+        }
         {
           audio && (
             <a class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface hover:bg-surface-container text-primary font-label-sm text-label-sm shadow-sm transition-all" href="#listen" data-track="chapter_audio_clicked" data-prop-chapter={String(number)} data-prop-location="reader_bar" aria-label={s.listen(Math.round(audio.duration / 60))}>
@@ -109,7 +133,16 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
         data-label={label}
         data-version={chapter.data.versions[0]?.label ?? 'v1'}
         data-words={wordCount(chapter.body)}
+        data-preview={preview ? '' : undefined}
       >
+        {
+          preview && (
+            <aside class="rounded-xl p-space-md bg-sand-light border border-terracotta-accent/30 flex flex-col gap-1" role="note">
+              <p class="font-label-lg text-label-lg text-terracotta-accent font-bold">{s.previewTitle}</p>
+              <p class="font-body-sm text-body-sm text-on-surface-variant">{s.previewBody.replace('{name}', SITE.authorFirstName)}</p>
+            </aside>
+          )
+        }
         <header class="flex flex-col gap-space-sm">
           <div class="flex flex-wrap items-center gap-space-sm">
             <span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-bold uppercase tracking-wider">{label}</span>
@@ -117,24 +150,53 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
               <Icon name="schedule" class="text-[16px] text-terracotta-accent" />
               {s.minRead(readingMinutes(chapter.body))}
             </span>
-            <span class="font-label-md text-label-md text-on-surface-variant">{formatDate(published, lang)}</span>
+            {!preview && <span class="font-label-md text-label-md text-on-surface-variant">{formatDate(published, lang)}</span>}
           </div>
           <h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-display-lg md:text-display-lg text-primary tracking-tight leading-tight">{title}</h1>
           <p class="font-body-md text-body-md md:font-body-lg md:text-body-lg text-on-surface-variant italic">{excerpt}</p>
+          {
+            related.length > 0 && (
+              <a class="self-start inline-flex items-center gap-2 font-label-lg text-label-lg text-primary hover:text-botanical-deep transition-colors" href={extrasHref} {...extrasProps('chapter_header')}>
+                <Icon name="smart_display" class="text-[20px] text-terracotta-accent" />
+                {s.extrasLink(related.length)}
+              </a>
+            )
+          }
         </header>
 
-        <AudioPlayer chapter={chapter} playlist={playlist} />
-        <PdfVersions chapter={chapter} compact />
+        {
+          !preview && (
+            <>
+              <AudioPlayer chapter={chapter} playlist={playlist} />
+              <PdfVersions chapter={chapter} compact />
+            </>
+          )
+        }
 
         <div class="prose max-w-[42rem]"><Content /></div>
         <div id="chapter-end"></div>
 
+        {!preview && (
         <section class="rounded-xl p-space-lg bg-surface-container-low flex flex-col items-center gap-space-sm text-center">
           <p class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">{s.endOf(label)}</p>
           <h2 class="font-headline-md text-headline-md text-primary">{s.takeWithYou}</h2>
           <PdfVersions chapter={chapter} />
           <button type="button" class="px-space-md py-2.5 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-label-md text-label-md transition-colors" data-share={shareUrl} data-share-title={`${title} · ${s.bookTitle}`} data-copied={s.linkCopied} data-share-location="chapter_end">{s.share}</button>
         </section>
+        )}
+
+        {
+          related.length > 0 && (
+            <section id="extras" class="flex flex-col gap-space-md scroll-mt-40" data-track-view="chapter_extras">
+              <h2 class="font-headline-md text-headline-md text-primary">{s.extrasTitle}</h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+                {related.map((p) => (
+                  <JournalCard post={p} location="chapter_end" event="related_content_clicked" props={{ chapter: String(number), count: String(related.length) }} />
+                ))}
+              </div>
+            </section>
+          )
+        }
 
         <Feedback lang={lang} number={number} label={label} title={title} />
 
@@ -153,6 +215,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
           </a>
         </div>
 
+        {!preview && (
         <nav class="grid grid-cols-2 gap-space-md" aria-label="Chapter navigation">
           {
             prev ? (
@@ -178,6 +241,7 @@ const wrap = 'w-full max-w-[1280px] mx-auto px-margin-mobile md:px-margin lg:px-
             )
           }
         </nav>
+        )}
       </article>
     </div>
   </div>

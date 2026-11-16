@@ -11,6 +11,9 @@
 @source '../components/Tiers.astro';
 @source '../components/AudioPlayer.astro';
 @source '../components/Feedback.astro';
+@source '../components/JournalCard.astro';
+@source '../components/VideoPlayer.astro';
+@source '../pages/[...lang]/journal/*.astro';
 
 :root {
   --st-background: #fcf9f8;
