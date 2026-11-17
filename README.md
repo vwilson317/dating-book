@@ -136,10 +136,20 @@ Each payment shows the contributor's tier, acknowledgment name and contact detai
 | `buy_clicked` | Taps a contribute button | `location` (hero/support_modal/landing_top), `tier` (name/instagram/story), `price`, `prompt` (three/finished/manual, prompt only), `ref` |
 | `purchase_completed` | Lands on the thank-you page from Stripe (counted once per checkout) | `session_id`, `tier` |
 | `buy_page_clicked`, `buy_read_free_clicked` | Footer "Contribute" link / "Read it free" | |
-| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `from` (automatic/fab), `chapters_read` |
+| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `from` (automatic/fab), `chapters_read`, `chapters_read_for_real` |
+| `support_unlocked` | The reader read their first chapter for real, so the Contribute button and blocks appear from now on | `via` (reading/audio/existing_reader), `chapter`, `chapters_read` |
 | `support_fab_hidden`, `support_fab_restored` | Reader hides or brings back the floating button | |
 
-The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same checkout and stay hidden on the live site until `PUBLIC_CHECKOUT_ENABLED=true`. The amount buttons at the top of the home page skip the prompt and go straight to checkout. The prompt opens once after 3 finished chapters and once after every published chapter. Its text is under `support` in `src/i18n/buy.ts`.
+The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same checkout and stay hidden on the live site until `PUBLIC_CHECKOUT_ENABLED=true`. The amount buttons at the top of the home page skip the prompt and go straight to checkout. The prompt's text is under `support` in `src/i18n/buy.ts`.
+
+**Nothing asks for money until the reader cares about the book.** A chapter counts as *read for real* when the reader reaches the end at a reading pace (scrolling through faster than ~700 words a minute doesn't count) or listens to most of its narration.
+- **Before that:** a new visitor sees only the chapters. There's no floating button, no Contribute block at the top of the home page, and none in the chapter list sidebar.
+- **After their first chapter read for real:** the floating button appears (after a 10-second pause, so it doesn't land on the last lines). The top-of-home and sidebar blocks show from then on.
+- **After 3 chapters read for real:** the full-screen prompt opens once, then again once they've read every published chapter.
+- **Always available:** the Contribute links in the menu, header, footer and the tiers section near the bottom of the home page, for anyone who goes looking.
+- **Existing readers:** readers who had already finished a chapter before this rule keep the button.
+
+To change the thresholds, see `PROMPT_AFTER` and the comments at the top of `src/scripts/support.ts`. Elements with `data-support-gate` wait for the first chapter read for real.
 
 Funnel in PostHog: `$pageview` on `/buy/` → `buy_clicked` → `purchase_completed`, broken down by `$initial_utm_campaign`.
 
@@ -214,9 +224,49 @@ Change the author and Instagram handle in `src/site.config.ts`, and the book tit
 
 The Journal (`/journal/`, `/pt/journal/`, `/es/journal/`) holds long-form videos and written posts. The idea: post a clip as a Reel, then link to the full video on the site, where you control the experience and the analytics.
 
-### Adding a post
+### Adding a video (no editing)
 
-Create `src/content/journal/en/<slug>.md` (or `pt/`, `es/`). The file name is the URL: `/journal/<slug>/`.
+1. Export the video from your phone or editor as it is, with its sound. Any common format works (MOV, MP4, MKV…).
+2. Drop it in `videos/en/` (or `videos/pt/`, `videos/es/`). Start the file name with a chapter number to show it on that chapter: `09-the-night-it-rained.mov`. For several chapters, use `01+09-…`. With no number, it's just a Journal post.
+3. Run `npm run video`.
+4. Check it with `npm run dev` at `/journal/`, then commit and push.
+
+`npm run video` does the rest:
+- **Converts the file:** an MP4 every phone and browser plays, up to 1080p, that starts playing before it's fully downloaded. Phone videos are turned the right way up, and the sound is kept in sync with the picture.
+- **Fills in the details:** picks a poster frame and reads the length and orientation (landscape or vertical).
+- **Writes the post:** creates `src/content/journal/<lang>/<slug>.md` with the title taken from the file name.
+
+The file name becomes the URL (`/journal/the-night-it-rained/`). Run it again any time: unchanged videos are skipped, and a replaced video is converted again. Your edits to the post are kept: the title, excerpt and any text you add under the video.
+
+Optional files next to the video, with the same name:
+- `the-night-it-rained.jpg` (or `.png`): your own poster instead of a frame picked from the video.
+- `the-night-it-rained.srt` (or `.vtt`): captions, which many people use with the sound off. Instagram, CapCut and most editors can export an `.srt`.
+
+It needs ffmpeg on your computer: `brew install ffmpeg` on a Mac, `winget install ffmpeg` on Windows. The raw files in `videos/` aren't committed.
+
+### Where the videos live
+
+**By default, in the site itself** (`public/video/`), committed with everything else. GitHub rejects files over 100 MB, so the script squeezes each video to fit:
+
+| Length | Quality |
+|---|---|
+| up to ~5 min | 1080p |
+| up to ~10 min | 720p, looks good |
+| longer | soft (the script warns you) |
+
+Every play also counts toward Netlify's bandwidth.
+
+**For long videos, use Cloudflare R2.** It's file storage with no charge for viewers downloading, and the first 10 GB is free. Once it's set up, `npm run video` uploads full-quality 1080p of any length there and puts the link in the post. Nothing else changes: same folder, same command. Posters and captions stay in the site. One-time setup:
+
+1. In Cloudflare, go to **R2**, create a bucket (e.g. `book-videos`), and under its **Settings** turn on public access, either with a custom domain such as `videos.yoursite.com` or the `r2.dev` address.
+2. **R2 → Manage API tokens → Create token**, with Object Read & Write on that bucket.
+3. Add these to `.env` (see `.env.example`): `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, and `VIDEO_PUBLIC_URL` (the public address from step 1).
+
+Videos already in `public/video/` keep working. Run `npm run video -- --force` to move them to R2, then delete the old files.
+
+### Post settings (for reference)
+
+The script writes these. You can also write a post by hand, e.g. a written post with no video:
 
 ```md
 ---
@@ -237,9 +287,6 @@ video:                         # leave out for a written post
 Anything written here appears under the video (or is the whole post, for a written one).
 ```
 
-- **Posters matter.** The poster is what people see before pressing play, the card image, and the WhatsApp/Instagram link preview. Use a 1280×720 JPG. A post without a poster or `cover` gets a generated title image instead.
-- **Captions:** many people watch on their phone with the sound off. A `.vtt` subtitles file turns captions on by default.
-- **Where to keep the video files:** short clips can go in `public/video/` and are served from your own site. Long videos are big, and every play counts against Netlify's bandwidth. For those, upload the MP4 to a storage/CDN service (Cloudflare R2, Bunny, Backblaze B2 and similar) and put its full URL in `src`. Export as MP4 (H.264 + AAC), 1080p or 720p. If you ever replace a video, give it a new file name: browsers keep `/video/` files for a week.
 - The Journal tab appears in the menu once a language has at least one post.
 
 ### The Reel → website flow
@@ -321,6 +368,8 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 | `install_clicked`, `install_prompt_result`, `app_installed` | PWA install funnel |
 
 ### Insights to set up in PostHog
+
+**Does waiting work?** Funnel: `support_unlocked` → `buy_clicked` → `purchase_completed`, and compare the conversion rate of `section_viewed` (section = home_contribute) with before this change. That block is now only shown to readers who've read a chapter for real, so expect fewer views and a higher share of clicks.
 
 **Contribute prompt (funnel).** Funnel: `support_prompt_shown` → `buy_clicked` (location = support_modal) → `purchase_completed`, broken down by `kind`. Break `buy_clicked` down by `tier` to see which tier people choose. Compare with `shared` and `instagram_clicked` (location = support_modal) to see who chose a free way to help.
 

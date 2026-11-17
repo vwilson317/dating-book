@@ -9,7 +9,7 @@
 //                       If the reader comes back and keeps reading, it's sent again with updated
 //                       totals and the same read_id. Use the latest one per read_id (see README).
 import { track } from './analytics';
-import { getProgress, saveProgress, fill } from './progress';
+import { getProgress, saveProgress, fill, markReadForReal } from './progress';
 
 const IDLE_AFTER_MS = 60_000; // stop counting time after a minute with no scroll/touch/key
 const SKIM_WPM = 700; // faster than this means they scrolled through without reading
@@ -110,13 +110,11 @@ export function initReading(
     maxPct = 100;
     if (!started) start();
     const secs = activeSeconds();
-    saveProgress(base.lang, { ...position(), pct: 100, finished: true });
-    document.dispatchEvent(new CustomEvent('chapter:finished'));
-    track('chapter_finished', {
-      ...base,
-      active_seconds: secs,
-      skimmed: wordsTotal > 0 && secs < (wordsTotal / SKIM_WPM) * 60,
-    });
+    const skimmed = wordsTotal > 0 && secs < (wordsTotal / SKIM_WPM) * 60;
+    if (!preview) saveProgress(base.lang, { ...position(), pct: 100, finished: true });
+    document.dispatchEvent(new CustomEvent('chapter:finished', { detail: { skimmed } }));
+    if (!skimmed && !preview) markReadForReal(base.lang, base.chapter, 'reading');
+    track('chapter_finished', { ...base, active_seconds: secs, skimmed });
     obs.disconnect();
   }).observe(end);
 

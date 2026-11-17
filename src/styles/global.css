@@ -2421,3 +2421,8 @@ html:has(.support-modal[open]) {
   vertical-align: 0.12em;
   color: #c2532f;
 }
+
+/* Contribute asks wait until the reader has read a chapter for real (src/scripts/support.ts) */
+html:not([data-support-ready]) [data-support-gate] {
+  display: none !important;
+}

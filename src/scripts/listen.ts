@@ -12,7 +12,7 @@
 //   audio_listened   – summary when the page is hidden: `seconds_listened`, `max_percent`, `speed`
 //   audio_speed_changed, audio_next_chapter (autoplay into the next chapter)
 import { track } from './analytics';
-import { saveProgress, getProgress } from './progress';
+import { saveProgress, getProgress, markReadForReal } from './progress';
 
 interface Track {
   number: number;
@@ -247,6 +247,8 @@ export function initListen(root: HTMLElement, mini: HTMLElement) {
     // listening to the end counts as reading it (✓ Read on the chapter cards)
     const prev = getProgress(meta.lang, current.number);
     saveProgress(meta.lang, { number: current.number, label: current.label, url: current.url, pct: prev?.pct ?? 100, finished: true, updated: Date.now() });
+    // ...and for real, if they listened to most of it rather than skipping to the end (allows for 2x speed)
+    if (stats.ms / 1000 >= current.duration * 0.4) markReadForReal(meta.lang, current.number, 'audio');
     const next = tracks[index + 1];
     if (next && autoNext.checked) {
       track('audio_next_chapter', { ...base(), to: next.number });

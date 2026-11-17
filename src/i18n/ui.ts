@@ -189,6 +189,7 @@ export const ui = {
     journalEmpty: 'Nothing here yet. The first video drops on Instagram first.',
     kindVideo: 'Video',
     kindPost: 'Story',
+    videoExcerpt: 'The full video, uncut.', // written into new posts by npm run video
     playVideo: 'Play video',
     rotateHint: 'Turn your phone sideways for the best view',
     resumeVideo: 'Pick up at {time}',
@@ -406,6 +407,7 @@ export const ui = {
     journalEmpty: 'Nada por aqui ainda. O primeiro vídeo sai primeiro no Instagram.',
     kindVideo: 'Vídeo',
     kindPost: 'História',
+    videoExcerpt: 'O vídeo completo, sem cortes.',
     playVideo: 'Assistir ao vídeo',
     rotateHint: 'Vire o celular de lado para ver melhor',
     resumeVideo: 'Continuar de {time}',
@@ -617,6 +619,7 @@ export const ui = {
     journalEmpty: 'Todavía no hay nada. El primer video sale primero en Instagram.',
     kindVideo: 'Video',
     kindPost: 'Historia',
+    videoExcerpt: 'El video completo, sin cortes.',
     playVideo: 'Ver el video',
     rotateHint: 'Gira el celular para verlo mejor',
     resumeVideo: 'Seguir desde {time}',

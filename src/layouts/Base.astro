@@ -132,6 +132,8 @@ const showSupport = !preview && !/\/(buy|thanks)\/?$/.test(path);
           if (p.size != null && p.size !== 1) d.dataset.size = p.size;
           if (p.font === 'sans') d.dataset.font = 'sans';
           if (p.spacing === 'relaxed') d.dataset.spacing = 'relaxed';
+          // Contribute asks marked data-support-gate show once a chapter was read for real (src/scripts/support.ts)
+          if (localStorage.getItem('support-ready')) d.dataset.supportReady = '';
         } catch (e) {}
         // Same check as inAppBrowser() in analytics.ts. Set early so the simpler page never flashes.
         if (/Instagram|FBAN|FBAV|FB_IAB|musical_ly|TikTok|BytedanceWebview/i.test(navigator.userAgent)) {
