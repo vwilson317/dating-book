@@ -136,10 +136,20 @@ Each payment shows the contributor's tier, acknowledgment name and contact detai
 | `buy_clicked` | Taps a contribute button | `location` (hero/support_modal/landing_top), `tier` (name/instagram/story), `price`, `prompt` (three/finished/manual, prompt only), `ref` |
 | `purchase_completed` | Lands on the thank-you page from Stripe (counted once per checkout) | `session_id`, `tier` |
 | `buy_page_clicked`, `buy_read_free_clicked` | Footer "Contribute" link / "Read it free" | |
-| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `from` (automatic/fab), `chapters_read` |
+| `support_prompt_shown`, `support_prompt_closed` | Full-screen contribute prompt opened / closed | `kind` (three/finished/manual), `from` (automatic/fab), `chapters_read`, `chapters_read_for_real` |
+| `support_unlocked` | The reader read their first chapter for real, so the Contribute button and blocks appear from now on | `via` (reading/audio/existing_reader), `chapter`, `chapters_read` |
 | `support_fab_hidden`, `support_fab_restored` | Reader hides or brings back the floating button | |
 
-The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same checkout and stay hidden on the live site until `PUBLIC_CHECKOUT_ENABLED=true`. The amount buttons at the top of the home page skip the prompt and go straight to checkout. The prompt opens once after 3 finished chapters and once after every published chapter. Its text is under `support` in `src/i18n/buy.ts`.
+The floating **Contribute** button and full-screen prompt (`src/components/Support.astro`, `src/scripts/support.ts`) use the same checkout and stay hidden on the live site until `PUBLIC_CHECKOUT_ENABLED=true`. The amount buttons at the top of the home page skip the prompt and go straight to checkout. The prompt's text is under `support` in `src/i18n/buy.ts`.
+
+**Nothing asks for money until the reader cares about the book.** A chapter counts as *read for real* when the reader reaches the end at a reading pace (scrolling through faster than ~700 words a minute doesn't count) or listens to most of its narration.
+- **Before that:** a new visitor sees only the chapters. There's no floating button, no Contribute block at the top of the home page, and none in the chapter list sidebar.
+- **After their first chapter read for real:** the floating button appears (after a 10-second pause, so it doesn't land on the last lines). The top-of-home and sidebar blocks show from then on.
+- **After 3 chapters read for real:** the full-screen prompt opens once, then again once they've read every published chapter.
+- **Always available:** the Contribute links in the menu, header, footer and the tiers section near the bottom of the home page, for anyone who goes looking.
+- **Existing readers:** readers who had already finished a chapter before this rule keep the button.
+
+To change the thresholds, see `PROMPT_AFTER` and the comments at the top of `src/scripts/support.ts`. Elements with `data-support-gate` wait for the first chapter read for real.
 
 Funnel in PostHog: `$pageview` on `/buy/` → `buy_clicked` → `purchase_completed`, broken down by `$initial_utm_campaign`.
 
@@ -358,6 +368,8 @@ If a reader switches away and comes back to the same tab, `chapter_read` is sent
 | `install_clicked`, `install_prompt_result`, `app_installed` | PWA install funnel |
 
 ### Insights to set up in PostHog
+
+**Does waiting work?** Funnel: `support_unlocked` → `buy_clicked` → `purchase_completed`, and compare the conversion rate of `section_viewed` (section = home_contribute) with before this change. That block is now only shown to readers who've read a chapter for real, so expect fewer views and a higher share of clicks.
 
 **Contribute prompt (funnel).** Funnel: `support_prompt_shown` → `buy_clicked` (location = support_modal) → `purchase_completed`, broken down by `kind`. Break `buy_clicked` down by `tier` to see which tier people choose. Compare with `shared` and `instagram_clicked` (location = support_modal) to see who chose a free way to help.
 

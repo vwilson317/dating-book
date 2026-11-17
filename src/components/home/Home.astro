@@ -1,6 +1,7 @@
 ---
 // The home page, built from stitch/book_home_reader (desktop) and stitch/mobile_book_home (phone).
-// Deliberate differences from the mockups: Contribute comes first, the hero sits between Chapters 2
+// Deliberate differences from the mockups: Contribute comes first for readers who've read a chapter
+// for real (hidden for new visitors, see src/scripts/support.ts), the hero sits between Chapters 2
 // and 3, the quiz is promoted only on the Contact page, and every chapter can be read in place.
 import type { Chapter } from '../../lib/content';
 import { SITE, instagramUrl, showPlaceholders, supportTiers } from '../../site.config';
@@ -47,10 +48,10 @@ const narrow = 'max-w-[1020px] mx-auto px-margin-mobile md:px-margin';
     </div>
   </div>
 
-  <!-- Contribute, first on the page on purpose -->
+  <!-- Contribute, first on the page for readers who already read a chapter for real; new visitors get the chapters first -->
   {
     tiers.length > 0 && (
-      <section class="w-full pt-space-lg lg:pt-space-xl pb-space-md" data-support-cta data-track-view="home_contribute">
+      <section class="w-full pt-space-lg lg:pt-space-xl pb-space-md" data-support-cta data-support-gate data-track-view="home_contribute">
         <div class={narrow}>
           <div class="bg-sand-light rounded-xl p-space-md md:p-space-lg shadow-sm flex flex-col gap-space-md">
             <div class="flex items-center gap-2">

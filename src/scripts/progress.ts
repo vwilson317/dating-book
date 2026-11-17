@@ -75,3 +75,30 @@ export function initProgressUI() {
 }
 
 export { fill };
+
+// ---- Chapters read for real ----
+// "Finished" above includes scrolling to the bottom. A chapter counts as read for real when the reader
+// reached the end at a reading pace (not skimmed) or listened to most of the narration. The Contribute
+// asks wait for this (src/scripts/support.ts): the button after one, the pop-up after three.
+const REAL_KEY = 'read-for-real:';
+export const SUPPORT_READY_KEY = 'support-ready'; // read by the inline script in Base.astro
+
+export function readForReal(lang: string): number[] {
+  try {
+    return JSON.parse(localStorage.getItem(REAL_KEY + lang) || '[]');
+  } catch {
+    return [];
+  }
+}
+
+/** Records it, and tells the page (support.ts listens). */
+export function markReadForReal(lang: string, n: number, via: 'reading' | 'audio') {
+  const list = readForReal(lang);
+  const first = !list.includes(n);
+  try {
+    if (first) localStorage.setItem(REAL_KEY + lang, JSON.stringify([...list, n]));
+  } catch {
+    /* private mode */
+  }
+  document.dispatchEvent(new CustomEvent('chapter:read-for-real', { detail: { lang, number: n, via, first } }));
+}

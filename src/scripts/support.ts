@@ -1,11 +1,19 @@
 // Floating "Contribute" button and the full-screen prompt (src/components/Support.astro).
 //
-// The prompt opens once after 3 finished chapters and once after every published chapter, counted
-// per language on this device. Readers who already paid never see the button or the prompts.
+// Nothing asks for money until the reader cares about the book:
+//   - The floating button, and the Contribute block at the top of the home page and chapter list,
+//     appear once they've read a chapter for real (reached the end without skimming, or listened to
+//     most of it). Elements marked data-support-gate stay hidden until then (CSS in global.css; the
+//     inline script in Base.astro sets it before the page paints for readers who already qualify).
+//   - The pop-up opens once after 3 chapters read for real, and once after every published chapter,
+//     counted per language on this device.
+// Navigation links to the Contribute page are always there for anyone looking for them. Readers who
+// already paid never see the button or the prompts.
 import { distinctId, track } from './analytics';
-import { allProgress } from './progress';
+import { allProgress, readForReal, SUPPORT_READY_KEY } from './progress';
 
 const PROMPT_AFTER = 3;
+const MIGRATED_KEY = 'support-gate-v1';
 // Leaves time to read the last lines. If they move on sooner, the next page shows the prompt.
 const DELAY_AFTER_FINISH_MS = 10_000;
 const DELAY_ON_LOAD_MS = 800;
@@ -71,6 +79,19 @@ export function initSupport() {
   const total = Number(modal.dataset.total) || 0;
   const seenKey = (kind: Kind) => `support-prompt:${lang}:${kind}`;
   const chaptersRead = () => allProgress(lang).filter((p) => p.finished).length;
+  const chaptersReadForReal = () => readForReal(lang).length;
+
+  // Readers from before this rule who already finished a chapter keep seeing the button. Runs once per
+  // device, so a new reader who only skims can't unlock it this way later.
+  if (!read(MIGRATED_KEY)) {
+    write(MIGRATED_KEY, '1');
+    const finishedBefore = Object.keys(localStorage).some((k) => k.startsWith('progress:') && read(k)?.includes('"finished":true'));
+    if (finishedBefore && !read(SUPPORT_READY_KEY)) {
+      write(SUPPORT_READY_KEY, '1');
+      track('support_unlocked', { via: 'existing_reader', chapters_read: chaptersRead() });
+    }
+  }
+  const ready = () => !!read(SUPPORT_READY_KEY);
   let openKind: Kind | null = null;
 
   const open = (kind: Kind, from?: string) => {
@@ -80,7 +101,7 @@ export function initSupport() {
     modal.querySelectorAll<HTMLElement>('[data-track="buy_clicked"]').forEach((a) => (a.dataset.propPrompt = kind));
     modal.showModal();
     modal.scrollTop = 0;
-    track('support_prompt_shown', { kind, from: from ?? 'automatic', chapters_read: chaptersRead() });
+    track('support_prompt_shown', { kind, from: from ?? 'automatic', chapters_read: chaptersRead(), chapters_read_for_real: chaptersReadForReal() });
   };
 
   modal.querySelectorAll('[data-support-close]').forEach((b) => b.addEventListener('click', () => modal.close()));
@@ -89,7 +110,21 @@ export function initSupport() {
   // ---- floating button ----
   const setCollapsed = (collapsed: boolean) => fab.classList.toggle('is-collapsed', collapsed);
   setCollapsed(read(COLLAPSED_KEY) === '1');
-  fab.hidden = false;
+  const reveal = () => {
+    document.documentElement.dataset.supportReady = '';
+    fab.hidden = false;
+  };
+  if (ready()) reveal();
+  document.addEventListener('chapter:read-for-real', (e) => {
+    const { number, via } = (e as CustomEvent<{ number: number; via: string }>).detail;
+    if (!ready()) {
+      write(SUPPORT_READY_KEY, '1');
+      track('support_unlocked', { via, chapter: number, chapters_read: chaptersRead() });
+      // after a pause, so it doesn't pop up over the last lines
+      window.setTimeout(reveal, DELAY_AFTER_FINISH_MS);
+    }
+    schedule(DELAY_AFTER_FINISH_MS);
+  });
   document.querySelectorAll<HTMLElement>('[data-support-open]').forEach((b) =>
     b.addEventListener('click', () => open('manual', b.dataset.supportOpen)),
   );
@@ -106,9 +141,10 @@ export function initSupport() {
 
   // ---- prompts ----
   const due = (): Kind | null => {
+    if (!ready()) return null;
     const done = chaptersRead();
     if (total > 0 && done >= total) return read(seenKey('finished')) ? null : 'finished';
-    return done >= PROMPT_AFTER && !read(seenKey('three')) ? 'three' : null;
+    return chaptersReadForReal() >= PROMPT_AFTER && !read(seenKey('three')) ? 'three' : null;
   };
   const busy = () =>
     !!document.querySelector('dialog[open]') || document.activeElement?.tagName === 'TEXTAREA';
